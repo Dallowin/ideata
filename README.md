@@ -19,6 +19,10 @@ then out-publish your competitors with an AI writing studio built right in.
 
 [Quick start](#quick-start) · [Features](#features) · [Configuration](#configuration) · [Architecture](#architecture) · [Roadmap](#roadmap)
 
+<br/>
+
+<img src=".github/assets/dashboard.png" alt="Ideata dashboard — AI visibility monitoring across answer engines" width="900">
+
 </div>
 
 <br/>
