@@ -38,10 +38,6 @@ Ideata is the open, self-hosted way to measure it and win it.
 
 ## ✨ Features
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
 ### 📡 AEO tracking
 
 - **8+ answer engines** — ChatGPT, Claude, Gemini, Perplexity, DeepSeek, Grok + regional **Yandex** (Alice / Neuro) & **GigaChat**
@@ -51,21 +47,25 @@ Ideata is the open, self-hosted way to measure it and win it.
 - **AI-crawler analytics** — GPTBot, ClaudeBot & co. via Cloudflare
 - **AI-referred traffic** — Yandex Metrica + Google Search Console
 
-</td>
-<td width="50%" valign="top">
-
 ### ✍️ Blog Writer studio
 
 - **Full pipeline** — brief → research → outline → draft → anti-slop → fact-check
 - **Per-article model** with a live price estimate before you spend a token
 - **Brand-voice agent** — one prompt, quality gates, target length & sources
 - **Cover studio** — 50+ templates, PNG composited in the browser
-- **Multi-posting** — adapt one article to Telegram / VK / Threads / Zen
 - **Content calendar** + idea generator
+- **Bilingual** — interface and generated content in English or Russian
 
-</td>
-</tr>
-</table>
+### 📤 Cross-posting
+
+One article, rewritten per platform — each with its own character limit, threading
+rules, tone and hashtag policy, not the same text copy-pasted everywhere.
+
+- **One-click publish** — Telegram, X, LinkedIn, Bluesky, Mastodon
+- **Auto-pull** — Zen subscribes to your `rss.xml` and picks articles up itself
+- **Adapt & copy** — VK, Threads
+- **The article itself** — your own blog, WordPress (app password or OAuth), or any REST endpoint
+- **Media** included: images and video ride along to every connector that accepts them
 
 ### 🛠️ Built for self-hosting
 
