@@ -103,28 +103,21 @@ Everything is configured through `.env` (see [`.env.example`](.env.example)) or,
 you're the owner, straight from the dashboard. The only thing you truly need is **model access** —
 and there are two ways to give it.
 
-### Models — OpenRouter *or* native keys
+### Models — which key powers which engine
 
-**Option A · OpenRouter** — the simple path. One key routes every model:
+Engines are split across providers. Set the keys for the engines you actually want:
 
-```env
-OPENROUTER_API_KEY=sk-or-...   # ChatGPT · Claude · Gemini · DeepSeek · Grok · Perplexity
-```
+| Engine | Variable | Where |
+| --- | --- | --- |
+| ChatGPT, DeepSeek, Grok, Perplexity | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
+| Claude, Gemini | `KIE_API_KEY` | [kie.ai](https://kie.ai) |
+| Google AI Overviews | `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` | [dataforseo.com](https://app.dataforseo.com/api-access) |
+| GigaChat | `GIGACHAT_API_KEY` | regional |
+| Yandex Alice, Yandex Neuro | `YANDEX_SEARCH_API_KEY` | regional |
 
-**Option B · Native provider keys** — bring the official key for each engine you want (per-engine, better geo-control):
+> **Claude and Gemini do not fall back to OpenRouter.** Without `KIE_API_KEY` they are skipped silently — the run completes, those rows are just missing. Set both keys if you want the full ten engines.
 
-| Engine | Variable |
-| --- | --- |
-| ChatGPT (OpenAI) | `OPENAI_API_KEY` |
-| Claude (Anthropic) | `ANTHROPIC_API_KEY` |
-| Gemini (Google) | `GEMINI_API_KEY` |
-| DeepSeek | `DEEPSEEK_API_KEY` |
-| Grok (xAI) | `XAI_API_KEY` |
-| Perplexity | `PERPLEXITY_API_KEY` |
-| GigaChat | `GIGACHAT_API_KEY` |
-| Yandex GPT | `YANDEX_SEARCH_API_KEY` |
-
-> Flip between the two anytime in **Settings → Engines**. GigaChat & Yandex GPT are native-only (regional engines).
+Per-provider native keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY` and friends) are accepted by the settings screen but are **not wired into the engine dispatcher yet** — see the roadmap. Today the two keys above are what actually drives the tracker.
 
 ### Everything else (all optional)
 
