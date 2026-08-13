@@ -62,6 +62,10 @@ services:
     environment:
       # внутри compose-сети сервисы доступны по имени; перебивает .env
       REDIS_URL: redis://redis:6379
+      # Читаем агрегаты трекера прямо из своей БД. Дефолт в коде — shadow, а он
+      # ходит за ответом в python-сервис по INTERNAL_TOKEN; этого сервиса в
+      # OSS-сборке нет, и дашборд получал 503 вместо данных.
+      AEO_READ_MODE: ${AEO_READ_MODE:-native}
     depends_on:
       db:
         condition: service_healthy
@@ -79,6 +83,10 @@ services:
     env_file: .env
     environment:
       REDIS_URL: redis://redis:6379
+      # Читаем агрегаты трекера прямо из своей БД. Дефолт в коде — shadow, а он
+      # ходит за ответом в python-сервис по INTERNAL_TOKEN; этого сервиса в
+      # OSS-сборке нет, и дашборд получал 503 вместо данных.
+      AEO_READ_MODE: ${AEO_READ_MODE:-native}
     depends_on:
       db:
         condition: service_healthy
