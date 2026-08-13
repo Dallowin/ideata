@@ -1,6 +1,6 @@
 <div align="center">
 
-# Ideata
+<img src=".github/assets/logo.png" alt="Ideata" width="300">
 
 ### Open-source **AEO tracker** + **AI content studio** — self-hosted in one command.
 
