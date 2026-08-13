@@ -9,15 +9,15 @@ then out-publish your competitors with an AI writing studio built right in.
 
 <br/>
 
-<a href="#-quick-start"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-compose-2496ED?style=flat&logo=docker&logoColor=white"></a>
+<a href="#quick-start"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-compose-2496ED?style=flat&logo=docker&logoColor=white"></a>
 <a href="https://vuejs.org"><img alt="Vue 3" src="https://img.shields.io/badge/Vue-3-42b883?style=flat&logo=vuedotjs&logoColor=white"></a>
 <a href="https://nestjs.com"><img alt="NestJS" src="https://img.shields.io/badge/NestJS-E0234E?style=flat&logo=nestjs&logoColor=white"></a>
 <a href="https://www.postgresql.org"><img alt="PostgreSQL 16" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat&logo=postgresql&logoColor=white"></a>
-<a href="#-contributing"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat"></a>
-<a href="#-quick-start"><img alt="Self-hosted" src="https://img.shields.io/badge/self--hosted-%E2%9C%93-6d071a?style=flat"></a>
+<a href="#contributing"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat"></a>
+<a href="#quick-start"><img alt="Self-hosted" src="https://img.shields.io/badge/self--hosted-%E2%9C%93-6d071a?style=flat"></a>
 <a href="LICENSE"><img alt="License AGPL-3.0" src="https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat"></a>
 
-[Quick start](#-quick-start) · [Features](#-features) · [Configuration](#%EF%B8%8F-configuration) · [Architecture](#-architecture) · [Roadmap](#%EF%B8%8F-roadmap)
+[Quick start](#quick-start) · [Features](#features) · [Configuration](#configuration) · [Architecture](#architecture) · [Roadmap](#roadmap)
 
 </div>
 
@@ -29,16 +29,16 @@ Search moved into the chat box. People ask **ChatGPT** and **Perplexity** for re
 instead of scrolling ten blue links. **AEO — Answer Engine Optimization — is the new SEO**, and
 Ideata is the open, self-hosted way to measure it and win it.
 
-- 🔎 **Track your AI visibility.** Run your real buyer prompts across 8+ engines and see exactly when you're mentioned, cited, or ignored — and who gets recommended instead of you.
-- 🏆 **Benchmark competitors.** Share of voice, sentiment, and which sources the models actually trust.
-- ✍️ **Close the gap.** A built-in AI writing studio that researches, drafts, and multi-posts content engineered to get cited back.
-- 🔒 **Own everything.** Runs entirely on your infrastructure. Bring your own API keys. No seats, no per-report fees, no limits.
+- **Track your AI visibility.** Run your real buyer prompts across 8+ engines and see exactly when you're mentioned, cited, or ignored — and who gets recommended instead of you.
+- **Benchmark competitors.** Share of voice, sentiment, and which sources the models actually trust.
+- **Close the gap.** A built-in AI writing studio that researches, drafts, and multi-posts content engineered to get cited back.
+- **Own everything.** Runs entirely on your infrastructure. Bring your own API keys. No seats, no per-report fees, no limits.
 
 <br/>
 
-## ✨ Features
+## Features
 
-### 📡 AEO tracking
+### AEO tracking
 
 - **8+ answer engines** — ChatGPT, Claude, Gemini, Perplexity, DeepSeek, Grok + regional **Yandex** (Alice / Neuro) & **GigaChat**
 - **Prompt panels** — track dozens of real prompts, run on a daily schedule
@@ -47,7 +47,7 @@ Ideata is the open, self-hosted way to measure it and win it.
 - **AI-crawler analytics** — GPTBot, ClaudeBot & co. via Cloudflare
 - **AI-referred traffic** — Yandex Metrica + Google Search Console
 
-### ✍️ Blog Writer studio
+### Blog Writer studio
 
 - **Full pipeline** — brief → research → outline → draft → anti-slop → fact-check
 - **Per-article model** with a live price estimate before you spend a token
@@ -56,7 +56,7 @@ Ideata is the open, self-hosted way to measure it and win it.
 - **Content calendar** + idea generator
 - **Bilingual** — interface and generated content in English or Russian
 
-### 📤 Cross-posting
+### Cross-posting
 
 One article, rewritten per platform — each with its own character limit, threading
 rules, tone and hashtag policy, not the same text copy-pasted everywhere.
@@ -67,7 +67,7 @@ rules, tone and hashtag policy, not the same text copy-pasted everywhere.
 - **The article itself** — your own blog, WordPress (app password or OAuth), or any REST endpoint
 - **Media** included: images and video ride along to every connector that accepts them
 
-### 🛠️ Built for self-hosting
+### Built for self-hosting
 
 - **One `docker compose up`** brings up Postgres, Redis, the API, the worker and the dashboard.
 - **Bring your own keys** through a slick in-app Settings UI — one OpenRouter key for everything, or native per-provider keys for geo-control.
@@ -76,10 +76,10 @@ rules, tone and hashtag policy, not the same text copy-pasted everywhere.
 
 <br/>
 
-## 🚀 Quick start
+## Quick start
 
 ```bash
-git clone https://github.com/your-org/ideata-app.git
+git clone https://github.com/Dallowin/ideata-app.git
 cd ideata-app
 cp .env.example .env          # add at least one LLM key (e.g. OPENROUTER_API_KEY)
 docker compose up -d --build
@@ -93,13 +93,13 @@ No cloud account. No credit card. Just Docker.
 
 <br/>
 
-## ⚙️ Configuration
+## Configuration
 
 Everything is configured through `.env` (see [`.env.example`](.env.example)) or, once
 you're the owner, straight from the dashboard. The only thing you truly need is **model access** —
 and there are two ways to give it.
 
-### 🔀 Models — OpenRouter *or* native keys
+### Models — OpenRouter *or* native keys
 
 **Option A · OpenRouter** — the simple path. One key routes every model:
 
@@ -134,7 +134,7 @@ OPENROUTER_API_KEY=sk-or-...   # ChatGPT · Claude · Gemini · DeepSeek · Grok
 
 <br/>
 
-## 🧱 Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -156,7 +156,7 @@ flowchart LR
 
 <br/>
 
-## 🌍 Localization
+## Localization
 
 The dashboard is **bilingual (English / Русский)** via a frontend i18n layer.
 Backend messages default to English; language-dependent **product content**
@@ -165,7 +165,7 @@ New UI locales are welcome — they live in the frontend translation dictionarie
 
 <br/>
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] More answer engines & regional assistants
 - [ ] Native-API dispatch with per-country geo-targeting
@@ -174,12 +174,12 @@ New UI locales are welcome — they live in the frontend translation dictionarie
 
 <br/>
 
-## 🤝 Contributing
+## Contributing
 
 Issues and PRs are very welcome. Spin it up locally, break something, send a fix.
 If you add a feature that touches the UI, keep it token-driven so it works in both themes.
 
-## 📄 License
+## License
 
 [AGPL-3.0](LICENSE) — free to self-host, modify and use commercially. If you run a
 modified version as a network service, you have to share your changes under the same
