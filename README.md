@@ -83,8 +83,8 @@ rules, tone and hashtag policy, not the same text copy-pasted everywhere.
 ## Quick start
 
 ```bash
-git clone https://github.com/Dallowin/ideata-app.git
-cd ideata-app
+git clone https://github.com/Dallowin/ideata.git
+cd ideata
 cp .env.example .env          # add at least one LLM key (e.g. OPENROUTER_API_KEY)
 docker compose up -d --build
 ```
