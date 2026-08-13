@@ -1,0 +1,599 @@
+{
+ "digestCases": [
+  {
+   "name": "A",
+   "facts": {
+    "meta": {
+     "domain": "shop.ru"
+    },
+    "visits": 128770,
+    "growthPct": 12,
+    "authority": null,
+    "kwTotal": 5400,
+    "refDomains": 340,
+    "backlinksTotal": 9800,
+    "spamScore": 2,
+    "sources": [
+     {
+      "label": "Органический поиск",
+      "pct": 82
+     }
+    ],
+    "geo": [
+     {
+      "code": "RU",
+      "share": 71
+     },
+     {
+      "code": "KZ",
+      "share": 12
+     }
+    ],
+    "intents": [
+     {
+      "label": "Коммерческие",
+      "pct": 44
+     }
+    ],
+    "keywords": [
+     {
+      "kw": "crm",
+      "vol": 1234,
+      "pos": 3,
+      "intent": "Коммерч."
+     },
+     {
+      "kw": "црм система",
+      "vol": 880,
+      "pos": 7,
+      "intent": null
+     }
+    ],
+    "topPages": [
+     {
+      "url": "https://shop.ru/p",
+      "traffic": 500,
+      "kws": 40
+     }
+    ],
+    "competitors": [
+     {
+      "domain": "rival.com",
+      "shared": 210
+     }
+    ],
+    "gapRows": [
+     {
+      "kw": "лучшая crm",
+      "vol": null,
+      "kd": 4.5,
+      "pos": null
+     }
+    ],
+    "tech": {
+     "Платформа": [
+      "Bitrix"
+     ]
+    },
+    "perfScore": 78,
+    "ads": [
+     {
+      "headline": "Скидка 30%"
+     }
+    ],
+    "crawl": {
+     "title": "CRM для бизнеса",
+     "hero_text": "Продавайте больше"
+    }
+   },
+   "rawKeywords": [
+    {
+     "keyword": "crm система",
+     "volume": 1234
+    },
+    {
+     "keyword": "срм для отдела продаж",
+     "volume": 590
+    },
+    {
+     "keyword": "",
+     "volume": null
+    }
+   ],
+   "digest": {
+    "domain": "shop.ru",
+    "visits": 128770,
+    "growthPct": 12,
+    "authority": null,
+    "kwTotal": 5400,
+    "refDomains": 340,
+    "backlinksTotal": 9800,
+    "spamScore": 2,
+    "sources": [
+     {
+      "label": "Органический поиск",
+      "pct": 82
+     }
+    ],
+    "geo": [
+     {
+      "code": "RU",
+      "share": 71
+     },
+     {
+      "code": "KZ",
+      "share": 12
+     }
+    ],
+    "intents": [
+     {
+      "label": "Коммерческие",
+      "pct": 44
+     }
+    ],
+    "topKeywords": [
+     {
+      "kw": "crm",
+      "vol": 1234,
+      "pos": 3,
+      "intent": "Коммерч."
+     },
+     {
+      "kw": "црм система",
+      "vol": 880,
+      "pos": 7,
+      "intent": null
+     }
+    ],
+    "topPages": [
+     {
+      "url": "https://shop.ru/p",
+      "traffic": 500,
+      "kws": 40
+     }
+    ],
+    "competitors": [
+     {
+      "domain": "rival.com",
+      "shared": 210
+     }
+    ],
+    "gapRows": [
+     {
+      "kw": "лучшая crm",
+      "vol": null,
+      "kd": 4.5,
+      "pos": null
+     }
+    ],
+    "tech": {
+     "Платформа": [
+      "Bitrix"
+     ]
+    },
+    "perfScore": 78,
+    "ads": [
+     {
+      "headline": "Скидка 30%"
+     }
+    ],
+    "crawl": {
+     "title": "CRM для бизнеса",
+     "hero_text": "Продавайте больше"
+    },
+    "keywordsSample": [
+     {
+      "kw": "crm система",
+      "vol": 1234
+     },
+     {
+      "kw": "срм для отдела продаж",
+      "vol": 590
+     },
+     {
+      "kw": "",
+      "vol": null
+     }
+    ]
+   },
+   "allowed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    10,
+    12,
+    40,
+    44,
+    71,
+    78,
+    82,
+    129,
+    200,
+    210,
+    300,
+    340,
+    500,
+    590,
+    600,
+    880,
+    900,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    9800,
+    10000,
+    128770,
+    128800,
+    129000,
+    130000
+   ]
+  },
+  {
+   "name": "B",
+   "facts": {
+    "meta": {},
+    "visits": null,
+    "keywords": [],
+    "gapRows": []
+   },
+   "rawKeywords": null,
+   "digest": {
+    "domain": null,
+    "visits": null,
+    "growthPct": null,
+    "authority": null,
+    "kwTotal": null,
+    "refDomains": null,
+    "backlinksTotal": null,
+    "spamScore": null,
+    "sources": null,
+    "geo": [],
+    "intents": null,
+    "topKeywords": [],
+    "topPages": [],
+    "competitors": [],
+    "gapRows": [],
+    "tech": null,
+    "perfScore": null,
+    "ads": null,
+    "crawl": null,
+    "keywordsSample": []
+   },
+   "allowed": []
+  },
+  {
+   "name": "C",
+   "facts": {
+    "meta": {
+     "domain": "acme.io"
+    },
+    "visits": 2500000,
+    "growthPct": -8,
+    "authority": 55,
+    "keywords": [
+     {
+      "kw": "widget",
+      "vol": 49900,
+      "pos": 1,
+      "intent": "INFO"
+     }
+    ],
+    "geo": [
+     {
+      "code": "US",
+      "share": 60
+     }
+    ],
+    "gapRows": [
+     {
+      "kw": "g",
+      "vol": 1250,
+      "kd": 10,
+      "pos": 5
+     }
+    ]
+   },
+   "rawKeywords": [],
+   "digest": {
+    "domain": "acme.io",
+    "visits": 2500000,
+    "growthPct": -8,
+    "authority": 55,
+    "kwTotal": null,
+    "refDomains": null,
+    "backlinksTotal": null,
+    "spamScore": null,
+    "sources": null,
+    "geo": [
+     {
+      "code": "US",
+      "share": 60
+     }
+    ],
+    "intents": null,
+    "topKeywords": [
+     {
+      "kw": "widget",
+      "vol": 49900,
+      "pos": 1,
+      "intent": "INFO"
+     }
+    ],
+    "topPages": [],
+    "competitors": [],
+    "gapRows": [
+     {
+      "kw": "g",
+      "vol": 1250,
+      "kd": 10,
+      "pos": 5
+     }
+    ],
+    "tech": null,
+    "perfScore": null,
+    "ads": null,
+    "crawl": null,
+    "keywordsSample": []
+   },
+   "allowed": [
+    -8,
+    1,
+    5,
+    10,
+    50,
+    55,
+    60,
+    1000,
+    1200,
+    1250,
+    2500,
+    49900,
+    50000,
+    2500000
+   ]
+  }
+ ],
+ "violCases": [
+  {
+   "name": "plain-500k",
+   "obj": {
+    "plan": [
+     {
+      "t": "Рост до 500000 визитов",
+      "why": "сейчас 128 770"
+     }
+    ]
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    500000
+   ]
+  },
+  {
+   "name": "space-and-nbsp",
+   "obj": {
+    "t": "было 128 770, станет 250 000"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    250000
+   ]
+  },
+  {
+   "name": "ru-thousand-dot",
+   "obj": {
+    "t": "прирост 12.300 и 3.500 в месяц"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    12300,
+    3500
+   ]
+  },
+  {
+   "name": "comma-thousand",
+   "obj": {
+    "t": "12,300 и 4,5 и 1,234,567"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    12300
+   ]
+  },
+  {
+   "name": "small-numbers-ok",
+   "obj": {
+    "t": "3 шага, impact 5, 99 процентов, 800 штук"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": []
+  },
+  {
+   "name": "numeric-values-ignored",
+   "obj": {
+    "impact": 500000,
+    "effort": 999999,
+    "t": "текст без крупных чисел"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": []
+  },
+  {
+   "name": "negative-and-dup",
+   "obj": {
+    "t": "-5000 и 5000 и снова 5000",
+    "x": "7777 7777"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    500077777777
+   ]
+  },
+  {
+   "name": "in-allowed",
+   "obj": {
+    "t": "129 000 и 130000 и 1200"
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": []
+  },
+  {
+   "name": "nested-list",
+   "obj": {
+    "plan": [
+     {
+      "how": [
+       "до 42000 клиентов",
+       "около 129000"
+      ]
+     }
+    ]
+   },
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": [
+    42000
+   ]
+  },
+  {
+   "name": "empty",
+   "obj": {},
+   "allowed": [
+    1,
+    5,
+    129,
+    1000,
+    1200,
+    1234,
+    5000,
+    5400,
+    128770,
+    128800,
+    129000,
+    130000
+   ],
+   "bad": []
+  }
+ ]
+}

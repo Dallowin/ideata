@@ -1,0 +1,249 @@
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/bricolage-grotesque";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Светлая тема. Нейтрали холодные, с синим подтоном, а не серые: серый в ноль
+     на большом дашборде выглядит грязно, а лёгкая синева держит воздух. Палитра
+     снята с публичного сайта Typefully (фон #fff, поверхности #f8f9f9 / #eef0f1,
+     границы #e6e8ea, вторичный текст #5c6d7a) и переведена в наши роли. */
+  --background: oklch(0.988 0.0015 250);
+  --foreground: oklch(0.21 0.008 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.008 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.008 250);
+  /* Первичная кнопка — НЕЙТРАЛЬНАЯ тёмная плашка. Синие кнопки запрещены
+     (правка Адиля 09.08.2026): цвет несёт статус, а не действия. */
+  --primary: oklch(0.24 0.008 250);
+  --primary-foreground: oklch(0.985 0.001 250);
+  --secondary: oklch(0.965 0.003 250);
+  --secondary-foreground: oklch(0.28 0.01 250);
+  --muted: oklch(0.965 0.003 250);
+  --muted-foreground: oklch(0.525 0.026 245);
+  --accent: oklch(0.955 0.004 250);
+  --accent-foreground: oklch(0.25 0.01 250);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.922 0.004 240);
+  --input: oklch(0.922 0.004 240);
+  --ring: var(--brand-accent);
+  --radius: 0.7rem;
+  --chart-1: oklch(0.55 0.22 265);
+  --chart-2: oklch(0.66 0.13 240);
+  --chart-3: oklch(0.72 0.09 230);
+  --chart-4: oklch(0.79 0.06 235);
+  --chart-5: oklch(0.86 0.03 240);
+  --sidebar: oklch(0.973 0.003 250);
+  --sidebar-foreground: oklch(0.28 0.01 250);
+  --sidebar-primary: oklch(0.55 0.22 265);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.005 250);
+  --sidebar-accent-foreground: oklch(0.25 0.01 250);
+  --sidebar-border: oklch(0.918 0.004 240);
+  --sidebar-ring: oklch(0.55 0.22 265);
+
+  /* Те же три уровня поверхностей, что и в тёмной теме, но затемняющие: на белом
+     фоне полупрозрачный белый исчезает, поэтому светлая тема кладёт синеватую
+     тень, а не подсветку. */
+  --surface: oklch(0.52 0.03 245 / 4%);
+  --surface-2: oklch(0.52 0.03 245 / 7%);
+  --surface-hover: oklch(0.52 0.03 245 / 10%);
+  --hairline: oklch(0.52 0.03 245 / 14%);
+  --text-2: oklch(0.42 0.018 248);
+  --success: oklch(0.56 0.14 162);
+  --success-soft: oklch(0.56 0.14 162 / 12%);
+  --warning: oklch(0.62 0.14 70);
+  --warning-soft: oklch(0.62 0.14 70 / 14%);
+  --danger: oklch(0.55 0.2 25);
+  --danger-soft: oklch(0.55 0.2 25 / 12%);
+  --info: oklch(0.55 0.15 245);
+  --info-soft: oklch(0.55 0.15 245 / 12%);
+
+  /* Bordeaux — the product accent (links, active/selected states, focus ring,
+     editor markers, primary CTA). Deep and warm so it reads on white without
+     shouting; NOT blue (blue buttons stay banned). */
+  --brand-accent: oklch(0.43 0.15 14);
+  --brand-accent-foreground: oklch(0.99 0.005 20);
+  --brand-accent-soft: oklch(0.43 0.15 14 / 10%);
+}
+
+.dark {
+  /* Тёмная тема по палитре Typefully (снята с их сайта в dark-режиме):
+     фон #111418, панели #181b20, приподнятые блоки #282b31, самая глубокая
+     поверхность #0e0f11, границы #1c1e21 и #212327, вторичный текст #8b94a7.
+
+     Главное отличие от прежней нашей палитры — не глубина, а тон: у них не
+     чёрно-синий, а почти нейтральный графит с лёгким холодным уклоном, и
+     панели СВЕТЛЕЕ фона, а не темнее. За счёт этого карточки читаются как
+     приподнятые, без единой тени. */
+  --background: oklch(0.207 0.008 252);
+  --foreground: oklch(0.965 0.004 265);
+  --card: oklch(0.248 0.009 258);
+  --card-foreground: oklch(0.965 0.004 265);
+  --popover: oklch(0.248 0.009 258);
+  --popover-foreground: oklch(0.965 0.004 265);
+  /* Первичная кнопка — нейтральная светлая плашка (как и в светлой теме —
+     нейтральная, не синяя; запрет синих кнопок 09.08.2026). */
+  --primary: oklch(0.93 0.004 265);
+  --primary-foreground: oklch(0.22 0.008 258);
+  --secondary: oklch(0.288 0.007 258);
+  --secondary-foreground: oklch(0.965 0.004 265);
+  --muted: oklch(0.288 0.007 258);
+  --muted-foreground: oklch(0.652 0.028 268);
+  --accent: oklch(0.325 0.01 262);
+  --accent-foreground: oklch(0.965 0.004 265);
+  --destructive: oklch(0.65 0.19 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.288 0.007 258);
+  --input: oklch(0.325 0.01 262);
+  --ring: var(--brand-accent);
+  --chart-1: oklch(0.58 0.21 264);
+  --chart-2: oklch(0.66 0.13 245);
+  --chart-3: oklch(0.72 0.09 235);
+  --chart-4: oklch(0.79 0.05 240);
+  --chart-5: oklch(0.86 0.03 245);
+  --sidebar: oklch(0.186 0.005 262);
+  --sidebar-foreground: oklch(0.9 0.008 265);
+  --sidebar-primary: oklch(0.58 0.21 264);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.288 0.007 258);
+  --sidebar-accent-foreground: oklch(0.965 0.004 265);
+  --sidebar-border: oklch(0.263 0.006 254);
+  --sidebar-ring: oklch(0.58 0.21 264);
+
+  /* Поверхности. До них по коду было рассыпано 345 сырых bg-white/[0.0x] в
+     двенадцати градациях: одинаковые по смыслу панели отличались на глаз, а
+     светлая тема была невозможна в принципе — на белом фоне полупрозрачный
+     белый исчезает. Три уровня закрывают все реальные случаи. */
+  --surface: oklch(1 0 0 / 3.5%);      /* панель, карточка */
+  --surface-2: oklch(1 0 0 / 6%);      /* вложенный блок, шапка панели */
+  --surface-hover: oklch(1 0 0 / 9%);  /* ховер, активное состояние */
+  --hairline: oklch(1 0 0 / 12%);      /* тонкая граница поверх border */
+
+  /* Вторичный текст между foreground и muted-foreground: в коде эту роль
+     играл text-zinc-300 (64 вхождения) — палитра Tailwind вместо токена. */
+  --text-2: oklch(0.828 0.014 265);
+
+  /* Семантика статусов. Раньше — emerald/rose/amber прямо в разметке
+     (~180 вхождений), поэтому «хорошо» и «плохо» кое-где разъезжались. */
+  --success: oklch(0.77 0.16 162);
+  --success-soft: oklch(0.77 0.16 162 / 14%);
+  --warning: oklch(0.83 0.14 84);
+  --warning-soft: oklch(0.83 0.14 84 / 14%);
+  --danger: oklch(0.71 0.17 17);
+  --danger-soft: oklch(0.71 0.17 17 / 14%);
+  --info: oklch(0.72 0.13 240);
+  --info-soft: oklch(0.72 0.13 240 / 16%);
+
+  /* Bordeaux accent, lifted for contrast on the dark graphite background. */
+  --brand-accent: oklch(0.64 0.17 16);
+  --brand-accent-foreground: oklch(0.99 0.005 20);
+  --brand-accent-soft: oklch(0.64 0.17 16 / 16%);
+}
+
+@theme inline {
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-brand: #4267ff;
+  --color-brand-soft: #7c93ff;
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-foreground: var(--brand-accent-foreground);
+  --color-brand-accent-soft: var(--brand-accent-soft);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-hover: var(--surface-hover);
+  --color-hairline: var(--hairline);
+  --color-text-2: var(--text-2);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.025em;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Видимый фокус с клавиатуры. В коде 32 места гасят outline-none, а взамен
+     дают focus:border-ring — смена цвета однопиксельной границы на тёмном фоне
+     практически не читается, а у половины и её нет. Глобальное правило чинит
+     все элементы разом; :focus-visible не срабатывает на клик мышью, поэтому
+     дизайн не страдает. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}

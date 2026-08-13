@@ -1,0 +1,886 @@
+// Postgres schema — the shared contract between the scraper (writes products/
+// snapshots) and the api (owns users/comments + future blog/marketplace, and
+// owns ALL migrations). Field names map to snake_case columns so the Python
+// scraper can write the same tables via SQLAlchemy.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                     Int      @id @default(autoincrement())
+  name                   String
+  nameKey                String   @default("") @map("name_key")
+  source                 String
+  period                 String   @default("all")
+  category               String?
+  tagline                String?
+  description            String?
+  type                   String   @default("unknown")
+  summary                String?
+  fullDescription        String?  @map("full_description")
+  descriptionRu          String?  @map("description_ru")
+  iconUrl                String?  @map("icon_url")
+  imageUrl               String?  @map("image_url")
+  media                  Json?
+  websiteUrl             String?  @map("website_url")
+  sourceUrl              String?  @map("source_url")
+  url                    String?
+  domain                 String?
+  rating                 Float?
+  upvotes                Int?
+  popularity             Int?
+  numComments            Int?     @map("num_comments")
+  makers                 Json?
+  tags                   Json?
+  postedAt               String?  @map("posted_at")
+  scrapedAt              DateTime @default(now()) @map("scraped_at")
+  enriched               Boolean  @default(false)
+  analyzed               Boolean  @default(false)
+  analysisMode           String?  @map("analysis_mode")
+  adaptationScore        Int?     @map("adaptation_score")
+  adaptationRationale    String?  @map("adaptation_rationale")
+  marketAnalysis         String?  @map("market_analysis")
+  analyzedAt             String?  @map("analyzed_at")
+  opportunityScore       Int?     @map("opportunity_score")
+  targetMarketAnalog     String?  @map("target_market_analog")
+  localizationDifficulty String?  @map("localization_difficulty")
+  monetization           String?
+  buildEffort            String?  @map("build_effort")
+  whyNow                 String?  @map("why_now")
+  playType               String?  @map("play_type")
+  localScore             Int?     @map("local_score")
+  globalScore            Int?     @map("global_score")
+  localCompetition       String?  @map("local_competition")
+  competitorStrength     String?  @map("competitor_strength")
+  localCompetitors       Json?    @map("local_competitors")
+  gap                    String?
+  whyFail                String?  @map("why_fail")
+  targetMarket           String?  @map("target_market")
+  buildPrompt            String?  @map("build_prompt")
+  buildPromptKind        String?  @map("build_prompt_kind")
+  buildPromptAt          String?  @map("build_prompt_at")
+  researchNote           String?  @map("research_note")
+  researchAt             String?  @map("research_at")
+
+  // --- deep analysis: demand signals ---------------------------------
+  searchVolume        Int?    @map("search_volume")
+  searchVolumeRegions Json?   @map("search_volume_regions")
+  trendDirection      String? @map("trend_direction")
+  trendSlope          Float?  @map("trend_slope")
+  serpOccupancy       String? @map("serp_occupancy")
+  serpResultsYandex   Int?    @map("serp_results_yandex")
+  serpResultsGoogle   Int?    @map("serp_results_google")
+  demandNote          String? @map("demand_note")
+  demandGeo           Json?   @map("demand_geo")
+  socialSignals       Json?   @map("social_signals")
+  demandAt            String? @map("demand_at")
+
+  // --- deep analysis: structured competitor numbers ------------------
+  competitorData       Json?   @map("competitor_data")
+  competitorTrafficMax Int?    @map("competitor_traffic_max")
+  badReviews           Json?   @map("bad_reviews")
+  tractionStrength     String? @map("traction_strength")
+  competitorsNote      String? @map("competitors_note")
+  competitorsAt        String? @map("competitors_at")
+
+  // --- deep analysis: per-dimension text -----------------------------
+  dimMarket         String? @map("dim_market")
+  dimRisks          String? @map("dim_risks")
+  dimWhyNow         String? @map("dim_why_now")
+  dimCisFeasibility String? @map("dim_cis_feasibility")
+  dimEffort         String? @map("dim_effort")
+
+  // --- deep analysis: signal score + verdict -------------------------
+  deepScore          Int?    @map("deep_score")
+  deepScoreBreakdown Json?   @map("deep_score_breakdown")
+  deepVerdict        String? @map("deep_verdict")
+  deepAnalyzedAt     String? @map("deep_analyzed_at")
+  deepAnalysisMode   String? @map("deep_analysis_mode")
+  deepVerdictLabel   String? @map("deep_verdict_label")
+  stopFactors        Json?   @map("stop_factors")
+
+  // --- deep analysis: financial model --------------------------------
+  marketCeiling       Json?    @map("market_ceiling")
+  ceilingPass         Boolean? @map("ceiling_pass")
+  unitEconomics       Json?    @map("unit_economics")
+  revenueEstimate     Json?    @map("revenue_estimate")
+  marketConcentration Json?    @map("market_concentration")
+  financeConfidence   String?  @map("finance_confidence")
+  financeNote         String?  @map("finance_note")
+  financeAt           String?  @map("finance_at")
+
+  status   String  @default("new")
+  note     String?
+  favorite Boolean @default(false)
+  raw      Json?
+
+  comments  Comment[]
+  snapshots ProductSnapshot[]
+
+  @@index([source])
+  @@index([opportunityScore])
+  @@index([deepScore])
+  @@index([nameKey])
+  @@index([scrapedAt])
+  @@map("products")
+}
+
+model ProductSnapshot {
+  id        Int      @id @default(autoincrement())
+  productId Int      @map("product_id")
+  ts        DateTime @default(now())
+  upvotes   Int?
+  rank      Int?
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, ts])
+  @@map("product_snapshots")
+}
+
+// --- app domain (owned by the api) ---------------------------------------
+
+model User {
+  id           Int       @id @default(autoincrement())
+  tgId         BigInt?   @unique @map("tg_id")
+  email        String?   @unique
+  passwordHash String?   @map("password_hash")
+  googleId     String?   @unique @map("google_id")
+  username     String?
+  name         String?
+  photoUrl     String?   @map("photo_url")
+  isAdmin      Boolean   @default(false) @map("is_admin")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  comments     Comment[]
+
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  verifyCode      String?   @map("verify_code")
+  verifySentAt    DateTime? @map("verify_sent_at") @db.Timestamptz(6)
+
+  @@map("users")
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  productId Int       @map("product_id")
+  userId    Int       @map("user_id")
+  parentId  Int?      @map("parent_id")
+  body      String
+  deleted   Boolean   @default(false)
+  createdAt DateTime  @default(now()) @map("created_at")
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+  parent    Comment?  @relation("Thread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("Thread")
+
+  @@index([productId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+// Hourly blog (auto-generated drafts + manual). Written by a worker in the
+// scraper service; served by the api.
+model BlogPost {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  excerpt     String?
+  body        String
+  coverUrl    String?   @map("cover_url")
+  tags        Json?
+  source      String    @default("auto") // auto | manual
+  status      String    @default("draft") // draft | published
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([status, publishedAt])
+  @@map("blog_posts")
+}
+
+// AI-аналитик: один разбор домена = одна строка. Пишет scrapper (пайплайн
+// site_analytic), читает scrapper же через /api/public/site_analytic/{id};
+// api владеет только схемой (как products). `facts` — весь контракт вкладок
+// (useAaMock), `llm_outputs` — выводы агентов (Этап 2). Недельный кэш платных
+// вызовов ищется по (domain, geo, week_key) — паттерн research_cache.
+model SiteAnalysis {
+  id            Int       @id @default(autoincrement())
+  userId        Int?      @map("user_id")
+  brandId       Int?      @map("brand_id")
+  jobId         Int?      @map("job_id")
+  domain        String
+  compareDomain String?   @map("compare_domain")
+  geo           String    @default("us")
+  weekKey       String    @map("week_key")
+  status        String    @default("queued") // queued | running | done | error
+  progress      Int       @default(0)
+  facts         Json?
+  llmOutputs    Json?     @map("llm_outputs")
+  costCents     Int       @default(0) @map("cost_cents")
+  errorText     String?   @map("error_text")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  finishedAt    DateTime? @map("finished_at")
+
+  @@index([domain, geo, weekKey])
+  @@index([userId])
+  @@index([status])
+  @@map("site_analyses")
+}
+
+// AEO-мониторинг: трекер бренда (конфиг ежедневного прогона) + сырые ответы
+// платформ. Пишет scrapper (AEO-раннер), api владеет схемой. Агрегаты
+// (visibility/SoV/тренды) считаются на чтении.
+model AeoTracker {
+  id          Int       @id @default(autoincrement())
+  userId      Int?      @map("user_id")
+  brandId     Int?      @map("brand_id")
+  domain      String
+  competitors Json?
+  prompts     Json?
+  platforms   Json?
+  geo         String    @default("us")
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  lastRunAt   DateTime? @map("last_run_at")
+
+  promptsLimit Int?    @map("prompts_limit")
+  runMeta      Json?   @map("run_meta")
+  // Язык проекта (ru/en), определённый прогоном по контенту главной. Колонку
+  // заводит scrapper (core/storage._ensure_schema), здесь — зеркало, чтобы
+  // схемы не разъезжались. По нему режутся движки чужого рынка и выбирается
+  // язык недельного письма (scrapper/web/jobs._project_lang).
+  lang         String?
+
+  @@index([active])
+  @@index([userId, domain])
+  @@map("aeo_trackers")
+}
+
+// Бренд/воркспейс, привязанный к аккаунту. Юзер держит список своих брендов
+// (доменов) и переключается между ними в кабинете; ровно один active за раз.
+// SiteAnalysis/AeoTracker ссылаются на бренд через brandId (мягкая связь).
+model Brand {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  domain      String
+  name        String?
+  // Онбординг (Profound-стиль): расширенные поля бренда, собираемые мастером
+  // настройки. description — «расскажите о бренде» (кормит анализ/AEO); geo —
+  // регион прогона промптов; language — язык результатов; topics/aliases — JSON
+  // массивы строк (темы для промптов и альтернативные имена бренда для матчинга).
+  description String?
+  competitors Json?
+  geo         String   @default("us")
+  language    String   @default("ru")
+  topics      Json?
+  aliases     Json?
+  isActive    Boolean  @default(false) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, domain])
+  @@index([userId])
+  @@map("brands")
+}
+
+// Подключение Яндекс.Метрики к бренду (вкладка «AI-трафик»). Один счётчик на
+// бренд. Токен получаем OAuth-кодом (oauth.yandex.ru), храним access/refresh и
+// срок жизни; перед вызовом Stat API рефрешим по необходимости. Отдельная строка
+// на бренд — отключение сносит только её.
+model MetrikaConnection {
+  id           Int       @id @default(autoincrement())
+  brandId      Int       @unique @map("brand_id")
+  userId       Int       @map("user_id")
+  counterId    String    @map("counter_id")
+  counterName  String?   @map("counter_name")
+  siteUrl      String?   @map("site_url")
+  accessToken  String    @map("access_token")
+  refreshToken String?   @map("refresh_token")
+  expiresAt    DateTime? @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("metrika_connections")
+}
+
+model GscConnection {
+  id           Int       @id @default(autoincrement())
+  brandId      Int       @unique @map("brand_id")
+  userId       Int       @map("user_id")
+  siteUrl      String    @map("site_url")
+  accessToken  String    @map("access_token")
+  refreshToken String?   @map("refresh_token")
+  expiresAt    DateTime? @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("gsc_connections")
+}
+
+// Подключение Threads (Meta) к бренду. refreshToken нет by design: у Threads
+// продлевается сам long-lived токен (60 дней), поэтому храним только его.
+/// Подключение LinkedIn по OAuth. В отличие от Threads, здесь настоящий
+/// refresh_token, и у него свой срок жизни — храним обе даты, чтобы отличать
+/// «токен можно продлить» от «надо переподключать аккаунт».
+model LinkedinConnection {
+  id               Int       @id @default(autoincrement())
+  brandId          Int       @unique @map("brand_id")
+  userId           Int       @map("user_id")
+  memberUrn        String    @map("member_urn")
+  name             String?
+  /// страница компании, если постим от её лица; пусто — от лица человека
+  orgUrn           String?   @map("org_urn")
+  accessToken      String    @map("access_token")
+  refreshToken     String?   @map("refresh_token")
+  expiresAt        DateTime? @map("expires_at")
+  refreshExpiresAt DateTime? @map("refresh_expires_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("linkedin_connections")
+}
+
+/// Подключение X по OAuth 2.0. Access-токен живёт всего два часа, поэтому
+/// refresh_token здесь не удобство, а условие работы канала.
+model XConnection {
+  id           Int       @id @default(autoincrement())
+  brandId      Int       @unique @map("brand_id")
+  userId       Int       @map("user_id")
+  xUserId      String    @map("x_user_id")
+  username     String?
+  accessToken  String    @map("access_token")
+  refreshToken String?   @map("refresh_token")
+  expiresAt    DateTime? @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("x_connections")
+}
+
+model ThreadsConnection {
+  id            Int       @id @default(autoincrement())
+  brandId       Int       @unique @map("brand_id")
+  userId        Int       @map("user_id")
+  threadsUserId String    @map("threads_user_id")
+  username      String?
+  accessToken   String    @map("access_token")
+  expiresAt     DateTime? @map("expires_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("threads_connections")
+}
+
+model CloudflareConnection {
+  id        Int      @id @default(autoincrement())
+  brandId   Int      @unique @map("brand_id")
+  userId    Int      @map("user_id")
+  apiToken  String   @map("api_token")
+  zoneId    String   @map("zone_id")
+  zoneName  String?  @map("zone_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("cloudflare_connections")
+}
+
+model AeoAnswer {
+  id          Int      @id @default(autoincrement())
+  trackerId   Int      @map("tracker_id")
+  runAt       DateTime @default(now()) @map("run_at")
+  platform    String
+  prompt      String
+  rawText     String?  @map("raw_text")
+  brandsFound Json?    @map("brands_found")
+  citations   Json?
+  sentiment   Json?
+
+  judge Json?
+
+  @@index([trackerId, runAt])
+  @@map("aeo_answers")
+}
+
+model BlogSettings {
+  id        Int      @id @default(1)
+  aiPrompt  String   @default("") @map("ai_prompt")
+  aiApiKey  String?  @map("ai_api_key")
+  aiModel   String?  @map("ai_model")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("blog_settings")
+}
+
+// --- Blog Writer tool (ported from the standalone blog-writer Nitro app) ------
+// One row = one article generation run (draft → pipeline → published post).
+// Mirrors the blog-writer SQLite `runs` table 1:1 (JSON payloads kept as text
+// so the ported pipeline code parses them unchanged); publish target is the
+// BlogPost model above (native Ideata blog) instead of the insane ingest API.
+// Field names are deliberately snake_case (matching columns) so the ported
+// blog-writer engine's RunRow shape passes through Prisma unchanged.
+model BlogRun {
+  id                    String @id
+  brandId               Int?   @map("brand_id") // brand workspace this article belongs to (null = legacy/unassigned)
+  topic                 String
+  status                String @default("running") // running | awaiting_sources | awaiting_outline | done | published | error
+  phase                 String @default("research") // research | outline | draft — for retry
+  mode                  String @default("interactive") // interactive (pauses) | auto
+  model                 String @default("") // model slug picked for THIS article ('' — brand default from settings)
+  locale                String @default("") // '' → default language from settings
+  group_id              String @default("") // translation group: all locales of one article share it
+  perspectives_json     String @default("[]")
+  pending_input_json    String @default("") // current phase input (source picks…) — for retry
+  title                 String @default("")
+  body_md               String @default("")
+  body_html             String @default("")
+  outline_json          String @default("")
+  sources_json          String @default("[]")
+  slop_json             String @default("")
+  eeat_json             String @default("") // E-E-A-T gate report (citations, removed links, lead/FAQ)
+  notes_json            String @default("[]")
+  queries_json          String @default("[]")
+  search_queries_json   String @default("[]") // fan-out search queries for the topic
+  cover_url             String @default("") // /blogtool/covers/<id>.jpg
+  category              String @default("")
+  author                String @default("")
+  views                 Int    @default(0)
+  word_count            Int    @default(0)
+  error                 String @default("")
+  // --- external publish state (now: native BlogPost) -------------------------
+  blog_post_id          Int    @default(0) // BlogPost.id (0 — not published yet)
+  blog_slug             String @default("")
+  blog_status           String @default("") // '' | draft | published
+  blog_locale           String @default("")
+  blog_cover_url        String @default("") // CDN url after upload
+  blog_cover_src        String @default("") // last local cover uploaded (skip re-upload)
+  blog_synced_at        String @default("")
+  // --- кросспостинг в Telegram-канал (per-brand бот пользователя) -------------
+  tg_msgids_json        String @default("[]") // id сообщений канала — идемпотентная переотправка/снятие
+  tg_chat_id            String @default("") // resolved chat_id канала (удаление после смены @канала)
+  // --- кросспостинг в остальные сети: { "<платформа>": { ids, url } } ---------
+  crosspost_json        String @default("{}") // состояние по площадкам (X и далее) — одним JSON, без колонки на сеть
+  // Черновик композера: { adapts: { "<платформа>": AdaptResult }, media: { "<платформа>": [{url,type,postIndex}] } }.
+  // Без него F5 стирал собранные адаптации и юзер платил за повторный прогон LLM.
+  crosspost_drafts_json String @default("")
+  // Расписание автопостинга: [{ id, channel, at (ISO-UTC), status, error?, doneAt? }].
+  // Пустая строка — расписания нет; шедулер выбирает только непустые.
+  publish_schedule_json String @default("")
+  created_at            String // ISO strings, exactly as blog-writer stored them
+  updated_at            String
+
+  @@index([status])
+  @@index([group_id])
+  @@index([updated_at])
+  @@index([brandId])
+  @@map("blog_runs")
+}
+
+// Key/value settings for the blog-writer tool (provider, api keys, per-stage
+// models, persona/brand/categories, pipeline knobs). Mirrors blog-writer's
+// `settings` KV table; appSettings resolves these over env defaults.
+// Scoped by brand: brandId=0 holds account-wide defaults (LLM provider/keys,
+// models, pipeline knobs); per-brand rows (voice, siteUrl, autopublish) override
+// them. resolveSettings(brandId) merges brand-0 base ⊕ that brand's overrides.
+model BlogWriterSetting {
+  brandId Int    @default(0) @map("brand_id")
+  key     String
+  value   String
+
+  @@id([brandId, key])
+  @@map("blog_writer_settings")
+}
+
+// Контент-план блог-райтера: одна строка = слот «статья на дату» в календаре
+// бренда. Генерируется LLM (plan/generate) или добавляется вручную; когда из
+// слота запускают статью, run_id связывает его с BlogRun (статус в календаре
+// дальше читается из рана). Дата — TEXT 'YYYY-MM-DD' (без TZ, как ISO-строки
+// в blog_runs); JSON-поля — TEXT, как везде в блог-райтере.
+model BlogPlanItem {
+  id           String @id
+  brandId      Int    @default(0) @map("brand_id") // 0 — админ без активного бренда
+  date         String // 'YYYY-MM-DD' — день публикации по плану
+  time         String @default("") // 'HH:mm' — точное время публикации, '' = весь день
+  title        String
+  angle        String @default("")
+  intent       String @default("") // informational | howto | comparison | best | definition | news
+  keyword      String @default("")
+  queries_json String @default("[]") // AEO-запросы, уходят в targetQueries рана
+  category     String @default("")
+  status       String @default("planned") // planned | skipped (прогресс статьи — по run_id)
+  run_id       String @default("") // BlogRun.id, когда статья запущена из слота
+  score        Float  @default(0) // средний AEO-score запросов
+  created_at   String // ISO strings
+  updated_at   String
+
+  @@index([brandId, date], map: "blog_plan_items_brand_date_idx")
+  @@index([run_id])
+  @@map("blog_plan_items")
+}
+
+// ─── Таблицы, исторически бутстрапленные скрапером (core/storage.py) ─────────
+// Заведены в схему, чтобы api читал/писал их через Prisma, а не raw SQL.
+// В базе они УЖЕ существуют (скрапер делает CREATE TABLE IF NOT EXISTS) —
+// поэтому никакого `prisma db push`, только ручные prisma/sql/*.sql при
+// реальных изменениях. Типы полей повторяют DDL скрапера 1:1, включая
+// TEXT-таймстемпы в scrape_jobs (код скрапера читает их как ISO-строки).
+
+// Публичные API-ключи (Bearer/X-API-Key). Хранится только sha256-хэш;
+// prefix — несекретные первые символы для списка ключей в UI.
+// user_id без FK на users — так создал скрапер, оставляем как есть.
+model ApiKey {
+  id        Int       @id @default(autoincrement())
+  tokenHash String    @unique @map("token_hash")
+  name      String    @default("")
+  userId    Int?      @map("user_id")
+  plan      String    @default("free")
+  active    Boolean   @default(true)
+  prefix    String?
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  lastUsed  DateTime? @map("last_used") @db.Timestamptz(6)
+
+  @@index([userId], map: "idx_api_keys_user")
+  @@map("api_keys")
+}
+
+// Тариф пользователя. NULL/нет строки = 'free'; биллинга нет, ставится
+// вручную/CLI; админы трактуются как 'scale' на уровне приложения.
+model UserPlan {
+  userId    Int      @id @map("user_id")
+  plan      String   @default("free")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  status              String    @default("active")
+  expiresAt           DateTime? @map("expires_at") @db.Timestamptz(6)
+  addons              Json      @default("{}")
+  freeRunAt           DateTime? @map("free_run_at") @db.Timestamptz(6)
+  polarCustomerId     String?   @map("polar_customer_id")
+  polarSubscriptionId String?   @map("polar_subscription_id")
+  polarEventAt        DateTime? @map("polar_event_at") @db.Timestamptz(6)
+
+  @@map("user_plans")
+}
+
+// Дневные агрегаты хитов AI-краулеров (лог-форвардер → вкладка «Боты»).
+// Уникальность по (user_id, domain, bot, day) — upsert прибавляет hits.
+model BotHit {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  domain    String
+  bot       String
+  vendor    String   @default("")
+  day       DateTime @db.Date
+  hits      Int      @default(0)
+  lastUa    String?  @map("last_ua")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([userId, domain, bot, day], map: "uniq_bot_hits")
+  @@index([userId, domain, day], map: "idx_bot_hits_lookup")
+  @@map("bot_hits")
+}
+
+// Очередь заданий скрапера. Владелец жизненного цикла — Python-воркер (RQ);
+// api только читает статус/лог для поллинга. Таймстемпы — TEXT (ISO),
+// как их пишет и читает скрапер; НЕ конвертировать в DateTime.
+model ScrapeJob {
+  id            Int     @id @default(autoincrement())
+  source        String
+  kind          String  @default("scrape")
+  force         Boolean @default(false)
+  period        String?
+  dateFrom      String? @map("date_from")
+  dateTo        String? @map("date_to")
+  enrich        Boolean @default(true)
+  analyze       Boolean @default(true)
+  limit         Int?
+  status        String  @default("queued")
+  foundCount    Int     @default(0) @map("found_count")
+  newCount      Int     @default(0) @map("new_count")
+  enrichedCount Int     @default(0) @map("enriched_count")
+  analyzedCount Int     @default(0) @map("analyzed_count")
+  errorText     String? @map("error_text")
+  log           String  @default("")
+  params        String?
+  userId        Int?    @map("user_id")
+  startedAt     String? @map("started_at")
+  finishedAt    String? @map("finished_at")
+  createdAt     String  @map("created_at")
+
+  @@index([status], map: "idx_jobs_status")
+  @@map("scrape_jobs")
+}
+
+// Редактируемые runtime-настройки (ключи провайдеров и пр.), админка скрапера.
+// api читает их в blogwriter (appSettings) — раньше через $queryRawUnsafe.
+model AppSetting {
+  key       String   @id
+  value     String   @default("")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("app_settings")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Таблицы, которые заводит Python-сервис (scrapper) кодом на старте, а не
+// миграцией. Описаны здесь, чтобы схема жила в одном месте и Prisma-клиент
+// умел в них ходить типизированно. Prisma их НЕ создаёт и не меняет —
+// источником правды остаётся core/storage.py, пока владение не переедет сюда.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Учёт каждого платного вызова LLM: что стоило, сколько токенов, какой прогон.
+model LlmUsage {
+  id        BigInt   @id @default(autoincrement())
+  ts        DateTime @default(now()) @db.Timestamptz(6)
+  provider  String
+  model     String?
+  platform  String?
+  purpose   String   @default("other")
+  runKind   String?  @map("run_kind")
+  runId     String?  @map("run_id")
+  userId    Int?     @map("user_id")
+  domain    String?
+  status    String   @default("ok")
+  error     String?
+  latencyMs Int?     @map("latency_ms")
+  tokensIn  Int?     @map("tokens_in")
+  tokensOut Int?     @map("tokens_out")
+  costRub   Decimal? @map("cost_rub") @db.Decimal(10, 4)
+  // Долларовая стоимость вызова (Nest-слой AEO пишет сюда; cost_rub НЕ трогаем —
+  // её пишет живой Python). Отдельная колонка, чтобы два писателя не спорили.
+  costUsd   Decimal? @map("cost_usd") @db.Decimal(12, 8)
+  requestId String?  @map("request_id")
+
+  @@index([ts], map: "idx_llm_usage_ts")
+  @@index([runKind, runId], map: "idx_llm_usage_run")
+  @@index([provider, ts], map: "idx_llm_usage_provider")
+  @@map("llm_usage")
+}
+
+/// Тарифный конфиг: админ-оверрайд поверх дефолтов в core/plans.py.
+model Plan {
+  slug      String   @id
+  config    Json     @default("{}")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("plans")
+}
+
+/// Лиды бесплатного отчёта лендинга: домен, почта и снимок фактов.
+model FreeReport {
+  id              Int      @id @default(autoincrement())
+  domain          String
+  email           String?
+  ip              String?
+  facts           Json?
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  token           String?  @unique(map: "uniq_free_reports_token")
+  claimedByUserId Int?     @map("claimed_by_user_id")
+  jobId           Int?     @map("job_id")
+
+  @@index([domain, createdAt(sort: Desc)], map: "idx_free_reports_domain")
+  @@map("free_reports")
+}
+
+/// Одноразовые коды подтверждения почты для анонимных потоков.
+model EmailCode {
+  id         Int       @id @default(autoincrement())
+  email      String
+  code       String
+  purpose    String    @default("free_report")
+  domain     String?
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+
+  @@index([email, purpose, domain], map: "idx_email_codes_lookup")
+  @@map("email_codes")
+}
+
+/// Переходы из ИИ-ответов (лог-форвардер → вкладка «AI-трафик»).
+model AiReferralHit {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  domain       String
+  source       String
+  vendor       String   @default("")
+  day          DateTime @db.Date
+  hits         Int      @default(0)
+  lastReferrer String?  @map("last_referrer")
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([userId, domain, source, day], map: "uniq_ai_referral_hits")
+  @@index([userId, domain, day], map: "idx_ai_referral_hits_lookup")
+  @@map("ai_referral_hits")
+}
+
+/// Участники аккаунта: кто ещё имеет доступ к брендам владельца.
+model AccountMember {
+  id           Int      @id @default(autoincrement())
+  ownerUserId  Int      @map("owner_user_id")
+  memberUserId Int      @map("member_user_id")
+  role         String
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([ownerUserId, memberUserId], map: "account_members_owner_user_id_member_user_id_key")
+  @@index([memberUserId], map: "idx_account_members_member")
+  @@index([ownerUserId], map: "idx_account_members_owner")
+  @@map("account_members")
+}
+
+/// Приглашения в аккаунт по ссылке-токену.
+model AccountInvite {
+  id          Int       @id @default(autoincrement())
+  ownerUserId Int       @map("owner_user_id")
+  token       String    @unique(map: "account_invites_token_key")
+  role        String
+  email       String?
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  acceptedBy  Int?      @map("accepted_by")
+  acceptedAt  DateTime? @map("accepted_at") @db.Timestamptz(6)
+
+  @@index([ownerUserId], map: "idx_account_invites_owner")
+  @@map("account_invites")
+}
+
+/// Какой бренд выбран у пользователя сейчас.
+model UserActiveBrand {
+  userId    Int      @id @map("user_id")
+  brandId   Int      @map("brand_id")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("user_active_brand")
+}
+
+/// Отметки об отправленных еженедельных отчётах — защита от повторной отправки.
+model ReportLog {
+  id      Int      @id @default(autoincrement())
+  userId  Int      @map("user_id")
+  kind    String
+  weekKey String   @map("week_key")
+  ok      Boolean  @default(true)
+  detail  String?
+  sentAt  DateTime @default(now()) @map("sent_at") @db.Timestamptz(6)
+
+  @@unique([userId, kind, weekKey], map: "uniq_report_log")
+  @@map("report_log")
+}
+
+/// Медиа в теле статьи блог-райтера: файл лежит прямо в базе (bytea).
+model BlogMedia {
+  id        BigInt   @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  brandId   Int?     @map("brand_id")
+  runId     String?  @map("run_id")
+  kind      String   @default("file")
+  mime      String   @default("application/octet-stream")
+  bytes     Bytes
+  sizeBytes Int      @default(0) @map("size_bytes")
+  fileName  String   @unique(map: "blog_media_file_idx") @map("file_name")
+  origName  String   @default("") @map("orig_name")
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([runId], map: "blog_media_run_idx")
+  @@index([userId, createdAt(sort: Desc)], map: "blog_media_user_idx")
+  @@map("blog_media")
+}
+
+/// Движение кредитов: списания за генерацию и начисления.
+model CreditLedger {
+  id     BigInt   @id @default(autoincrement())
+  userId Int      @map("user_id")
+  ts     DateTime @default(now()) @db.Timestamptz(6)
+  amount Int
+  reason String
+  model  String?
+  meta   Json?
+
+  @@index([userId, ts(sort: Desc)], map: "credit_ledger_user_ts_idx")
+  @@map("credit_ledger")
+}
+
+/// Картинки студии обложек — тоже байтами в базе, диск лишь кэш.
+model PreviewImage {
+  id        BigInt   @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  brandId   Int?     @map("brand_id")
+  runId     String?  @map("run_id")
+  kind      String   @default("bg")
+  model     String?
+  prompt    String?
+  aspect    String?
+  credits   Int?
+  mime      String   @default("image/jpeg")
+  bytes     Bytes
+  sizeBytes Int      @default(0) @map("size_bytes")
+  fileName  String?  @map("file_name")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([runId], map: "preview_images_run_idx")
+  @@index([userId, createdAt(sort: Desc)], map: "preview_images_user_idx")
+  @@map("preview_images")
+}
+
+/// Сохранённые шаблоны сцен студии обложек.
+model PreviewScene {
+  id        BigInt   @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  brandId   Int?     @map("brand_id")
+  name      String   @default("Мой шаблон")
+  scene     Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId, updatedAt(sort: Desc)], map: "preview_scenes_user_idx")
+  @@map("preview_scenes")
+}
+
+/// Счётчик генераций фона — на нём держится дневная квота.
+model PreviewBgUsage {
+  id        BigInt   @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)], map: "preview_bg_usage_user_time_idx")
+  @@map("preview_bg_usage")
+}
+
+/// Кэш дорогого grounded-research по нишам (TTL в днях, env RESEARCH_CACHE_TTL_DAYS).
+model ResearchCache {
+  cacheKey String   @map("cache_key")
+  kind     String   @default("search")
+  data     Json?
+  ts       DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([cacheKey, kind])
+  @@map("research_cache")
+}
+
+/// Кэш Яндекс.Вордстата — квота там жёсткая, повторы недопустимы.
+model WordstatCache {
+  phrase String
+  kind   String   @default("dynamics")
+  data   Json?
+  ts     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([phrase, kind])
+  @@map("wordstat_cache")
+}
+
+/// Личный ключ kie у пользователя — генерация за его счёт, а не за наш.
+model UserAiKey {
+  userId    Int      @id @map("user_id")
+  kieKey    String   @default("") @map("kie_key")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("user_ai_keys")
+}

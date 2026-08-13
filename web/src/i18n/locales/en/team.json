@@ -1,0 +1,82 @@
+{
+  "team": {
+    "subtitle": "Teammate access to the account: editors change data, viewers only look",
+    "seats": "no seats | {used} of {total} seat | {used} of {total} seats",
+    "invite": "Invite",
+    "loading": "Loading…",
+    "gate": {
+      "text": "On the {plan} plan only you have access. Inviting teammates starts with {pro}.",
+      "upgrade": "Upgrade plan"
+    },
+    "col": {
+      "member": "Member",
+      "since": "Member since",
+      "role": "Role"
+    },
+    "you": "you",
+    "remove": {
+      "title": "Remove from team",
+      "confirm": "Remove {name} from the team?",
+      "fallbackName": "this member"
+    },
+    "pending": {
+      "linkInvite": "Invite by link",
+      "badge": "pending",
+      "copied": "Link copied",
+      "copy": "Copy invite link",
+      "invitedAt": "invited {date}",
+      "sent": "invite sent",
+      "revoke": "Revoke invite"
+    },
+    "empty": {
+      "title": "Just you so far",
+      "hint": "Invite a teammate — they sign in via the link and get access to the brand's data."
+    },
+    "myTeams": {
+      "title": "My teams",
+      "account": "Account #{id}"
+    },
+    "dialog": {
+      "title": "Invite to the team",
+      "description": "Create a link and send it to your teammate — we don't send emails yet.",
+      "issuedHint": "Role: {role}. The link works until your teammate signs in.",
+      "roleLabel": "Role",
+      "emailLabel": "Email",
+      "emailNote": "— optional, just a reminder",
+      "emailPlaceholder": "colleague{'@'}example.com",
+      "creating": "Creating…",
+      "submit": "Create invite"
+    },
+    "role": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "roleLower": {
+      "owner": "owner",
+      "editor": "editor",
+      "viewer": "viewer"
+    },
+    "roleHint": {
+      "editor": "edits prompts, runs reports and posts",
+      "viewer": "read-only access to data"
+    },
+    "error": {
+      "planLimit": "Team access starts with the {pro} plan.",
+      "createFailed": "Could not create the invite"
+    },
+    "accept": {
+      "done": "You are on the team",
+      "doneWithOwner": "You are on the {owner} team",
+      "doneHint": "Role: {role}. The account's brands are already in the switcher on the left.",
+      "goToApp": "Go to the dashboard",
+      "errorTitle": "Invite not accepted",
+      "toApp": "To the dashboard",
+      "retry": "Try again",
+      "pendingTitle": "Accepting the invite…",
+      "pendingHint": "One moment — connecting you to the account.",
+      "badLink": "The invite link is incomplete or broken.",
+      "failed": "Could not accept the invite. The link may have expired."
+    }
+  }
+}

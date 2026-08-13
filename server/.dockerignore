@@ -1,0 +1,34 @@
+# Ставится заново в build-стейдже (npm ci) — не тащим локальный (может быть с
+# мака: чужие бинарники prisma-движка и т.п.).
+node_modules
+
+# Собирается в образе (npm run build) — локальный dist в контекст не нужен.
+dist
+build
+
+# Секреты и локальные env — в образ НЕ кладём (compose даёт их через env_file).
+.env
+.env.*
+!.env.example
+
+# VCS и CI
+.git
+.gitignore
+.gitlab-ci.yml
+
+# Тесты/покрытие/логи/кэши
+coverage
+.nyc_output
+*.log
+*.tsbuildinfo
+.eslintcache
+
+# Docker-обвязка и редакторы
+Dockerfile
+.dockerignore
+docker-compose.yml
+.idea
+.vscode
+
+# FUSE-артефакты удалённых-но-открытых файлов (sshfs/mergerfs)
+.fuse_hidden*

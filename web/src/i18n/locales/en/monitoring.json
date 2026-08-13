@@ -1,0 +1,194 @@
+{
+  "monitoring": {
+    "page": {
+      "running": "run in progress",
+      "tabMain": "Main",
+      "tabExtra": "Additional",
+      "activePrompts": "no active | {n} active | {n} active",
+      "suggestedPrompts": "{n} awaiting approval",
+      "runsInWindow": "no runs in window | {n} run in window | {n} runs in window"
+    },
+    "addCompetitors": "Add competitors",
+    "you": "you",
+    "themesLater": "Themes are collected on full sweeps — they will appear after the next citation sweep.",
+    "metric": {
+      "visibility": "Visibility",
+      "cite": "Citation share",
+      "sov": "Share of voice",
+      "pos": "Average position"
+    },
+    "col": {
+      "brand": "Brand",
+      "visibility": "Visibility",
+      "sov": "SoV",
+      "tone": "Tone",
+      "pos": "Pos."
+    },
+    "hero": {
+      "pp": "pp",
+      "visHint": "of AI answers mention the brand",
+      "chartAfter": "The chart appears after the second run",
+      "rankTitle": "Position in niche",
+      "rankHint": "place among tracked brands",
+      "noRivals": "No competitors set — no one to compare with",
+      "sentTitle": "Sentiment",
+      "sentHint": "how AI talks about the brand, 0–100",
+      "toneGood": "praises",
+      "toneBad": "criticises",
+      "toneNeutral": "mentions",
+      "sentPositive": "positive",
+      "sentNeutral": "neutral",
+      "sentNegative": "negative"
+    },
+    "kpi": {
+      "needRivals": "competitors needed",
+      "sovHint": "of all brand mentions",
+      "posHint": "brand's place in the answer",
+      "citeHint": "links to your site",
+      "promptsLabel": "Prompts per run",
+      "promptsHintLimit": "of {n} active — tracker limit",
+      "promptsHintCap": "of {n} on your plan",
+      "promptsHintPanel": "in the monitoring panel",
+      "setUp": "{hint} — set them"
+    },
+    "trend": {
+      "titleDaily": "Trend by day",
+      "titleWeekly": "Trend by week",
+      "hintVis": "Share of AI answers mentioning the brand",
+      "hintCite": "Share of citations pointing to your site",
+      "emptyTitle": "No history yet",
+      "emptyHint": "The chart appears after the second run: points go by day with daily monitoring and by week with rare runs."
+    },
+    "leaderboard": {
+      "title": "You and competitors",
+      "subtitle": "From the latest run",
+      "emptyTitle": "No one to compare with",
+      "emptyHint": "Until competitors are set, share of voice and position are counted from you alone."
+    },
+    "matrix": {
+      "title": "Engines × brands",
+      "subtitle": "Visibility in every answer engine over the monitoring window",
+      "empty": "The matrix builds up after a run across engines.",
+      "silentEngine": "{engine} — not a single answer in this window",
+      "silentCell": "{engine} — the engine did not answer in this window",
+      "cell": "{brand} · {engine} — visibility {v}%",
+      "no": "n/a"
+    },
+    "prompts": {
+      "title": "Audience prompts",
+      "active": "no active | {n} active | {n} active",
+      "all": "all",
+      "empty": "Prompts will appear after the tracker's first run."
+    },
+    "sentiment": {
+      "title": "What you are named for",
+      "subtitle": "AI wording"
+    },
+    "changes": {
+      "title": "What changed",
+      "compare": "Run {last} vs {prev}",
+      "subtitle": "Compared with the previous run",
+      "gainedBadge": "no new | {n} new | {n} new",
+      "lostBadge": "{n} lost",
+      "noPrevTitle": "Nothing to compare yet",
+      "noPrevHint": "After the second run you will see where you started and stopped being named.",
+      "sameTitle": "No changes",
+      "sameHint": "The latest run repeated the previous one: same prompts, positions and sources.",
+      "passedUs": "passed you",
+      "gained": "Started naming you",
+      "lost": "Stopped naming you",
+      "wasIn": "was in {list}",
+      "andMore": "and {n} more",
+      "noPromptChanges": "The set of prompts with mentions did not change.",
+      "engineReach": "Reach across engines",
+      "enginesMove": "{from} → {to} of {total}",
+      "posShift": "Position shift",
+      "newSources": "New sources",
+      "goneSources": "Gone from answers",
+      "noOtherChanges": "Reach, positions and sources did not change."
+    },
+    "sources": {
+      "title": "Top cited",
+      "all": "all sources",
+      "empty": "Source domains will build up from citations in engine answers."
+    },
+    "citeTypes": {
+      "title": "Source types",
+      "subtitle": "share of citations",
+      "empty": "Categories will appear once engines start citing sources."
+    },
+    "ownPages": {
+      "title": "Your pages in answers",
+      "subtitle": "citations",
+      "empty": "Answer engines do not cite your site yet. That is the growth point — content for the prompts in your panel."
+    },
+    "mentions": {
+      "title": "Latest mentions",
+      "subtitle": "from the latest run",
+      "empty": "Answer snippets mentioning the brand will appear after a tracker run."
+    },
+    "competitors": {
+      "title": "Brand competitors",
+      "desc": "Who to compare you with in AI answers. While the list is empty, there is nothing to compute “share of voice” and “average position” from.",
+      "chosen": "Selected {n} of {max}",
+      "remove": "Remove {domain}",
+      "none": "No one yet",
+      "addLabel": "Add a domain",
+      "noSuggestions": "Site analysis has not suggested candidates yet — enter domains manually.",
+      "suggested": "Found by site analysis",
+      "aiNames": "named by AI",
+      "errSelf": "This is your own domain",
+      "errSave": "Could not save"
+    },
+    "export": {
+      "label": "Data from the latest run",
+      "promptsCsv": "Prompts · CSV",
+      "promptsCsvHint": "visibility and positions by engine",
+      "sourcesCsv": "Sources · CSV",
+      "sourcesCsvHint": "domains, shares and links from answers",
+      "answersXls": "AI answers · Excel",
+      "answersXlsHint": "full answer texts and all citations",
+      "upsell": "Excel export — from the Bestseller plan →"
+    },
+    "siteTab": {
+      "last": "Data from the latest AI site analysis",
+      "loading": "Loading the analysis…",
+      "running": "The analysis is running — data will appear once it finishes.",
+      "errTitle": "Could not load the analysis",
+      "errHint": "Try reloading the page — the data is read from a finished report, no new run is started.",
+      "emptyTitle": "No site analysis yet",
+      "emptyHint": "Semantics, backlink profile, site tech base, organic competitors and an action plan will appear here — all from the brand's AI analysis.",
+      "note": "The analysis runs once per brand — this tab pulls in the finished report."
+    },
+    "fmt": {
+      "k": "{v}k",
+      "m": "{v}M",
+      "daysAgo": "no days | {n}d ago | {n}d ago",
+      "weeksAgo": "no weeks | {n}w ago | {n}w ago",
+      "week": "wk {n}"
+    },
+    "demo": {
+      "brandDesc": "AI visibility analytics",
+      "topicAeo": "AEO",
+      "topicMonitoring": "Monitoring",
+      "topicComparison": "Comparison",
+      "prompt1": "brand mention analytics service",
+      "prompt2": "how to tell if ChatGPT recommends my store",
+      "prompt3": "brand monitoring tools for answer engines",
+      "prompt4": "visibility analytics for an online store",
+      "prompt5": "what to replace expensive analytics platforms with",
+      "prompt6": "how to get into AI answers",
+      "answer": "Services like this are called AEO trackers: every day they ask answer engines the questions your audience asks and watch who the model names in its reply. {self} queries ten engines, including Yandex Alice and Yandex Neuro, and shows not just the share of mentions but the brand's position inside the answer. Among the alternatives they mention {rival} — cheaper, but it only queries English-language models.",
+      "judgeReason": "brand named first, with a link to the site",
+      "catOwn": "Own site",
+      "catCatalogs": "Roundups and directories",
+      "catUgc": "UGC (forums, Reddit)",
+      "catMedia": "Media",
+      "catOther": "Other",
+      "themeAccurate": "accurate data",
+      "themeOnboarding": "fast onboarding",
+      "themeYandex": "covers every engine",
+      "themePrice": "price above market"
+    }
+  }
+}

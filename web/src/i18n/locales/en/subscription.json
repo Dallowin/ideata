@@ -1,0 +1,180 @@
+{
+  "subscription": {
+    "subtitle": "Plan, limits and account billing",
+    "current": {
+      "label": "Current plan",
+      "renews": "runs until {date}",
+      "freeNote": "no card · one-off report"
+    },
+    "meter": {
+      "prompts": "Prompts · account pool",
+      "brands": "Brands",
+      "postsToday": "Blog posts · today",
+      "loading": "Loading limits…",
+      "empty": "Limits appear once you pick a plan."
+    },
+    "action": {
+      "upgrade": "Upgrade plan",
+      "portal": "Manage subscription",
+      "contact": "Message us"
+    },
+    "addonsActive": "Add-ons:",
+    "billing": {
+      "portalNote": "Card, invoices and cancellation — in the billing portal.",
+      "cardNote": "Pay by international card right on the site.",
+      "ruNote": "For Russian cards — we set it up via Telegram support."
+    },
+    "free": {
+      "title": "One free report",
+      "badgeUsed": "used",
+      "badgeAvailable": "available",
+      "usedHint": "Already used. For ongoing monitoring and full citation snapshots — pick a plan below.",
+      "availableHint": "{prompts} prompts across {engines} AI engines — we show whether AI names you and in which position. No card.",
+      "run": "Run the report",
+      "choosePlan": "Pick a plan"
+    },
+    "plans": {
+      "title": "Plans",
+      "hint": "You subscribe for monitoring prompts. Annual billing is {pct}% cheaper.",
+      "month": "Monthly",
+      "year": "Yearly",
+      "discount": "−{pct}%",
+      "yourPlan": "Your plan",
+      "active": "Active",
+      "freeCta": "Free, no card",
+      "contact": "Discuss volume",
+      "ctaPick": "Choose {plan}",
+      "ctaStartFree": "Start free",
+      "ctaUpgrade": "Upgrade to {plan}",
+      "ctaDowngrade": "Downgrade to {plan}"
+    },
+    "price": {
+      "perMonth": "/mo",
+      "oneTime": "one-off",
+      "annualNote": "billed yearly · {price} per month",
+      "noCard": "no card"
+    },
+    "card": {
+      "poolHint": "no posts on the fast model | ≈ {n} post on the fast model | ≈ {n} posts on the fast model"
+    },
+    "plan": {
+      "free": {
+        "name": "Free",
+        "audience": "See your AI visibility for the first time",
+        "included": [
+          "{prompts} prompts — one-off",
+          "{engines} AI engines of the daily core",
+          "Site tech audit",
+          "Brand AI visibility report",
+          "Blog Writer — {credits} credits to try",
+          "{credits} credits, one-off",
+          "No card"
+        ]
+      },
+      "lite": {
+        "name": "Start",
+        "audience": "Weekly visibility trend",
+        "included": [
+          "{prompts} prompts in the pool",
+          "{runs} runs a week",
+          "Full citation snapshot — monthly",
+          "CSV export",
+          "Weekly email report",
+          "{credits} credits a month",
+          "Blog Writer — as far as credits go"
+        ]
+      },
+      "pro": {
+        "name": "Bestseller",
+        "badge": "Users' choice",
+        "audience": "Daily monitoring with citations and content",
+        "included": [
+          "{prompts} prompts in the pool",
+          "Daily runs",
+          "Weekly citations + Yandex Neuro",
+          "Blog Writer — as far as credits go",
+          "Telegram reports",
+          "Unlimited team",
+          "{brands} brands",
+          "{credits} credits a month"
+        ]
+      },
+      "scale": {
+        "name": "Business",
+        "audience": "For agencies and teams with several brands",
+        "included": [
+          "{prompts} prompts in the pool",
+          "Everything in {pro}",
+          "{brands} brands",
+          "Blog Writer + premium prose",
+          "API access",
+          "{credits} credits a month"
+        ]
+      }
+    },
+    "addonsSection": {
+      "title": "Monitoring add-ons",
+      "hint": "Prompts and brands live on the plan, not on credits — they scale separately.",
+      "perMonth": "per month"
+    },
+    "addon": {
+      "prompts_25": {
+        "title": "+{prompts} prompts",
+        "scope": "any paid plan"
+      }
+    },
+    "pack": {
+      "credits_5": { "note": "give it a try" },
+      "credits_50": { "note": "an average month" },
+      "credits_500": { "note": "a team for a year" }
+    },
+    "creditsPanel": {
+      "label": "Credits",
+      "inPool": "in the plan pool",
+      "ofTotal": "of {n}",
+      "usageUnknown": "Usage is unavailable right now — showing the plan pool",
+      "oneTimePool": "One-off pool: does not renew",
+      "renews": "Renews at the start of the period",
+      "spentLabel": "Used this period",
+      "spendNote": "Credits go to Blog Writer posts, assistant questions and ad-hoc reports. Regular monitoring runs on your plan and spends no credits.",
+      "buyTitle": "Buy more credits",
+      "viaSupport": "top-up via support"
+    },
+    "modelRates": {
+      "title": "What costs what",
+      "hint": "The price depends on the model you pick for the task",
+      "colClass": "Class",
+      "colPost": "Post",
+      "colMessage": "Question",
+      "colEnough": "Enough for",
+      "notInChat": "not in chat",
+      "upTo": "no posts | up to {n} post | up to {n} posts",
+      "chipTitle": "{vendor} · {in} input / {out} output per 1M tokens",
+      "chipLegend": "Numbers on the chip: credits per post · per assistant question"
+    },
+    "modelClass": {
+      "fast": {
+        "label": "Fast",
+        "hint": "daily flow: news, digests, short pieces"
+      },
+      "standard": {
+        "label": "Standard",
+        "hint": "the main workhorse: expert articles and deep dives"
+      },
+      "premium": {
+        "label": "Premium",
+        "hint": "flagship pieces where every phrase matters"
+      },
+      "max": {
+        "label": "Maximum",
+        "hint": "the priciest models on the market — for one-off tasks"
+      }
+    },
+    "units": {
+      "credits": "no credits | {n} credit | {n} credits",
+      "creditsShort": "{v} cr.",
+      "creditsApprox": "≈ {v} cr."
+    },
+    "rate": "{n} credits = {price}"
+  }
+}

@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+build/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# prisma generated client
+prisma/generated/
+
+# logs
+*.log
+npm-debug.log*
+logs/
+
+# tests / coverage
+coverage/
+.nyc_output/
+
+# editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# misc
+*.tsbuildinfo
+.eslintcache
+tmp/
+
+# FUSE (sshfs/mergerfs) артефакты удалённых-но-открытых файлов
+.fuse_hidden*

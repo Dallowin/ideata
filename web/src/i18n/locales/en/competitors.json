@@ -1,0 +1,66 @@
+{
+  "competitors": {
+    "subtitle": "Who leads in AI answers and how the gap moves day to day",
+    "inCompare": "no competitors | {n} competitor compared | {n} competitors compared",
+    "configure": "Edit comparison",
+    "errRemove": "Could not remove the competitor",
+    "noTracker": "Monitoring has not run yet — nothing to compare. Start the first run on Monitoring.",
+    "kpi": {
+      "rivals": "Compared",
+      "rivalsHint": "up to four rivals",
+      "mine": "Your visibility",
+      "mineHint": "{n} pp vs the previous run",
+      "mineHintFlat": "unchanged vs the previous run",
+      "leader": "Category leader",
+      "leaderHint": "{n}% visibility",
+      "leaderYou": "that is you",
+      "lost": "Prompts lost",
+      "lostHint": "a rival is named more often than you"
+    },
+    "cards": {
+      "vis": "visibility, latest run",
+      "remove": "Remove {domain} from the comparison",
+      "add": "Add a competitor",
+      "addHint": "{n} slots left",
+      "ahead": "you lead by {n} pp",
+      "behind": "you trail by {n} pp",
+      "even": "neck and neck",
+      "wins": "beats you on {n} prompts"
+    },
+    "empty": {
+      "title": "No one to compare with yet",
+      "hint": "Add up to four competitors and every prompt and source will show who the AI names instead of you. Data arrives with the next run."
+    },
+    "tabs": {
+      "prompts": "By prompt",
+      "sources": "By source",
+      "engines": "By engine"
+    },
+    "prompts": {
+      "title": "Who leads on each prompt",
+      "subtitle": "Share of engines that named the brand in their answer. Latest run — Monitoring shows the whole window, so the numbers may differ.",
+      "search": "Search prompts…",
+      "onlyLost": "Lost only",
+      "gap": "Gap",
+      "engines": "no answers | {n} engine answered | {n} engines answered",
+      "posHint": "best position in the answer: {n}",
+      "empty": "Prompts appear after the first monitoring run."
+    },
+    "sources": {
+      "title": "Cited alongside the brand",
+      "subtitle": "How often a source is cited in answers that name the brand. This is co-occurrence in one answer, not coverage about the brand.",
+      "search": "Search by domain…",
+      "onlyRival": "Rival leads",
+      "host": "Source",
+      "total": "Total",
+      "ownSite": "your site",
+      "rivalSite": "rival site",
+      "prompts": "no prompts | {n} prompt | {n} prompts",
+      "empty": "The latest run returned no links."
+    },
+    "csv": {
+      "topic": "Section",
+      "engines": "Engines answered"
+    }
+  }
+}

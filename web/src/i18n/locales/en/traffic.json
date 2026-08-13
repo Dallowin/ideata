@@ -1,0 +1,92 @@
+{
+  "traffic": {
+    "subtitle": "Visits from AI assistants and crawlers on your site",
+    "noIntegrations": "integrations not connected",
+    "integrations": "Integrations",
+    "connectMetrika": "Connect Yandex.Metrica in settings.",
+    "byMetrika": "Yandex.Metrica data",
+    "domainPlaceholder": "Domain",
+    "kpi": {
+      "visits": "Visits",
+      "aiVisits": "AI visits",
+      "users": "Visitors",
+      "share": "Share of traffic",
+      "bounce": "Bounce rate",
+      "ppSuffix": " pp"
+    },
+    "scope": {
+      "ai": "AI traffic",
+      "all": "All traffic"
+    },
+    "range": {
+      "d7": "7 days",
+      "d30": "30 days",
+      "m3": "3 months"
+    },
+    "chart": {
+      "title": "Visits from AI assistants",
+      "subAll": "Yandex.Metrica data · all counter traffic",
+      "subAi": "Yandex.Metrica data · AI sources only",
+      "subOff": "Data will appear once Yandex.Metrica is connected",
+      "emptyAll": "No visits recorded for this period. Total visits on the site: {total}.",
+      "emptyAi": "No AI visits recorded for this period. Total visits on the site: {total}.",
+      "emptyOff": "Connect Yandex.Metrica in settings to see visits.",
+      "show": "Show on chart",
+      "hide": "Hide on chart"
+    },
+    "assistants": {
+      "titleAssistants": "By assistant",
+      "titleSources": "By source",
+      "visitsCount": "no visits | {n} visit | {n} visits",
+      "empty": "No visits from AI assistants yet — they show up with the first referral."
+    },
+    "landing": {
+      "title": "Landing pages",
+      "note": "where people land",
+      "empty": "No entries recorded for this period."
+    },
+    "geo": {
+      "title": "Visits by country",
+      "empty": "Geography will be built from the Metrica report."
+    },
+    "devices": {
+      "title": "Devices",
+      "empty": "Device breakdown will come from the Metrica report."
+    },
+    "crawlers": {
+      "title": "AI crawlers on your site",
+      "byCloudflare": "Cloudflare data · {zone}",
+      "byForwarder": "log forwarder data",
+      "empty": "AI bot hits will appear once the log forwarder is set up (button above)."
+    },
+    "setup": {
+      "open": "Set up real hit collection",
+      "close": "Hide collection setup",
+      "note": "Every 5 minutes the script reads the nginx access log and sends Ideata the counts of AI bots (by User-Agent) and live referrals from AI chats (by Referer). Save it as",
+      "noteTail": ", make it executable and add to cron.",
+      "snippetHeader": "# Ideata — collects AI bot hits and AI-answer referrals from nginx access logs (run via cron).",
+      "snippetLogPath": "# path to your site's access log",
+      "snippetReferer": "# Referer, not UA — real people clicking a link in an AI answer."
+    },
+    "connectors": {
+      "metrika": {
+        "title": "Yandex.Metrica",
+        "desc": "Visits from AI assistants and full web analytics"
+      },
+      "gsc": {
+        "title": "Search Console",
+        "desc": "Impressions and clicks from Google, including AI Overviews"
+      },
+      "cloudflare": {
+        "title": "Cloudflare",
+        "desc": "AI crawler hits on your site (GPTBot, ClaudeBot…)"
+      },
+      "state": {
+        "demo": "demo data",
+        "connected": "connected",
+        "notConnected": "not connected",
+        "notConfigured": "not configured on the server"
+      }
+    }
+  }
+}

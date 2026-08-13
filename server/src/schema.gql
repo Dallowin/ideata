@@ -1,0 +1,262 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AiDraftResult {
+  filename: String!
+  markdown: String!
+  slug: String!
+}
+
+type AiModelType {
+  id: String!
+  label: String!
+}
+
+type AiModelsResult {
+  default: String!
+  models: [AiModelType!]!
+}
+
+input BlogPostInput {
+  body: String!
+  coverUrl: String
+  excerpt: String
+  id: Int
+  slug: String!
+  status: String! = "draft"
+  tags: [String!]
+  title: String!
+}
+
+type BlogPostType {
+  body: String!
+  coverUrl: String
+  createdAt: String!
+  excerpt: String
+  id: Int!
+  publishedAt: String
+  slug: String!
+  source: String!
+  status: String!
+  tags: [String!]!
+  title: String!
+}
+
+type BlogSettingsType {
+  aiApiKey: String!
+  aiModel: String!
+  aiPrompt: String!
+}
+
+type Brand {
+  aliases: [String!]!
+  competitors: [String!]!
+  createdAt: String!
+  description: String
+  domain: String!
+  geo: String!
+  id: Int!
+  isActive: Boolean!
+  language: String!
+  myRole: String!
+  name: String
+  ownerName: String
+  ownerUserId: Int!
+  topics: [String!]!
+}
+
+type BuildPromptResult {
+  cached: Boolean!
+  kind: String!
+  text: String!
+}
+
+type Comment {
+  body: String!
+  createdAt: String!
+  id: Int!
+  isDeleted: Boolean!
+  parentId: Int
+  userId: Int!
+  userName: String!
+}
+
+type Facet {
+  label: String!
+  value: String!
+}
+
+type Facets {
+  buildEffort: [Facet!]!
+  categories: [String!]!
+  localCompetition: [Facet!]!
+  playTypes: [Facet!]!
+  sorts: [Facet!]!
+  sources: [SourceFacet!]!
+  verdictLabels: [Facet!]!
+}
+
+type Me {
+  authed: Boolean!
+  isAdmin: Boolean
+  name: String
+  userId: Int
+}
+
+type Mutation {
+  acceptInvite(token: String!): TeamAccount!
+  addComment(body: String!, parentId: Int, projectId: Int!): Comment!
+  aiDraftPost(model: String, projectId: Int, slug: String, topic: String): AiDraftResult!
+  analyzeUrl(url: String!): UrlAnalysisResult!
+  buildPrompt(kind: String! = "mvp", projectId: Int!): BuildPromptResult!
+  createBrand(aliases: [String!], competitors: [String!], description: String, domain: String!, geo: String, language: String, name: String, topics: [String!]): Brand!
+  createInvite(email: String, role: String!): TeamInvite!
+  deleteBlogPost(id: Int!): Boolean!
+  deleteBrand(id: Int!): Boolean!
+  deleteComment(id: Int!): Boolean!
+  removeMember(userId: Int!): Boolean!
+  research(projectId: Int!): ResearchResult!
+  revokeInvite(id: Int!): Boolean!
+  setActiveBrand(id: Int!): Boolean!
+  setBlogSettings(aiApiKey: String, aiModel: String, aiPrompt: String!): BlogSettingsType!
+  setMemberRole(role: String!, userId: Int!): TeamMember!
+  updateBrand(aliases: [String!], competitors: [String!], description: String, geo: String, id: Int!, language: String, name: String, topics: [String!]): Brand!
+  upsertBlogPost(input: BlogPostInput!): BlogPostType!
+}
+
+type MyTeam {
+  invites: [TeamInvite!]!
+  members: [TeamMember!]!
+  myAccounts: [TeamAccount!]!
+  seatsLimit: Int
+}
+
+type Project {
+  adaptationScore: Int
+  analyzed: Boolean!
+  badReviews: [String!]
+  buildEffort: String
+  category: String
+  ceilingPass: Boolean
+  competitorData: String
+  competitorStrength: String
+  competitorTrafficMax: Int
+  competitorsNote: String
+  deepAnalysisMode: String
+  deepAnalyzedAt: String
+  deepScore: Int
+  deepScoreBreakdown: String
+  deepVerdict: String
+  deepVerdictLabel: String
+  demandGeo: String
+  demandNote: String
+  descriptionRu: String
+  dimCisFeasibility: String
+  dimEffort: String
+  dimMarket: String
+  dimRisks: String
+  dimWhyNow: String
+  financeConfidence: String
+  financeNote: String
+  fullDescription: String
+  gap: String
+  globalScore: Int
+  iconUrl: String
+  id: Int!
+  imageUrl: String
+  isRevenue: Boolean!
+  localCompetition: String
+  localCompetitors: [String!]
+  localScore: Int
+  localizationDifficulty: String
+  marketAnalysis: String
+  marketCeiling: String
+  media: [String!]
+  monetization: String
+  name: String!
+  numComments: Int
+  opportunityScore: Int
+  playType: String
+  postedAt: String
+  revenueEstimate: String
+  searchVolume: Int
+  searchVolumeRegions: String
+  serpOccupancy: String
+  serpResultsYandex: Int
+  socialSignals: String
+  source: String!
+  sourceUrl: String
+  stopFactors: String
+  summary: String
+  tagline: String
+  tags: [String!]
+  targetMarketAnalog: String
+  tractionStrength: String
+  trendDirection: String
+  unitEconomics: String
+  upvotes: Int
+  websiteUrl: String
+  whyFail: String
+  whyNow: String
+}
+
+type ProjectsPage {
+  items: [Project!]!
+  page: Int!
+  pageSize: Int!
+  pages: Int!
+  total: Int!
+}
+
+type Query {
+  aiModels: AiModelsResult!
+  blogPost(slug: String!): BlogPostType
+  blogPosts: [BlogPostType!]!
+  blogPostsAll: [BlogPostType!]!
+  blogSettings: BlogSettingsType!
+  comments(projectId: Int!): [Comment!]!
+  facets: Facets!
+  me: Me!
+  myBrands: [Brand!]!
+  myTeam: MyTeam!
+  project(id: Int!): Project
+  projects(buildEffort: [String!], category: [String!], localCompetition: [String!], minDeepScore: Int, minOpp: Int, order: String = "desc", page: Int = 1, pageSize: Int = 30, playType: [String!], search: String, sort: String = "opportunityScore", source: [String!], verdictLabel: [String!]): ProjectsPage!
+}
+
+type ResearchResult {
+  cached: Boolean!
+  note: String!
+}
+
+type SourceFacet {
+  label: String!
+  name: String!
+}
+
+type TeamAccount {
+  ownerName: String
+  ownerUserId: Int!
+  role: String!
+}
+
+type TeamInvite {
+  createdAt: String!
+  email: String
+  id: Int!
+  role: String!
+  status: String!
+  token: String!
+}
+
+type TeamMember {
+  createdAt: String!
+  email: String
+  name: String
+  role: String!
+  userId: Int!
+}
+
+type UrlAnalysisResult {
+  json: String!
+}

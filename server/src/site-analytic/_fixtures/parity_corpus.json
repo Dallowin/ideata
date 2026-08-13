@@ -1,0 +1,2241 @@
+{
+ "schema_lint": [
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"headline\":\"H\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Article"
+    ],
+    "issues": [
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «author» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «datePublished» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «image» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": true
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"Article\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Article"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": "Article",
+      "msg": "Article: нет обязательного свойства «headline»"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «author» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «datePublished» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «image» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{broken json</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 0,
+    "broken": 1,
+    "types": [],
+    "issues": [
+     {
+      "level": "error",
+      "type": null,
+      "msg": "блок JSON-LD не парсится — движки его игнорируют целиком"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"FAQPage\",\"mainEntity\":[]}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "FAQPage"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": "FAQPage",
+      "msg": "FAQPage: нет обязательного свойства «mainEntity»"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@graph\":[{\"@type\":\"Organization\"},{\"@type\":\"WebSite\",\"name\":\"S\"}]}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Organization",
+     "WebSite"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": "Organization",
+      "msg": "Organization: нет обязательного свойства «name»"
+     },
+     {
+      "level": "warn",
+      "type": "Organization",
+      "msg": "Organization: не заполнено «url» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Organization",
+      "msg": "Organization: не заполнено «logo» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Organization",
+      "msg": "Organization: не заполнено «sameAs» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">[{\"@type\":\"Product\",\"name\":\"P\"},{\"@type\":\"Offer\",\"price\":10,\"priceCurrency\":\"USD\"}]</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Product",
+     "Offer"
+    ],
+    "issues": [
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «offers» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «aggregateRating» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «image» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": true
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@type\":\"Article\",\"headline\":\"H\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Article"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": null,
+      "msg": "нет @context — блок не считается разметкой schema.org"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «author» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «datePublished» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Article",
+      "msg": "Article: не заполнено «image» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"Product\",\"name\":\"P\",\"offers\":{},\"image\":[]}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Product"
+    ],
+    "issues": [
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «offers» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «aggregateRating» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "Product",
+      "msg": "Product: не заполнено «image» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": true
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":[\"Article\",\"NewsArticle\"],\"headline\":\"H\",\"author\":\"A\",\"datePublished\":\"2020\",\"image\":\"i\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Article",
+     "NewsArticle"
+    ],
+    "issues": [],
+    "valid": true
+   }
+  },
+  {
+   "html": "<p>no ld+json here</p>",
+   "out": {
+    "blocks": 0,
+    "parsed": 0,
+    "broken": 0,
+    "types": [],
+    "issues": [],
+    "valid": false
+   }
+  },
+  {
+   "html": "<SCRIPT TYPE='application/ld+json'>  {\"@context\":\"x\",\"@type\":\"WebSite\",\"name\":\"S\"}  </SCRIPT>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "WebSite"
+    ],
+    "issues": [],
+    "valid": true
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"HowTo\",\"name\":\"N\",\"step\":[]}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "HowTo"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": "HowTo",
+      "msg": "HowTo: нет обязательного свойства «step»"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">123</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [],
+    "issues": [
+     {
+      "level": "error",
+      "type": null,
+      "msg": "в разметке нет ни одного @type — движку нечего понять"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"foo\":\"bar\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [],
+    "issues": [
+     {
+      "level": "error",
+      "type": null,
+      "msg": "в разметке нет ни одного @type — движку нечего понять"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"Organization\",\"name\":\"O\",\"url\":\"u\",\"logo\":\"l\",\"sameAs\":[]}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Organization"
+    ],
+    "issues": [
+     {
+      "level": "warn",
+      "type": "Organization",
+      "msg": "Organization: не заполнено «sameAs» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": true
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"Recipe\",\"name\":\"R\",\"recipeIngredient\":[\"a\"]}</script><script type=\"application/ld+json\">{bad</script>",
+   "out": {
+    "blocks": 2,
+    "parsed": 1,
+    "broken": 1,
+    "types": [
+     "Recipe"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": null,
+      "msg": "блок JSON-LD не парсится — движки его игнорируют целиком"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"LocalBusiness\",\"name\":\"L\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "LocalBusiness"
+    ],
+    "issues": [
+     {
+      "level": "error",
+      "type": "LocalBusiness",
+      "msg": "LocalBusiness: нет обязательного свойства «address»"
+     },
+     {
+      "level": "warn",
+      "type": "LocalBusiness",
+      "msg": "LocalBusiness: не заполнено «telephone» — блок беднее, чем мог бы быть"
+     },
+     {
+      "level": "warn",
+      "type": "LocalBusiness",
+      "msg": "LocalBusiness: не заполнено «openingHours» — блок беднее, чем мог бы быть"
+     }
+    ],
+    "valid": false
+   }
+  },
+  {
+   "html": "<script type=\"application/ld+json\">{\"@context\":\"x\",\"@type\":\"Event\",\"name\":\"E\",\"startDate\":\"2020\"}</script>",
+   "out": {
+    "blocks": 1,
+    "parsed": 1,
+    "broken": 0,
+    "types": [
+     "Event"
+    ],
+    "issues": [],
+    "valid": true
+   }
+  }
+ ],
+ "since_ru": [
+  {
+   "iso": "2026-04-17T00:00",
+   "out": "апр 2026"
+  },
+  {
+   "iso": "2026-4-1",
+   "out": null
+  },
+  {
+   "iso": "2026",
+   "out": null
+  },
+  {
+   "iso": "2026-13-01",
+   "out": null
+  },
+  {
+   "iso": "2026-00-01",
+   "out": "дек 2026"
+  },
+  {
+   "iso": null,
+   "out": null
+  },
+  {
+   "iso": "2026-04-17-99",
+   "out": "апр 2026"
+  },
+  {
+   "iso": "2025-12-31",
+   "out": "дек 2025"
+  },
+  {
+   "iso": "2024-01-15",
+   "out": "янв 2024"
+  },
+  {
+   "iso": "",
+   "out": null
+  },
+  {
+   "iso": "garbage",
+   "out": null
+  },
+  {
+   "iso": "2026-11-09T12:00:00Z",
+   "out": "ноя 2026"
+  },
+  {
+   "iso": "1999-01-01",
+   "out": "янв 1999"
+  }
+ ],
+ "to_int": [
+  {
+   "in": "500k",
+   "out": 500000
+  },
+  {
+   "in": "1.2M",
+   "out": 1200000
+  },
+  {
+   "in": "12,000",
+   "out": 12000
+  },
+  {
+   "in": 12000,
+   "out": 12000
+  },
+  {
+   "in": "12.5.6",
+   "out": null
+  },
+  {
+   "in": "abc",
+   "out": null
+  },
+  {
+   "in": "3.9",
+   "out": 3
+  },
+  {
+   "in": "2.5k",
+   "out": 2500
+  },
+  {
+   "in": null,
+   "out": null
+  },
+  {
+   "in": "  7  ",
+   "out": 7
+  },
+  {
+   "in": "10x",
+   "out": 10
+  },
+  {
+   "in": 0,
+   "out": 0
+  },
+  {
+   "in": 5.99,
+   "out": 5
+  },
+  {
+   "in": "0",
+   "out": 0
+  },
+  {
+   "in": "",
+   "out": null
+  },
+  {
+   "in": "1000000",
+   "out": 1000000
+  },
+  {
+   "in": "3.2m",
+   "out": 3200000
+  },
+  {
+   "in": "999",
+   "out": 999
+  },
+  {
+   "in": "1,234,567",
+   "out": 1234567
+  },
+  {
+   "in": true,
+   "out": 1
+  },
+  {
+   "in": "1.5B",
+   "out": 1
+  }
+ ],
+ "py_title": [
+  {
+   "in": "facebook",
+   "out": "Facebook"
+  },
+  {
+   "in": "INSTAGRAM",
+   "out": "Instagram"
+  },
+  {
+   "in": "audience_network",
+   "out": "Audience_Network"
+  },
+  {
+   "in": "messenger",
+   "out": "Messenger"
+  },
+  {
+   "in": "instagram feed",
+   "out": "Instagram Feed"
+  },
+  {
+   "in": "MESSENGER inbox",
+   "out": "Messenger Inbox"
+  },
+  {
+   "in": "a",
+   "out": "A"
+  },
+  {
+   "in": "",
+   "out": ""
+  },
+  {
+   "in": "web-site",
+   "out": "Web-Site"
+  },
+  {
+   "in": "x1y2",
+   "out": "X1Y2"
+  }
+ ],
+ "host_like": [
+  {
+   "in": "https://www.Tilda.cc/ru",
+   "out": "tilda.cc"
+  },
+  {
+   "in": "WWW.site.com",
+   "out": "site.com"
+  },
+  {
+   "in": "site.www.com",
+   "out": "site.com"
+  },
+  {
+   "in": "awww.com",
+   "out": ""
+  },
+  {
+   "in": "notion",
+   "out": ""
+  },
+  {
+   "in": "x.io/path",
+   "out": "x.io"
+  },
+  {
+   "in": "http://a.b.c/",
+   "out": "a.b.c"
+  },
+  {
+   "in": "",
+   "out": ""
+  },
+  {
+   "in": "  Foo.COM  ",
+   "out": "foo.com"
+  },
+  {
+   "in": "HTTPS://sub.domain.co.uk/a?b=1",
+   "out": "sub.domain.co.uk"
+  },
+  {
+   "in": null,
+   "out": ""
+  },
+  {
+   "in": "no-dot",
+   "out": ""
+  }
+ ],
+ "is_non_competitor": [
+  {
+   "in": "reddit.com",
+   "out": true
+  },
+  {
+   "in": "foo.com",
+   "out": false
+  },
+  {
+   "in": "www.wikipedia.org",
+   "out": true
+  },
+  {
+   "in": "sub.g2.com",
+   "out": true
+  },
+  {
+   "in": "notion.so",
+   "out": false
+  },
+  {
+   "in": "youtube.com",
+   "out": true
+  },
+  {
+   "in": "vc.ru",
+   "out": true
+  },
+  {
+   "in": "bar.io",
+   "out": false
+  },
+  {
+   "in": "",
+   "out": false
+  },
+  {
+   "in": "google.com",
+   "out": true
+  },
+  {
+   "in": "en.wikipedia.org",
+   "out": true
+  },
+  {
+   "in": "myforbes.com",
+   "out": false
+  }
+ ],
+ "host_of": [
+  {
+   "in": "https://www.tilda.cc/ru/",
+   "out": "tilda.cc"
+  },
+  {
+   "in": "HTTP://Example.com",
+   "out": "example.com"
+  },
+  {
+   "in": "site.com",
+   "out": "site.com"
+  },
+  {
+   "in": "www.a.b",
+   "out": "a.b"
+  },
+  {
+   "in": "",
+   "out": ""
+  },
+  {
+   "in": null,
+   "out": ""
+  },
+  {
+   "in": "https://x.io/path?q=1",
+   "out": "x.io"
+  },
+  {
+   "in": "ftp://z.com/a",
+   "out": "ftp:"
+  }
+ ],
+ "parse_onboarding": [
+  {
+   "comps": [
+    "a.com",
+    "b.io"
+   ],
+   "out": [
+    "a.com",
+    "b.io"
+   ]
+  },
+  {
+   "comps": [
+    {
+     "domain": "x.com"
+    },
+    {
+     "url": "y.io"
+    },
+    {
+     "name": "Zed"
+    },
+    {},
+    "raw.com"
+   ],
+   "out": [
+    "x.com",
+    "y.io",
+    "Zed",
+    "raw.com"
+   ]
+  },
+  {
+   "comps": "not a list",
+   "out": []
+  },
+  {
+   "comps": [],
+   "out": []
+  },
+  {
+   "comps": [
+    "  spaced.com  ",
+    "",
+    "keep.io"
+   ],
+   "out": [
+    "spaced.com",
+    "keep.io"
+   ]
+  },
+  {
+   "comps": [
+    {
+     "name": ""
+    },
+    {
+     "domain": "d.com",
+     "name": "ignored"
+    }
+   ],
+   "out": [
+    "d.com"
+   ]
+  },
+  {
+   "comps": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
+   ],
+   "out": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
+   ]
+  }
+ ],
+ "meta_ads": [
+  {
+   "brand": "acme",
+   "limit": 6,
+   "items": [
+    {
+     "ad_creative_link_titles": [
+      "Buy now"
+     ],
+     "ad_creative_bodies": [
+      "Best deal ever"
+     ],
+     "ad_delivery_start_time": "2026-04-17T00:00:00+0000",
+     "publisher_platforms": [
+      "facebook",
+      "instagram"
+     ]
+    },
+    {
+     "ad_creative_link_titles": [],
+     "ad_creative_bodies": [
+      "Body only"
+     ],
+     "ad_delivery_start_time": "2025-12-01T00:00",
+     "publisher_platforms": [
+      "messenger",
+      "audience_network",
+      "facebook"
+     ]
+    },
+    {
+     "ad_creative_link_titles": [],
+     "ad_creative_bodies": []
+    }
+   ],
+   "out": [
+    {
+     "pl": "Meta (Facebook, Instagram)",
+     "h": "Buy now",
+     "t": "Best deal ever",
+     "since": "апр 2026"
+    },
+    {
+     "pl": "Meta (Messenger, Audience_Network)",
+     "h": "—",
+     "t": "Body only",
+     "since": "дек 2025"
+    }
+   ]
+  },
+  {
+   "brand": "b",
+   "limit": 6,
+   "items": [
+    {
+     "ad_creative_link_titles": [
+      "  Trim me  "
+     ],
+     "ad_creative_bodies": [
+      "  spaced body  "
+     ],
+     "ad_delivery_start_time": "bad-date",
+     "publisher_platforms": []
+    }
+   ],
+   "out": [
+    {
+     "pl": "Meta",
+     "h": "Trim me",
+     "t": "spaced body",
+     "since": null
+    }
+   ]
+  },
+  {
+   "brand": "c",
+   "limit": 6,
+   "items": [
+    {
+     "ad_creative_link_titles": [
+      "Заголовок яяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяя"
+     ],
+     "ad_creative_bodies": [
+      "текст юююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююю"
+     ],
+     "ad_delivery_start_time": "2024-07-09T10:00",
+     "publisher_platforms": [
+      "facebook"
+     ]
+    }
+   ],
+   "out": [
+    {
+     "pl": "Meta (Facebook)",
+     "h": "Заголовок яяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяя",
+     "t": "текст юююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююююю",
+     "since": "июл 2024"
+    }
+   ]
+  },
+  {
+   "brand": "empty",
+   "limit": 6,
+   "items": [],
+   "out": null
+  },
+  {
+   "brand": "lim",
+   "limit": 1,
+   "items": [
+    {
+     "ad_creative_link_titles": [
+      "One"
+     ],
+     "ad_creative_bodies": [
+      "b1"
+     ],
+     "ad_delivery_start_time": "2026-01-01",
+     "publisher_platforms": [
+      "facebook"
+     ]
+    },
+    {
+     "ad_creative_link_titles": [
+      "Two"
+     ],
+     "ad_creative_bodies": [
+      "b2"
+     ],
+     "ad_delivery_start_time": "2026-02-01",
+     "publisher_platforms": [
+      "facebook"
+     ]
+    }
+   ],
+   "out": [
+    {
+     "pl": "Meta (Facebook)",
+     "h": "One",
+     "t": "b1",
+     "since": "янв 2026"
+    }
+   ]
+  }
+ ],
+ "youtube": [
+  {
+   "query": "aeo",
+   "shorts": false,
+   "region": null,
+   "search": {
+    "items": [
+     {
+      "id": {
+       "videoId": "v1"
+      },
+      "snippet": {
+       "title": "T1"
+      }
+     },
+     {
+      "id": {
+       "videoId": "v2"
+      },
+      "snippet": {
+       "title": "T2"
+      }
+     },
+     {
+      "id": {
+       "kind": "channel"
+      },
+      "snippet": {
+       "title": "skip"
+      }
+     }
+    ],
+    "pageInfo": {
+     "totalResults": "1200000"
+    }
+   },
+   "videos": {
+    "items": [
+     {
+      "id": "v1",
+      "snippet": {
+       "title": "T1",
+       "channelTitle": "C1",
+       "channelId": "ch1",
+       "publishedAt": "2026-01-01T00:00:00Z",
+       "description": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "statistics": {
+       "viewCount": "12345",
+       "likeCount": "100",
+       "commentCount": "5"
+      },
+      "contentDetails": {
+       "duration": "PT3M"
+      }
+     },
+     {
+      "id": "v2",
+      "snippet": {
+       "title": "T2",
+       "channelTitle": "C2",
+       "channelId": "ch2",
+       "publishedAt": "2026-02-01T00:00:00Z",
+       "description": "short"
+      },
+      "statistics": {
+       "viewCount": "999",
+       "likeCount": "2",
+       "commentCount": "0"
+      },
+      "contentDetails": {
+       "duration": "PT1M"
+      }
+     }
+    ]
+   },
+   "channels": {
+    "items": [
+     {
+      "id": "ch1",
+      "statistics": {
+       "subscriberCount": "50000"
+      }
+     },
+     {
+      "id": "ch2",
+      "statistics": {
+       "subscriberCount": "1200"
+      }
+     }
+    ]
+   },
+   "out": {
+    "video_results": 1200000,
+    "top_views": 13344,
+    "titles": [
+     "T1",
+     "T2",
+     "skip"
+    ],
+    "mentions": [
+     {
+      "title": "T1",
+      "url": "https://youtube.com/watch?v=v1",
+      "channel": "C1",
+      "subs": 50000,
+      "views": 12345,
+      "likes": 100,
+      "comments": 5,
+      "time": "2026-01-01T00:00:00Z",
+      "dur": "PT3M",
+      "desc": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+     },
+     {
+      "title": "T2",
+      "url": "https://youtube.com/watch?v=v2",
+      "channel": "C2",
+      "subs": 1200,
+      "views": 999,
+      "likes": 2,
+      "comments": 0,
+      "time": "2026-02-01T00:00:00Z",
+      "dur": "PT1M",
+      "desc": "short"
+     }
+    ]
+   }
+  },
+  {
+   "query": "empty",
+   "shorts": false,
+   "region": null,
+   "search": {
+    "items": [],
+    "pageInfo": {
+     "totalResults": "0"
+    }
+   },
+   "videos": {
+    "items": []
+   },
+   "channels": {
+    "items": []
+   },
+   "out": {
+    "video_results": 0,
+    "top_views": 0,
+    "titles": [],
+    "mentions": []
+   }
+  },
+  {
+   "query": "shorts",
+   "shorts": true,
+   "region": "US",
+   "search": {
+    "items": [
+     {
+      "id": {
+       "videoId": "s1"
+      },
+      "snippet": {
+       "title": "S1"
+      }
+     }
+    ],
+    "pageInfo": {
+     "totalResults": 42
+    }
+   },
+   "videos": {
+    "items": [
+     {
+      "id": "s1",
+      "snippet": {
+       "title": "S1",
+       "channelTitle": "CS",
+       "channelId": "chs"
+      },
+      "statistics": {
+       "viewCount": "7"
+      }
+     }
+    ]
+   },
+   "channels": {
+    "items": [
+     {
+      "id": "chs",
+      "statistics": {
+       "subscriberCount": "9"
+      }
+     }
+    ]
+   },
+   "out": {
+    "video_results": 42,
+    "top_views": 7,
+    "titles": [
+     "S1"
+    ],
+    "mentions": [
+     {
+      "title": "S1",
+      "url": "https://youtube.com/watch?v=s1",
+      "channel": "CS",
+      "subs": 9,
+      "views": 7,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     }
+    ]
+   }
+  },
+  {
+   "query": "missingstats",
+   "shorts": false,
+   "region": null,
+   "search": {
+    "items": [
+     {
+      "id": {
+       "videoId": "m1"
+      },
+      "snippet": {
+       "title": "M1"
+      }
+     }
+    ],
+    "pageInfo": {}
+   },
+   "videos": {
+    "items": []
+   },
+   "channels": {
+    "items": []
+   },
+   "out": {
+    "video_results": null,
+    "top_views": 0,
+    "titles": [
+     "M1"
+    ],
+    "mentions": [
+     {
+      "title": null,
+      "url": "https://youtube.com/watch?v=m1",
+      "channel": null,
+      "subs": null,
+      "views": null,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     }
+    ]
+   }
+  },
+  {
+   "query": "many",
+   "shorts": false,
+   "region": null,
+   "search": {
+    "items": [
+     {
+      "id": {
+       "videoId": "n0"
+      },
+      "snippet": {
+       "title": "N0"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n1"
+      },
+      "snippet": {
+       "title": "N1"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n2"
+      },
+      "snippet": {
+       "title": "N2"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n3"
+      },
+      "snippet": {
+       "title": "N3"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n4"
+      },
+      "snippet": {
+       "title": "N4"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n5"
+      },
+      "snippet": {
+       "title": "N5"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n6"
+      },
+      "snippet": {
+       "title": "N6"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n7"
+      },
+      "snippet": {
+       "title": "N7"
+      }
+     },
+     {
+      "id": {
+       "videoId": "n8"
+      },
+      "snippet": {
+       "title": "N8"
+      }
+     }
+    ],
+    "pageInfo": {
+     "totalResults": 9
+    }
+   },
+   "videos": {
+    "items": [
+     {
+      "id": "n0",
+      "snippet": {
+       "title": "N0",
+       "channelId": "c0",
+       "channelTitle": "CH0"
+      },
+      "statistics": {
+       "viewCount": "0"
+      }
+     },
+     {
+      "id": "n1",
+      "snippet": {
+       "title": "N1",
+       "channelId": "c1",
+       "channelTitle": "CH1"
+      },
+      "statistics": {
+       "viewCount": "10"
+      }
+     },
+     {
+      "id": "n2",
+      "snippet": {
+       "title": "N2",
+       "channelId": "c2",
+       "channelTitle": "CH2"
+      },
+      "statistics": {
+       "viewCount": "20"
+      }
+     },
+     {
+      "id": "n3",
+      "snippet": {
+       "title": "N3",
+       "channelId": "c3",
+       "channelTitle": "CH3"
+      },
+      "statistics": {
+       "viewCount": "30"
+      }
+     },
+     {
+      "id": "n4",
+      "snippet": {
+       "title": "N4",
+       "channelId": "c4",
+       "channelTitle": "CH4"
+      },
+      "statistics": {
+       "viewCount": "40"
+      }
+     },
+     {
+      "id": "n5",
+      "snippet": {
+       "title": "N5",
+       "channelId": "c5",
+       "channelTitle": "CH5"
+      },
+      "statistics": {
+       "viewCount": "50"
+      }
+     },
+     {
+      "id": "n6",
+      "snippet": {
+       "title": "N6",
+       "channelId": "c6",
+       "channelTitle": "CH6"
+      },
+      "statistics": {
+       "viewCount": "60"
+      }
+     },
+     {
+      "id": "n7",
+      "snippet": {
+       "title": "N7",
+       "channelId": "c7",
+       "channelTitle": "CH7"
+      },
+      "statistics": {
+       "viewCount": "70"
+      }
+     },
+     {
+      "id": "n8",
+      "snippet": {
+       "title": "N8",
+       "channelId": "c8",
+       "channelTitle": "CH8"
+      },
+      "statistics": {
+       "viewCount": "80"
+      }
+     }
+    ]
+   },
+   "channels": {
+    "items": [
+     {
+      "id": "c0",
+      "statistics": {
+       "subscriberCount": "0"
+      }
+     },
+     {
+      "id": "c1",
+      "statistics": {
+       "subscriberCount": "1"
+      }
+     },
+     {
+      "id": "c2",
+      "statistics": {
+       "subscriberCount": "2"
+      }
+     },
+     {
+      "id": "c3",
+      "statistics": {
+       "subscriberCount": "3"
+      }
+     },
+     {
+      "id": "c4",
+      "statistics": {
+       "subscriberCount": "4"
+      }
+     },
+     {
+      "id": "c5",
+      "statistics": {
+       "subscriberCount": "5"
+      }
+     },
+     {
+      "id": "c6",
+      "statistics": {
+       "subscriberCount": "6"
+      }
+     },
+     {
+      "id": "c7",
+      "statistics": {
+       "subscriberCount": "7"
+      }
+     },
+     {
+      "id": "c8",
+      "statistics": {
+       "subscriberCount": "8"
+      }
+     }
+    ]
+   },
+   "out": {
+    "video_results": 9,
+    "top_views": 360,
+    "titles": [
+     "N0",
+     "N1",
+     "N2",
+     "N3",
+     "N4"
+    ],
+    "mentions": [
+     {
+      "title": "N0",
+      "url": "https://youtube.com/watch?v=n0",
+      "channel": "CH0",
+      "subs": 0,
+      "views": 0,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N1",
+      "url": "https://youtube.com/watch?v=n1",
+      "channel": "CH1",
+      "subs": 1,
+      "views": 10,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N2",
+      "url": "https://youtube.com/watch?v=n2",
+      "channel": "CH2",
+      "subs": 2,
+      "views": 20,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N3",
+      "url": "https://youtube.com/watch?v=n3",
+      "channel": "CH3",
+      "subs": 3,
+      "views": 30,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N4",
+      "url": "https://youtube.com/watch?v=n4",
+      "channel": "CH4",
+      "subs": 4,
+      "views": 40,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N5",
+      "url": "https://youtube.com/watch?v=n5",
+      "channel": "CH5",
+      "subs": 5,
+      "views": 50,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N6",
+      "url": "https://youtube.com/watch?v=n6",
+      "channel": "CH6",
+      "subs": 6,
+      "views": 60,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     },
+     {
+      "title": "N7",
+      "url": "https://youtube.com/watch?v=n7",
+      "channel": "CH7",
+      "subs": 7,
+      "views": 70,
+      "likes": null,
+      "comments": null,
+      "time": null,
+      "dur": null,
+      "desc": ""
+     }
+    ]
+   }
+  }
+ ],
+ "entity_kg": [
+  {
+   "domain": "tilda.cc",
+   "name": null,
+   "langs": [
+    "en",
+    "ru"
+   ],
+   "ent": {
+    "search": {
+     "en": [
+      {
+       "id": "Q1",
+       "label": "Tilda",
+       "description": "website builder"
+      }
+     ],
+     "ru": []
+    },
+    "entities": {
+     "Q1": {
+      "claims": {
+       "P856": [
+        {
+         "mainsnak": {
+          "datavalue": {
+           "value": "https://tilda.cc/"
+          }
+         }
+        }
+       ]
+      },
+      "sitelinks": {
+       "enwiki": {
+        "title": "Tilda Publishing"
+       },
+       "ruwiki": {
+        "title": "Тильда"
+       }
+      }
+     }
+    },
+    "pageviews": {
+     "items": [
+      {
+       "views": 100
+      },
+      {
+       "views": 250
+      },
+      {
+       "views": 0
+      }
+     ]
+    }
+   },
+   "out": {
+    "found": true,
+    "domain": "tilda.cc",
+    "query": "tilda",
+    "qid": "Q1",
+    "label": "Tilda",
+    "description": "website builder",
+    "official_sites": [
+     "https://tilda.cc/"
+    ],
+    "domain_matches": true,
+    "ambiguous": false,
+    "sitelinks": 2,
+    "wikipedia": "Tilda Publishing",
+    "wikipedia_lang": "en",
+    "pageviews_30d": 350
+   }
+  },
+  {
+   "domain": "acme.com",
+   "name": null,
+   "langs": [
+    "en",
+    "ru"
+   ],
+   "ent": {
+    "search": {
+     "en": [
+      {
+       "id": "Q2",
+       "label": "Acme",
+       "description": "other"
+      }
+     ],
+     "ru": []
+    },
+    "entities": {
+     "Q2": {
+      "claims": {
+       "P856": [
+        {
+         "mainsnak": {
+          "datavalue": {
+           "value": "https://other.org/"
+          }
+         }
+        }
+       ]
+      },
+      "sitelinks": {
+       "enwiki": {
+        "title": "Acme Corp"
+       }
+      }
+     }
+    }
+   },
+   "out": {
+    "found": true,
+    "domain": "acme.com",
+    "query": "acme",
+    "qid": "Q2",
+    "label": "Acme",
+    "description": "other",
+    "official_sites": [
+     "https://other.org/"
+    ],
+    "domain_matches": false,
+    "ambiguous": true,
+    "sitelinks": 1,
+    "wikipedia": "Acme Corp",
+    "wikipedia_lang": "en"
+   }
+  },
+  {
+   "domain": "nobody.io",
+   "name": null,
+   "langs": [
+    "en",
+    "ru"
+   ],
+   "ent": {
+    "search": {
+     "en": [],
+     "ru": []
+    },
+    "entities": {}
+   },
+   "out": {
+    "found": false,
+    "domain": "nobody.io",
+    "query": "nobody",
+    "ambiguous": false,
+    "qid": null
+   }
+  },
+  {
+   "domain": "match2.com",
+   "name": "Match Two",
+   "langs": [
+    "en",
+    "ru"
+   ],
+   "ent": {
+    "search": {
+     "en": [
+      {
+       "id": "Qa",
+       "label": "A"
+      },
+      {
+       "id": "Qb",
+       "label": "B"
+      }
+     ],
+     "ru": []
+    },
+    "entities": {
+     "Qa": {
+      "claims": {},
+      "sitelinks": {}
+     },
+     "Qb": {
+      "claims": {
+       "P856": [
+        {
+         "mainsnak": {
+          "datavalue": {
+           "value": "http://match2.com"
+          }
+         }
+        }
+       ]
+      },
+      "sitelinks": {
+       "ruwiki": {
+        "title": "Матч"
+       }
+      }
+     }
+    },
+    "pageviews": {
+     "items": [
+      {
+       "views": 5
+      }
+     ]
+    }
+   },
+   "out": {
+    "found": true,
+    "domain": "match2.com",
+    "query": "Match Two",
+    "qid": "Qb",
+    "label": "B",
+    "description": null,
+    "official_sites": [
+     "http://match2.com"
+    ],
+    "domain_matches": true,
+    "ambiguous": false,
+    "sitelinks": 1,
+    "wikipedia": "Матч",
+    "wikipedia_lang": "ru",
+    "pageviews_30d": 5
+   }
+  },
+  {
+   "domain": "brokenent.com",
+   "name": null,
+   "langs": [
+    "en"
+   ],
+   "ent": {
+    "search": {
+     "en": [
+      {
+       "id": "Qx",
+       "label": "X"
+      }
+     ]
+    },
+    "entities": {}
+   },
+   "out": {
+    "found": false,
+    "domain": "brokenent.com",
+    "query": "brokenent",
+    "ambiguous": false,
+    "qid": null
+   }
+  },
+  {
+   "domain": "nowiki.com",
+   "name": null,
+   "langs": [
+    "en",
+    "ru"
+   ],
+   "ent": {
+    "search": {
+     "en": [
+      {
+       "id": "Qw",
+       "label": "W",
+       "description": "  spaced  "
+      }
+     ],
+     "ru": []
+    },
+    "entities": {
+     "Qw": {
+      "claims": {
+       "P856": [
+        {
+         "mainsnak": {
+          "datavalue": {
+           "value": "https://nowiki.com/"
+          }
+         }
+        }
+       ]
+      },
+      "sitelinks": {}
+     }
+    }
+   },
+   "out": {
+    "found": true,
+    "domain": "nowiki.com",
+    "query": "nowiki",
+    "qid": "Qw",
+    "label": "W",
+    "description": "spaced",
+    "official_sites": [
+     "https://nowiki.com/"
+    ],
+    "domain_matches": true,
+    "ambiguous": false,
+    "sitelinks": 0,
+    "wikipedia": null,
+    "wikipedia_lang": null
+   }
+  }
+ ],
+ "build_competitors": [
+  {
+   "domain": "acme.com",
+   "about": "about",
+   "seo_rows": [
+    {
+     "domain": "foo.com",
+     "traffic": 100,
+     "shared": 5
+    },
+    {
+     "domain": "wikipedia.org",
+     "shared": 9
+    },
+    {
+     "domain": "bar.io",
+     "shared": 3
+    },
+    {
+     "domain": "foo.com",
+     "traffic": 200,
+     "shared": 8
+    }
+   ],
+   "onboarding": [
+    "baz.io",
+    "Acme Corp"
+   ],
+   "out": [
+    {
+     "domain": "baz.io",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": null,
+     "dr": null,
+     "source": "onboarding",
+     "mentions": 0,
+     "verdict": "direct",
+     "why": "указан владельцем бренда"
+    },
+    {
+     "domain": null,
+     "name": "Acme Corp",
+     "traffic": null,
+     "growth": null,
+     "shared": null,
+     "dr": null,
+     "source": "onboarding",
+     "mentions": 0,
+     "verdict": "direct",
+     "why": "указан владельцем бренда"
+    },
+    {
+     "domain": "foo.com",
+     "name": null,
+     "traffic": 100,
+     "growth": null,
+     "shared": 5,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "bar.io",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 3,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    }
+   ]
+  },
+  {
+   "domain": "shop.com",
+   "about": "",
+   "seo_rows": [
+    {
+     "domain": "a.com",
+     "shared": 1
+    },
+    {
+     "domain": "b.com",
+     "shared": 2
+    },
+    {
+     "domain": "c.com",
+     "shared": 3
+    }
+   ],
+   "onboarding": [],
+   "out": [
+    {
+     "domain": "c.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 3,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "b.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 2,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "a.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 1,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    }
+   ]
+  },
+  {
+   "domain": "x.io",
+   "about": "p",
+   "seo_rows": [],
+   "onboarding": [
+    "y.io",
+    "z.io",
+    "x.io"
+   ],
+   "out": [
+    {
+     "domain": "y.io",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": null,
+     "dr": null,
+     "source": "onboarding",
+     "mentions": 0,
+     "verdict": "direct",
+     "why": "указан владельцем бренда"
+    },
+    {
+     "domain": "z.io",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": null,
+     "dr": null,
+     "source": "onboarding",
+     "mentions": 0,
+     "verdict": "direct",
+     "why": "указан владельцем бренда"
+    }
+   ]
+  },
+  {
+   "domain": "self.com",
+   "about": "",
+   "seo_rows": [
+    {
+     "domain": "self.com",
+     "shared": 99
+    },
+    {
+     "domain": "reddit.com",
+     "shared": 50
+    }
+   ],
+   "onboarding": [],
+   "out": []
+  },
+  {
+   "domain": "over.com",
+   "about": "",
+   "seo_rows": [
+    {
+     "domain": "d0.com",
+     "shared": 0
+    },
+    {
+     "domain": "d1.com",
+     "shared": 1
+    },
+    {
+     "domain": "d2.com",
+     "shared": 2
+    },
+    {
+     "domain": "d3.com",
+     "shared": 3
+    },
+    {
+     "domain": "d4.com",
+     "shared": 4
+    },
+    {
+     "domain": "d5.com",
+     "shared": 5
+    },
+    {
+     "domain": "d6.com",
+     "shared": 6
+    },
+    {
+     "domain": "d7.com",
+     "shared": 7
+    },
+    {
+     "domain": "d8.com",
+     "shared": 8
+    },
+    {
+     "domain": "d9.com",
+     "shared": 9
+    },
+    {
+     "domain": "d10.com",
+     "shared": 10
+    },
+    {
+     "domain": "d11.com",
+     "shared": 11
+    }
+   ],
+   "onboarding": [],
+   "out": [
+    {
+     "domain": "d11.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 11,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d10.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 10,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d9.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 9,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d8.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 8,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d7.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 7,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d6.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 6,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d5.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 5,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    },
+    {
+     "domain": "d4.com",
+     "name": null,
+     "traffic": null,
+     "growth": null,
+     "shared": 4,
+     "dr": null,
+     "source": "seo",
+     "mentions": 0,
+     "verdict": null,
+     "why": null
+    }
+   ]
+  },
+  {
+   "domain": "mix.com",
+   "about": "",
+   "seo_rows": [
+    {
+     "domain": "over.io",
+     "traffic": 500,
+     "shared": 4
+    }
+   ],
+   "onboarding": [
+    "over.io"
+   ],
+   "out": [
+    {
+     "domain": "over.io",
+     "name": null,
+     "traffic": 500,
+     "growth": null,
+     "shared": 4,
+     "dr": null,
+     "source": "onboarding",
+     "mentions": 0,
+     "verdict": "direct",
+     "why": "указан владельцем бренда"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,202 @@
+{
+  "preview": {
+    "title": "Covers",
+    "customDesign": "Custom design",
+    "myTemplate": "My template",
+    "toolbar": {
+      "undo": "Undo (⌘Z)",
+      "redo": "Redo (⌘⇧Z)",
+      "saved": "Saved",
+      "templates": "Templates",
+      "saveTemplate": "Save template"
+    },
+    "target": {
+      "pick": "Pick an article",
+      "groupLabel": "Brand articles",
+      "empty": "No articles yet"
+    },
+    "cover": {
+      "action": "Set as cover",
+      "saving": "Saving…",
+      "hint": "Render a JPEG and set it as the article cover",
+      "hintNoRun": "Pick an article first",
+      "errorForbidden": "Only the brand owner on a plan with the blog can change the cover.",
+      "error": "Could not save the cover."
+    },
+    "tool": {
+      "text": "Text",
+      "shape": "Shape",
+      "image": "Image"
+    },
+    "hint": {
+      "header": "drag objects, double-click text",
+      "canvas": "drag · double-click — edit · corners — resize · ⌘Z — undo",
+      "empty": "Click an object — its settings show up here. Drag objects, double-click text to edit.",
+      "textObject": "Double-click the text on the canvas to edit. Drag to move.",
+      "imageObject": "Drag the image to move · corners to resize",
+      "gradient": "Click the bar to add a stop · drag to move"
+    },
+    "size": {
+      "og": {
+        "label": "OG / cover",
+        "hint": "article cover, link preview"
+      },
+      "wide": {
+        "label": "Wide 16:9",
+        "hint": "YouTube cover, slides"
+      },
+      "square": {
+        "label": "Square 1:1",
+        "hint": "feed post"
+      },
+      "story": {
+        "label": "Story 9:16",
+        "hint": "Stories, Reels, Shorts"
+      },
+      "twitter": {
+        "label": "X / Twitter",
+        "hint": "twitter:image summary_large"
+      },
+      "yt": {
+        "label": "YouTube 1280×720",
+        "hint": "video thumbnail"
+      }
+    },
+    "gallery": {
+      "title": "Templates",
+      "all": "All",
+      "mine": "★ Mine",
+      "empty": "Empty. Hit “Save” in the studio — your design shows up here."
+    },
+    "template": {
+      "saveError": "Could not save the template — check that you are signed in.",
+      "name": {
+        "editorial": "Editorial",
+        "swissGrid": "Swiss grid",
+        "product": "Product",
+        "metric": "Metric",
+        "quote": "Quote",
+        "mono": "Mono",
+        "announce": "Announcement",
+        "split": "Split",
+        "minimal": "Minimal",
+        "photoHeadline": "Photo + headline",
+        "featureList": "Feature list",
+        "newspaper": "Newspaper headline"
+      },
+      "tag": {
+        "blog": "Blog",
+        "editorial": "Editorial",
+        "magazine": "Magazine",
+        "saas": "SaaS",
+        "product": "Product",
+        "metric": "Metric",
+        "report": "Report",
+        "quote": "Quote",
+        "dev": "Dev",
+        "release": "Release",
+        "launch": "Launch",
+        "minimal": "Minimal",
+        "photo": "Photo",
+        "guide": "Guide"
+      }
+    },
+    "inspector": {
+      "forward": "bring forward",
+      "backward": "send backward",
+      "duplicate": "duplicate",
+      "remove": "delete",
+      "alignCanvas": "Align to canvas",
+      "addText": "+ Text",
+      "addShape": "+ Shape"
+    },
+    "field": {
+      "font": "Font",
+      "size": "Size",
+      "weight": "Weight",
+      "color": "Color",
+      "tracking": "Tracking",
+      "leading": "Leading",
+      "caps": "CAPS",
+      "italic": "Italic",
+      "pill": "Pill",
+      "pillBg": "Pill background",
+      "boxWidth": "Box width",
+      "fill": "Fill",
+      "width": "Width",
+      "height": "Height",
+      "radius": "Corner radius",
+      "fit": "Fit",
+      "opacity": "Opacity",
+      "bgColor": "Fill color",
+      "offsetX": "Offset X",
+      "offsetY": "Offset Y",
+      "zoom": "Zoom",
+      "scrim": "Dimming",
+      "angle": "Angle",
+      "model": "Model"
+    },
+    "fit": {
+      "cover": "Fill (cover)",
+      "contain": "Fit (contain)"
+    },
+    "bg": {
+      "title": "Background",
+      "solid": "Color",
+      "gradient": "Gradient",
+      "image": "Image",
+      "toLayer": "Turn into a layer — move it on the canvas",
+      "upload": "Upload your own"
+    },
+    "gradient": {
+      "linear": "Linear",
+      "radial": "Radial",
+      "stop": "Stop {n}",
+      "removeStop": "remove stop"
+    },
+    "ai": {
+      "or": "or generate one",
+      "ownKey": "your own key · no credits",
+      "balance": "balance {n} cr.",
+      "credits": "{n} cr.",
+      "promptPlaceholder": "Describe the image: “dark studio texture, soft light”",
+      "generate": "Generate",
+      "generateWithPrice": "Generate ({n} cr.)",
+      "generating": "Drawing… ~15s",
+      "notEnough": "Not enough credits for this model — pick a cheaper one or top up.",
+      "historyTitle": "Generated earlier",
+      "allCount": "All ({n})",
+      "reuseFree": "Reusing is free",
+      "genFailed": "Could not generate the image."
+    },
+    "library": {
+      "title": "My images",
+      "search": "Search by prompt or model",
+      "notFound": "Nothing found",
+      "empty": "Nothing generated yet",
+      "noPrompt": "no description",
+      "note": "Reusing an image is free — credits are charged only for a new generation.",
+      "apply": "Set as background"
+    },
+    "export": {
+      "prompt": "Prompt",
+      "intent": "Intent",
+      "region": "Region",
+      "visibility": "Visibility, %",
+      "citations": "Citations",
+      "domain": "Domain",
+      "category": "Category",
+      "ownSite": "Own site",
+      "share": "Share, %",
+      "engines": "Engines",
+      "url": "URL",
+      "engine": "Engine",
+      "mentioned": "Mentioned",
+      "position": "Position",
+      "aiAnswer": "AI answer",
+      "sources": "Sources",
+      "yes": "yes",
+      "no": "no"
+    }
+  }
+}

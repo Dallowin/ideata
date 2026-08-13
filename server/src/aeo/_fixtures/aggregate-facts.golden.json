@@ -1,0 +1,755 @@
+{
+ "cases": [
+  {
+   "name": "rich",
+   "answers": [
+    {
+     "platform": "claude",
+     "prompt": "best crm for smb",
+     "text": "shop.ru и rival.com — варианты. shop.ru лучший.",
+     "brands_found": [
+      {
+       "brand": "shop.ru",
+       "pos": 1
+      },
+      {
+       "brand": "rival.com",
+       "pos": 2
+      }
+     ],
+     "citations": [
+      {
+       "url": "https://shop.ru/pricing",
+       "title": "Цены"
+      },
+      {
+       "url": "https://www.reddit.com/r/crm",
+       "title": "Обсуждение"
+      },
+      {
+       "url": "https://rival.com/vs",
+       "title": "Сравнение"
+      }
+     ],
+     "judge": {
+      "score": 70,
+      "sentiment": "positive",
+      "recommendation": 80,
+      "factuality": 90,
+      "relevance": 88,
+      "hallucination": "low",
+      "reason": "r"
+     }
+    },
+    {
+     "platform": "gemini",
+     "prompt": "best crm for smb",
+     "text": "rival.com популярен.",
+     "brands_found": [
+      {
+       "brand": "rival.com",
+       "pos": 1
+      }
+     ],
+     "citations": [
+      {
+       "url": "https://rival.com",
+       "title": "Главная"
+      }
+     ],
+     "judge": {
+      "score": 40,
+      "sentiment": "neutral",
+      "recommendation": 20,
+      "factuality": 90,
+      "relevance": 88,
+      "hallucination": "low",
+      "reason": "r"
+     }
+    },
+    {
+     "platform": "perplexity",
+     "prompt": "best crm for smb",
+     "text": "Есть shop.ru.",
+     "brands_found": [
+      {
+       "brand": "shop.ru",
+       "pos": 3
+      }
+     ],
+     "citations": [
+      "https://g2.com/crm",
+      {
+       "url": "https://vc.ru/crm",
+       "title": "Обзор"
+      }
+     ],
+     "judge": {
+      "score": 55,
+      "sentiment": "neutral",
+      "recommendation": 65,
+      "factuality": 90,
+      "relevance": 88,
+      "hallucination": "low",
+      "reason": "r"
+     }
+    },
+    {
+     "platform": "claude",
+     "prompt": "срм для отдела продаж",
+     "text": "Попробуйте shop.ru.",
+     "brands_found": [
+      {
+       "brand": "shop.ru",
+       "pos": 1
+      }
+     ],
+     "citations": [
+      {
+       "url": "https://shop.ru/sales",
+       "title": "Отдел продаж"
+      }
+     ],
+     "judge": {
+      "score": 80,
+      "sentiment": "positive",
+      "recommendation": 90,
+      "factuality": 90,
+      "relevance": 88,
+      "hallucination": "low",
+      "reason": "r"
+     }
+    },
+    {
+     "platform": "gemini",
+     "prompt": "срм для отдела продаж",
+     "text": "Ничего конкретного.",
+     "brands_found": [],
+     "citations": []
+    }
+   ],
+   "domain": "shop.ru",
+   "competitors": [
+    "rival.com",
+    "other.io"
+   ],
+   "platforms": [
+    "claude",
+    "gemini",
+    "perplexity"
+   ],
+   "sentiment": {
+    "shop.ru": {
+     "score": 66,
+     "themes": [
+      {
+       "t": "быстрый",
+       "tone": "good"
+      }
+     ]
+    },
+    "rival.com": {
+     "score": 50,
+     "themes": []
+    }
+   },
+   "promptMeta": {
+    "best crm for smb": {
+     "volume": 1234,
+     "intent": "best",
+     "topic": "CRM"
+    },
+    "срм для отдела продаж": {
+     "volume": 590,
+     "intent": null,
+     "topic": null
+    }
+   },
+   "out": {
+    "aiPlatforms": [
+     "claude",
+     "gemini",
+     "perplexity"
+    ],
+    "aiBrands": [
+     {
+      "brand": "shop.ru",
+      "self": true,
+      "vals": [
+       100,
+       0,
+       100
+      ]
+     },
+     {
+      "brand": "rival.com",
+      "self": false,
+      "vals": [
+       50,
+       50,
+       0
+      ]
+     },
+     {
+      "brand": "other.io",
+      "self": false,
+      "vals": [
+       0,
+       0,
+       0
+      ]
+     }
+    ],
+    "sovSelf": 60,
+    "solutionRate": 60,
+    "solutionJudged": 4,
+    "solutionMinRec": 60,
+    "aiPromptsRows": [
+     {
+      "solution": true,
+      "prompt": "best crm for smb",
+      "vol": 1234,
+      "intent": "best",
+      "topic": "CRM",
+      "mentioned": true,
+      "pos": 1,
+      "platforms": [
+       "claude",
+       "perplexity"
+      ],
+      "judgeScore": 55,
+      "judgeSentiment": "neutral",
+      "answers": [
+       {
+        "platform": "claude",
+        "text": "shop.ru и rival.com — варианты. shop.ru лучший.",
+        "citations": [
+         {
+          "url": "https://shop.ru/pricing",
+          "title": "Цены",
+          "host": "shop.ru",
+          "cat": "Свой сайт"
+         },
+         {
+          "url": "https://www.reddit.com/r/crm",
+          "title": "Обсуждение",
+          "host": "reddit.com",
+          "cat": "UGC (форумы, Reddit)"
+         },
+         {
+          "url": "https://rival.com/vs",
+          "title": "Сравнение",
+          "host": "rival.com",
+          "cat": "Конкуренты"
+         }
+        ],
+        "brandsFound": [
+         {
+          "brand": "shop.ru",
+          "pos": 1
+         },
+         {
+          "brand": "rival.com",
+          "pos": 2
+         }
+        ],
+        "self": true,
+        "judge": {
+         "score": 70,
+         "sentiment": "positive",
+         "recommendation": 80,
+         "factuality": 90,
+         "relevance": 88,
+         "hallucination": "low",
+         "reason": "r"
+        }
+       },
+       {
+        "platform": "gemini",
+        "text": "rival.com популярен.",
+        "citations": [
+         {
+          "url": "https://rival.com",
+          "title": "Главная",
+          "host": "rival.com",
+          "cat": "Конкуренты"
+         }
+        ],
+        "brandsFound": [
+         {
+          "brand": "rival.com",
+          "pos": 1
+         }
+        ],
+        "self": false,
+        "judge": {
+         "score": 40,
+         "sentiment": "neutral",
+         "recommendation": 20,
+         "factuality": 90,
+         "relevance": 88,
+         "hallucination": "low",
+         "reason": "r"
+        }
+       },
+       {
+        "platform": "perplexity",
+        "text": "Есть shop.ru.",
+        "citations": [
+         {
+          "url": "https://g2.com/crm",
+          "title": "",
+          "host": "g2.com",
+          "cat": "Обзорники/каталоги"
+         },
+         {
+          "url": "https://vc.ru/crm",
+          "title": "Обзор",
+          "host": "vc.ru",
+          "cat": "UGC (форумы, Reddit)"
+         }
+        ],
+        "brandsFound": [
+         {
+          "brand": "shop.ru",
+          "pos": 3
+         }
+        ],
+        "self": true,
+        "judge": {
+         "score": 55,
+         "sentiment": "neutral",
+         "recommendation": 65,
+         "factuality": 90,
+         "relevance": 88,
+         "hallucination": "low",
+         "reason": "r"
+        }
+       }
+      ]
+     },
+     {
+      "solution": true,
+      "prompt": "срм для отдела продаж",
+      "vol": 590,
+      "intent": "use_case",
+      "topic": null,
+      "mentioned": true,
+      "pos": 1,
+      "platforms": [
+       "claude"
+      ],
+      "judgeScore": 80,
+      "judgeSentiment": "positive",
+      "answers": [
+       {
+        "platform": "claude",
+        "text": "Попробуйте shop.ru.",
+        "citations": [
+         {
+          "url": "https://shop.ru/sales",
+          "title": "Отдел продаж",
+          "host": "shop.ru",
+          "cat": "Свой сайт"
+         }
+        ],
+        "brandsFound": [
+         {
+          "brand": "shop.ru",
+          "pos": 1
+         }
+        ],
+        "self": true,
+        "judge": {
+         "score": 80,
+         "sentiment": "positive",
+         "recommendation": 90,
+         "factuality": 90,
+         "relevance": 88,
+         "hallucination": "low",
+         "reason": "r"
+        }
+       },
+       {
+        "platform": "gemini",
+        "text": "Ничего конкретного.",
+        "citations": [],
+        "brandsFound": [],
+        "self": false
+       }
+      ]
+     }
+    ],
+    "promptIntents": [
+     {
+      "intent": "best",
+      "label": "«лучший сервис/инструмент для задачи» (топ-подборка)",
+      "total": 1,
+      "mentioned": 1,
+      "vis": 100
+     },
+     {
+      "intent": "use_case",
+      "label": "как решить конкретную задачу ниши этим классом продукта",
+      "total": 1,
+      "mentioned": 1,
+      "vis": 100
+     }
+    ],
+    "estImpressions": 1824,
+    "citations": [
+     {
+      "url": "https://shop.ru/pricing",
+      "n": 1,
+      "title": "Цены"
+     },
+     {
+      "url": "https://shop.ru/sales",
+      "n": 1,
+      "title": "Отдел продаж"
+     }
+    ],
+    "citedPages": [
+     {
+      "url": "https://g2.com/crm",
+      "title": "",
+      "host": "g2.com",
+      "cat": "Обзорники/каталоги",
+      "n": 1
+     },
+     {
+      "url": "https://rival.com",
+      "title": "Главная",
+      "host": "rival.com",
+      "cat": "Конкуренты",
+      "n": 1
+     },
+     {
+      "url": "https://rival.com/vs",
+      "title": "Сравнение",
+      "host": "rival.com",
+      "cat": "Конкуренты",
+      "n": 1
+     },
+     {
+      "url": "https://vc.ru/crm",
+      "title": "Обзор",
+      "host": "vc.ru",
+      "cat": "UGC (форумы, Reddit)",
+      "n": 1
+     },
+     {
+      "url": "https://www.reddit.com/r/crm",
+      "title": "Обсуждение",
+      "host": "reddit.com",
+      "cat": "UGC (форумы, Reddit)",
+      "n": 1
+     }
+    ],
+    "citeSources": [
+     {
+      "label": "Свой сайт",
+      "pct": 29
+     },
+     {
+      "label": "UGC (форумы, Reddit)",
+      "pct": 29
+     },
+     {
+      "label": "Конкуренты",
+      "pct": 29
+     },
+     {
+      "label": "Обзорники/каталоги",
+      "pct": 14
+     }
+    ],
+    "sentiment": [
+     {
+      "brand": "shop.ru",
+      "self": true,
+      "score": 66
+     },
+     {
+      "brand": "rival.com",
+      "self": false,
+      "score": 50
+     }
+    ],
+    "sentThemes": {
+     "shop.ru": [
+      {
+       "t": "быстрый",
+       "tone": "good"
+      }
+     ],
+     "rival.com": []
+    },
+    "foundNotCited": 0,
+    "visTrend": null
+   }
+  },
+  {
+   "name": "not-mentioned",
+   "answers": [
+    {
+     "platform": "claude",
+     "prompt": "лучшие crm 2026",
+     "text": "rival.com и other.io.",
+     "brands_found": [
+      {
+       "brand": "rival.com",
+       "pos": 1
+      },
+      {
+       "brand": "other.io",
+       "pos": 2
+      }
+     ],
+     "citations": [
+      {
+       "url": "https://rival.com/best",
+       "title": "Топ"
+      }
+     ]
+    },
+    {
+     "platform": "gemini",
+     "prompt": "лучшие crm 2026",
+     "text": "other.io отличный.",
+     "brands_found": [
+      {
+       "brand": "other.io",
+       "pos": 1
+      }
+     ],
+     "citations": []
+    }
+   ],
+   "domain": "shop.ru",
+   "competitors": [
+    "rival.com",
+    "other.io"
+   ],
+   "platforms": [
+    "claude",
+    "gemini",
+    "perplexity"
+   ],
+   "sentiment": null,
+   "promptMeta": {
+    "лучшие crm 2026": {
+     "volume": 2000,
+     "intent": "best",
+     "topic": null
+    }
+   },
+   "out": {
+    "aiPlatforms": [
+     "claude",
+     "gemini",
+     "perplexity"
+    ],
+    "aiBrands": [
+     {
+      "brand": "shop.ru",
+      "self": true,
+      "vals": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "brand": "rival.com",
+      "self": false,
+      "vals": [
+       100,
+       0,
+       0
+      ]
+     },
+     {
+      "brand": "other.io",
+      "self": false,
+      "vals": [
+       100,
+       100,
+       0
+      ]
+     }
+    ],
+    "sovSelf": 0,
+    "solutionRate": 0,
+    "solutionJudged": 0,
+    "solutionMinRec": 60,
+    "aiPromptsRows": [
+     {
+      "solution": false,
+      "prompt": "лучшие crm 2026",
+      "vol": 2000,
+      "intent": "best",
+      "topic": null,
+      "mentioned": false,
+      "pos": null,
+      "platforms": [],
+      "judgeScore": null,
+      "judgeSentiment": null,
+      "answers": [
+       {
+        "platform": "claude",
+        "text": "rival.com и other.io.",
+        "citations": [
+         {
+          "url": "https://rival.com/best",
+          "title": "Топ",
+          "host": "rival.com",
+          "cat": "Конкуренты"
+         }
+        ],
+        "brandsFound": [
+         {
+          "brand": "rival.com",
+          "pos": 1
+         },
+         {
+          "brand": "other.io",
+          "pos": 2
+         }
+        ],
+        "self": false
+       },
+       {
+        "platform": "gemini",
+        "text": "other.io отличный.",
+        "citations": [],
+        "brandsFound": [
+         {
+          "brand": "other.io",
+          "pos": 1
+         }
+        ],
+        "self": false
+       }
+      ]
+     }
+    ],
+    "promptIntents": [
+     {
+      "intent": "best",
+      "label": "«лучший сервис/инструмент для задачи» (топ-подборка)",
+      "total": 1,
+      "mentioned": 0,
+      "vis": 0
+     }
+    ],
+    "estImpressions": null,
+    "citations": null,
+    "citedPages": [
+     {
+      "url": "https://rival.com/best",
+      "title": "Топ",
+      "host": "rival.com",
+      "cat": "Конкуренты",
+      "n": 1
+     }
+    ],
+    "citeSources": [
+     {
+      "label": "Конкуренты",
+      "pct": 100
+     }
+    ],
+    "sentiment": null,
+    "sentThemes": null,
+    "foundNotCited": 0,
+    "visTrend": null
+   }
+  },
+  {
+   "name": "empty",
+   "answers": [],
+   "domain": "shop.ru",
+   "competitors": [
+    "rival.com",
+    "other.io"
+   ],
+   "platforms": [
+    "claude",
+    "gemini",
+    "perplexity"
+   ],
+   "sentiment": null,
+   "promptMeta": null,
+   "out": {}
+  }
+ ],
+ "panelOnly": {
+  "panel": [
+   {
+    "prompt": "best crm",
+    "volume": 1234,
+    "intent": "best",
+    "topic": "CRM"
+   },
+   {
+    "prompt": "",
+    "volume": null
+   },
+   {
+    "prompt": "crm pricing",
+    "volume": null,
+    "intent": "pricing",
+    "topic": null
+   }
+  ],
+  "platforms": [
+   "claude",
+   "gemini",
+   "perplexity"
+  ],
+  "note": "движки не ответили",
+  "out": {
+   "aiPlatforms": [
+    "claude",
+    "gemini",
+    "perplexity"
+   ],
+   "aiBrands": [],
+   "sovSelf": 0,
+   "aiPromptsRows": [
+    {
+     "prompt": "best crm",
+     "vol": 1234,
+     "intent": "best",
+     "topic": "CRM",
+     "mentioned": false,
+     "pos": null,
+     "platforms": [],
+     "answers": []
+    },
+    {
+     "prompt": "crm pricing",
+     "vol": null,
+     "intent": "pricing",
+     "topic": null,
+     "mentioned": false,
+     "pos": null,
+     "platforms": [],
+     "answers": []
+    }
+   ],
+   "promptIntents": null,
+   "estImpressions": null,
+   "citations": null,
+   "citedPages": null,
+   "citeSources": null,
+   "sentiment": null,
+   "sentThemes": null,
+   "foundNotCited": 0,
+   "visTrend": null,
+   "aeoStatus": "engines_unavailable",
+   "aeoStatusNote": "движки не ответили"
+  }
+ }
+}

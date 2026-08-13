@@ -1,0 +1,105 @@
+# ideata-app — self-contained стек AEO-трекера: БД + redis + backend + worker + дашборд.
+# Всё поднимается ОДНОЙ командой:
+#
+#   cp .env.example .env      # вписать хотя бы один LLM-ключ (OPENROUTER_API_KEY)
+#   docker compose up -d --build
+#
+# Дашборд:   http://localhost:8080
+# Backend:   http://localhost:4000  (проксируется дашбордом, порт открыт для отладки)
+#
+# server и worker — ОДИН образ (ideata-app-server:local), разные command.
+name: ideata-app
+
+services:
+  # ── Postgres (данные) ───────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ideata
+      POSTGRES_PASSWORD: ideata
+      POSTGRES_DB: ideata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ideata -d ideata"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # ── Redis (очередь BullMQ + планировщик) ────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Миграции (one-shot: создаёт схему в пустой БД, затем выходит) ────────────
+  migrate:
+    image: ideata-app-server:local
+    build: ./server
+    command: sh -c "npx prisma db push --skip-generate"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # ── Backend (Nest HTTP-api) ─────────────────────────────────────────────────
+  server:
+    image: ideata-app-server:local
+    build: ./server
+    command: node dist/main
+    ports:
+      - "4000:4000"
+    env_file: .env
+    environment:
+      # внутри compose-сети сервисы доступны по имени; перебивает .env
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── Worker (BullMQ-прогоны AEO + недельные отчёты) ──────────────────────────
+  worker:
+    image: ideata-app-server:local
+    build: ./server
+    command: node dist/aeo-worker
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    # warm shutdown: воркер дожимает активный прогон (LLM-вызовы — десятки секунд)
+    stop_grace_period: 90s
+    restart: unless-stopped
+
+  # ── Дашборд (Vue SPA за nginx, проксирует API на server) ────────────────────
+  web:
+    image: ideata-app-web:local
+    build: ./web
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  redis-data:

@@ -1,0 +1,28 @@
+{
+  "links": {
+    "subtitle": "What answer engines link to when they answer your prompts",
+    "domains": "no domains | {n} domain | {n} domains",
+    "kpi": {
+      "cites": "Citations total",
+      "citesHint": "links inside engine answers",
+      "hosts": "Source domains",
+      "hostsHint": "the ones AI links to",
+      "share": "Your share of citations",
+      "shareHint": "of links point to your site",
+      "pages": "Your pages in answers",
+      "pagesHint": "no citations | {n} citation | {n} citations",
+      "pagesHintEmpty": "none so far"
+    },
+    "trend": {
+      "title": "Your share of citations by week",
+      "subtitle": "How many links in AI answers point to your site",
+      "series": "Citation share",
+      "emptyTitle": "No history yet",
+      "emptyHint": "A point is added every week of monitoring — the trend shows up from the second one."
+    },
+    "sources": {
+      "title": "Source domains",
+      "subtitle": "Expand a row to see the exact URLs and the prompts where they are cited"
+    }
+  }
+}

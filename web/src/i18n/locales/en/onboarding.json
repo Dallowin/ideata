@@ -1,0 +1,134 @@
+{
+  "onboarding": {
+    "greeting": "Welcome",
+    "greetingName": "Welcome, {name}",
+    "brandFallback": "your brand",
+    "start": {
+      "title": "Start by adding a brand",
+      "domainPlaceholder": "Enter the site address — for example, stripe.com",
+      "pickPlan": "Choose a plan",
+      "invalidDomain": "Enter a valid domain — for example, stripe.com"
+    },
+    "gather": {
+      "title": "Collecting info about the site"
+    },
+    "locale": {
+      "title": "Where should the prompts run?",
+      "subtitle": "Pick the main audience region and the language of results — we will tune AI search answers to them.",
+      "regionLabel": "Region",
+      "languageLabel": "Language",
+      "languageFromSite": "Detected from your site — change it if you want prompts in another language.",
+      "languageFromRegion": "Set from your region — change it if you want prompts in another language.",
+      "continue": "Continue",
+      "regions": {
+        "kz": "Kazakhstan",
+        "ru": "Russia",
+        "us": "United States",
+        "gb": "United Kingdom",
+        "de": "Germany",
+        "global": "Global"
+      },
+      "languages": {
+        "ru": "Русский",
+        "en": "English"
+      }
+    },
+    "topics": {
+      "title": "Which topics do we track?",
+      "pick": "no topics | Pick up to {n} topic | Pick up to {n} topics",
+      "addPlaceholder": "Add your own topic",
+      "limit": "No topics available | Up to {n} topic — uncheck one to add another. | Up to {n} topics — uncheck one to add another.",
+      "limitShort": "No topics available | Up to {n} topic. | Up to {n} topics.",
+      "submit": "Looks good",
+      "seed": [
+        "{brand} vs competitors",
+        "Best {brand} alternatives",
+        "{brand} reviews and ratings",
+        "{brand}: pricing and plans",
+        "{brand} — features and capabilities",
+        "How to choose a solution in the {brand} niche",
+        "{brand} for business",
+        "{brand} integrations and API"
+      ]
+    },
+    "final": {
+      "created": "Brand {brand} is created",
+      "later": "Dashboard for now",
+      "toDashboard": "Open the dashboard",
+      "error": {
+        "fallback": "Could not finish the setup"
+      },
+      "limit": {
+        "title": "Brand limit on your plan",
+        "cta": "Upgrade the plan"
+      },
+      "ready": {
+        "title": "Brand {brand} is ready to track",
+        "text": "We launched the first prompts and are building your visibility dashboard. First data arrives in a couple of minutes."
+      },
+      "free": {
+        "text": "Run a one-time free AI visibility check — we will show how AI answers about your brand.",
+        "cta": "Run the free check",
+        "note": "One-time, 10 prompts, no daily monitoring"
+      },
+      "upsell": {
+        "text": "To run regular visibility checks, choose a plan. The one-time free check is already used.",
+        "cta": "Choose a plan"
+      },
+      "running": {
+        "title": "Starting the analysis…",
+        "text": "Creating the brand and running the first prompts"
+      }
+    },
+    "verify": {
+      "title": "Enter the code from the email",
+      "sent": "Sent to {target}. In the mock any six-digit code works.",
+      "targetOwn": "your email",
+      "targetAccount": "the account email",
+      "invalid": "Wrong or expired code. In the mock any six-digit one works.",
+      "submit": "Continue"
+    },
+    "errors": {
+      "requestFailed": "Could not complete the request"
+    },
+    "notFound": {
+      "title": "No such page"
+    },
+    "scenario": {
+      "title": "Mock scenario",
+      "reset": "Restart the flow",
+      "plan": {
+        "label": "Plan",
+        "free": "Free",
+        "paid": "Paid"
+      },
+      "freeRun": {
+        "label": "One-time check",
+        "available": "Available",
+        "used": "Used"
+      },
+      "email": {
+        "label": "Email",
+        "verified": "Verified",
+        "no": "No"
+      },
+      "outcome": {
+        "label": "Brand creation",
+        "ok": "Success",
+        "limit": "Limit",
+        "error": "Failure"
+      },
+      "peek": {
+        "label": "Site lookup",
+        "found": "Description found",
+        "empty": "Empty",
+        "slow": "Slow"
+      }
+    },
+    "components": {
+      "modelSelect": {
+        "placeholder": "Pick a model"
+      }
+    }
+  }
+}

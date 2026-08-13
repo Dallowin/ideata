@@ -1,0 +1,252 @@
+{
+  "overview": {
+    "hello": {
+      "night": "Good night",
+      "morning": "Good morning",
+      "day": "Good afternoon",
+      "evening": "Good evening",
+      "withName": "{part}, {name}"
+    },
+    "units": {
+      "promptsNom": "no prompts | {n} prompt | {n} prompts",
+      "promptsGen": "no prompts | {n} prompt | {n} prompts",
+      "promptsDat": "no prompts | {n} prompt | {n} prompts",
+      "newSources": "no new sources | {n} new source | {n} new sources",
+      "links": "no links | {n} link | {n} links"
+    },
+    "digest": {
+      "helloFallback": "Hi",
+      "loading": "Pulling the data…",
+      "empty": "No data yet — the first tracker run will show how often AI models name your brand.",
+      "brandFallback": "Your brand",
+      "mentionedIn": "shows up in",
+      "ofAnswers": "of AI answers",
+      "delta": "({delta} pp vs the last run)",
+      "bestIn": "You are most visible in",
+      "bestSuffix": "— {v}% over the last 8 weeks",
+      "change": {
+        "passed": "{brand} passed you: {from}% → {to}% visibility",
+        "drop": "Coverage slipped on {items} — for example “{prompt}”: {from} → {to} engines",
+        "gained": "You are now named on {items} more",
+        "newSources": "{items} appeared in answers",
+        "lost": "You are no longer named on {items}"
+      }
+    },
+    "recs": {
+      "head": "What to do right now — from the latest run",
+      "empty": "Everything is set up, and there are no content topics yet — they will show up after the next run.",
+      "engineTitle": "{engine} — answered without you",
+      "action": {
+        "open": "Open",
+        "specify": "Add",
+        "connect": "Connect",
+        "plans": "Plans",
+        "write": "Write a post",
+        "toPlan": "To content plan",
+        "compare": "Compare",
+        "analyze": "Investigate"
+      },
+      "setup": {
+        "suggested": {
+          "title": "no suggested prompts to confirm | Confirm {n} suggested prompt | Confirm {n} suggested prompts",
+          "m1": "AI picked them for your niche",
+          "m2": "not running yet"
+        },
+        "pool": {
+          "title": "Fill up the prompt pool",
+          "m1": "{n} of {cap} on your plan",
+          "m2": "slots do not roll over"
+        },
+        "rivals": {
+          "title": "Set the brand's competitors",
+          "m1": "you cannot see who AI names instead of you"
+        },
+        "connector": {
+          "title": "Connect {name}"
+        },
+        "analytic": {
+          "title": "Run the AI site audit",
+          "m1": "semantics, links and tech basics",
+          "m2": "the “Extra” tab is empty"
+        },
+        "plan": {
+          "title": "Turn on regular monitoring",
+          "m1": "free gives a one-off run",
+          "m2": "no trend will build up"
+        }
+      },
+      "topic": {
+        "noMentions": "0 mentions",
+        "citations": "no citations in answers | {n} citation in answers | {n} citations in answers",
+        "demand": "demand {vol}/mo",
+        "difficulty": "difficulty {kd}",
+        "rivalTop": "competitor on top",
+        "thin": {
+          "title": "Close the “{name}” cluster",
+          "m1": "coverage is thin",
+          "m2": "needs 8–12 pieces"
+        }
+      },
+      "group": {
+        "gap": "Where you are not named",
+        "rivals": "Competitors",
+        "content": "Content topics",
+        "setup": "Finish setup"
+      },
+      "gap": {
+        "silent": {
+          "title": "no silent engines | {n} engine never named you | {n} engines never named you",
+          "m1": "zero across the whole window, not just low visibility",
+          "m2": "fixed by presence in sources, not by text on your site"
+        }
+      },
+      "rivals": {
+        "passed": {
+          "title": "{brand} overtook you",
+          "m1": "was {from}%, now {to}%",
+          "m2": "in the latest run"
+        },
+        "lost": {
+          "title": "nothing lost | Stopped being named on {n} prompt | Stopped being named on {n} prompts",
+          "m1": ""
+        }
+      }
+    },
+    "assistant": {
+      "newChat": "New chat",
+      "thinking": "thinking…",
+      "placeholder": "Ask a question or set a task. For example: why did visibility drop on commercial prompts",
+      "attach": "Coming soon: attach a file or an export",
+      "modelPlaceholder": "Model",
+      "modelNote": "On the right — the rough price per question. Hover a model to see its rates.",
+      "price": {
+        "per1M": "{n} cr./1M",
+        "mTokens": "{n}M tokens",
+        "kTokens": "{n}K tokens"
+      },
+      "card": {
+        "message": "Question",
+        "input": "Input",
+        "output": "Output",
+        "context": "Context"
+      },
+      "askChip": "Ask",
+      "suggest": {
+        "visDrop": "Why did visibility drop?",
+        "rivals": "Which competitors grow faster than us?",
+        "topics": "Which topics should we cover?",
+        "sources": "Which sources are we missing?"
+      },
+      "emptyAnswer": "The model returned an empty answer — try rephrasing.",
+      "modelFailed": "Could not reach the model. I still answer the usual questions without it — here is what I can show straight from your data:",
+      "hint": "Connect integrations — the assistant will cover traffic too",
+      "cost": {
+        "local": "From the latest run — no model involved, no credits spent",
+        "spent": "Model answer · {n} cr. charged",
+        "model": "Model answer"
+      },
+      "footer": "The usual questions I answer from run data — no model, no credits spent"
+    },
+    "skills": [
+      "what changed in the latest run",
+      "why visibility went down or up",
+      "which competitors grow and who passed us",
+      "which prompts AI answers without us",
+      "who the engines cite and what they link to",
+      "which answer engines see us best",
+      "what is said about the brand by sentiment",
+      "site health: tech basics and backlink profile"
+    ],
+    "answers": {
+      "link": {
+        "monitoring": "Open Monitoring",
+        "weekly": "Weekly trend",
+        "brandSettings": "Brand settings",
+        "youAndRivals": "You and competitors",
+        "writePost": "Write a post",
+        "links": "Open Links",
+        "engineMatrix": "Engine matrix",
+        "sentiment": "Sentiment",
+        "prompts": "Open Prompts",
+        "extra": "The “Extra” tab"
+      },
+      "changed": {
+        "single": "Nothing to compare yet — there has been only one run. After the second one I will show what changed.",
+        "metrics": "Metrics: {list}.",
+        "gained": "You are now named on {items}: {list}.",
+        "lost": "No longer named on {n}: {list}.",
+        "drops": "Coverage slipped on {items}, most of all “{prompt}”: {from} → {to} engines.",
+        "newSources": "New sources in answers: {list}.",
+        "goneSources": "Gone: {list}.",
+        "nothing": "Nothing changed: same prompts, same positions, same sources."
+      },
+      "vis": {
+        "flat": "Visibility holds at **{v}%** — that is the share of AI answers naming your brand.",
+        "up": "Visibility rose by **{d} pp** and now stands at **{v}%**.",
+        "down": "Visibility dropped by **{d} pp** and now stands at **{v}%**.",
+        "reasonLost": "you dropped out of {items} ({list})",
+        "reasonNarrow": "engine coverage narrowed on {items}",
+        "reasonRivals": "competitors grew: {list}",
+        "reasonGained": "{items} gained a mention",
+        "because": "What is behind it: {list}.",
+        "noChange": "Prompts and sources stayed the same — the shift came from the engines rewording their answers.",
+        "sov": "share of voice {v}%",
+        "avgPos": "average position {v}",
+        "citeShare": "citation share {v}%",
+        "nearby": "Alongside: {list}."
+      },
+      "rivals": {
+        "none": "No competitors are set for the brand, nothing to compare with. Add them and I will show who AI names instead of you.",
+        "rank": "You are **{rank} of {n}** by visibility.",
+        "rankVis": "You are **{rank} of {n}** by visibility — **{vis}%**.",
+        "self": "**{brand}** (you)",
+        "row": "• {name} — {vis}%{delta}",
+        "passed": "Since the last run you were passed by: **{list}**.",
+        "fastest": "The fastest growing is **{brand}**: +{d} pp per run."
+      },
+      "gaps": {
+        "blind": "AI answers without you on {items}. The most notable: {list}.",
+        "withCites": "On {n} of them the engines cite other sources — there is definitely something to take over.",
+        "site": "From the site audit: {list}.",
+        "gapItem": "“{kw}” (demand {vol}/mo, difficulty {kd})",
+        "thin": "Thin cluster — “{name}”: demand is confirmed, coverage is not there."
+      },
+      "sources": {
+        "top": "Engines cite most often: {list}.",
+        "topItem": "{host} ({n})",
+        "own": "Your site takes {share}% of citations — {items}.",
+        "noOwn": "Engines do not link to your site at all yet — that is the main growth point.",
+        "cats": "Source types: {list}.",
+        "catItem": "{label} {pct}%",
+        "pages": "Your cited pages: {list}."
+      },
+      "engines": {
+        "best": "You are most visible in: {list}.",
+        "bestItem": "{label} — {v}%",
+        "worst": "Never named in: {list}."
+      },
+      "sentiment": {
+        "self": "Sentiment about you — {score} out of 100.",
+        "rivals": "Competitors: {list}.",
+        "rivalItem": "{brand} {score}",
+        "good": "Praised for: {list}.",
+        "bad": "Criticised for: {list}."
+      },
+      "prompts": {
+        "panel": "The panel has no active prompts. | The panel has {n} active prompt. | The panel has {n} active prompts.",
+        "panelCap": "The panel has no active prompts of {cap} on your plan. | The panel has {n} active prompt of {cap} on your plan. | The panel has {n} active prompts of {cap} on your plan.",
+        "suggested": "{n} more are waiting for confirmation — they are not running yet.",
+        "top": "Best performers: {list}.",
+        "topItem": "“{text}” ({vis}%)"
+      },
+      "site": {
+        "pagespeed": "PageSpeed — {n} out of 100.",
+        "faqSchema": "FAQ schema",
+        "crawlMissing": "For AI crawling you are missing: {list}.",
+        "crawlOk": "The site is ready for AI crawling: robots, sitemap, llms.txt and schema are in place.",
+        "refDomains": "Backlink profile: {n} referring domains.",
+        "refDomainsSpam": "Backlink profile: {n} referring domains, spam score {spam}."
+      }
+    }
+  }
+}

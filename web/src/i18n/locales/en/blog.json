@@ -1,0 +1,1024 @@
+{
+  "blog": {
+    "pages": {
+      "units": {
+        "words": "no words | {n} word | {n} words"
+      },
+      "nav": {
+        "back": "back to dashboard",
+        "subtitle": "content agent",
+        "newTopic": "Start a new topic",
+        "ideas": "Topic ideas",
+        "plan": "Content plan",
+        "covers": "Covers",
+        "agent": "Agent profile",
+        "topics": "Topics",
+        "integration": "Integration",
+        "topicsGroup": "Topics · {n}",
+        "empty": "Nothing here yet — start a new topic.",
+        "groups": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "earlier": "Earlier"
+        },
+        "topicsGroupPartial": "Topics · {n} of {total}"
+      },
+      "topics": {
+        "title": "Topics",
+        "searchPlaceholder": "Search topics…",
+        "viewGrid": "Grid",
+        "viewList": "List",
+        "sortLabel": "Sort by:",
+        "sort": {
+          "updated": "Last updated",
+          "created": "Date created",
+          "views": "Views"
+        },
+        "filters": {
+          "all": "All",
+          "running": "Running",
+          "draft": "Drafts",
+          "ready": "Ready",
+          "published": "Published",
+          "error": "Errors",
+          "awaiting": "Waiting for you"
+        },
+        "phase": {
+          "running": "running",
+          "draft": "draft",
+          "ready": "ready",
+          "published": "published",
+          "error": "error",
+          "awaiting": "Waiting for you"
+        },
+        "emptyHint": "No articles for this brand yet — start a new topic.",
+        "noMatch": {
+          "title": "No topics match these filters",
+          "hint": "Try changing or clearing the filters to see more topics.",
+          "reset": "Clear filters"
+        },
+        "versions": "Versions: {n}",
+        "loadFailed": "Could not load the list of articles.",
+        "subtitle": "Brand articles: drafts, ready and published.",
+        "rowMenu": "Topic actions",
+        "delete": {
+          "title": "Delete this topic?",
+          "body": "“{title}” and all of its versions ({n}) will be deleted permanently. Published copies stay live on the channels — unpublish them separately.",
+          "failed": "Could not delete the topic."
+        }
+      },
+      "new": {
+        "title": "What should the article be about?",
+        "topicPlaceholder": "Describe the topic — the agent will research it, build an outline and write in your brand voice",
+        "queriesHint": "Which AI questions the article should answer. Leave empty and the agent will pick them.",
+        "queryPlaceholder": "Add a query and press Enter…",
+        "suggest": "Suggest",
+        "queriesPill": "Queries",
+        "modes": {
+          "auto": {
+            "label": "Autopilot",
+            "hint": "The agent runs every step and hands you a finished article."
+          },
+          "interactive": {
+            "label": "Step by step",
+            "hint": "Approve the sources and the outline before writing starts."
+          }
+        },
+        "examples": [
+          "how businesses can get into ChatGPT answers in 2026",
+          "what AEO is and how it differs from SEO",
+          "how to track brand mentions in AI assistants"
+        ],
+        "modelPlaceholder": "Model",
+        "submit": "Create article",
+        "credits": "{n} cr.",
+        "creditsRange": "{from}–{to} cr.",
+        "balance": "Balance {n} cr.",
+        "notEnough": "Not enough credits {n} cr.",
+        "articleApprox": "article ≈ {price}",
+        "errors": {
+          "noCredits": "Not enough credits for an article — top up your package.",
+          "tooOften": "Too often: you have hit today's run limit.",
+          "generic": "Could not start generation — check that a brand is selected and you are signed in."
+        },
+        "topUp": "Top up"
+      },
+      "ideas": {
+        "title": "Topic ideas",
+        "tabs": {
+          "brand": "For your brand",
+          "competitors": "Steal from competitors"
+        },
+        "seedPlaceholder": "Direction (optional): e.g. AEO for e-commerce",
+        "generate": "Generate",
+        "more": "More",
+        "competitorsHint": "Topics where competitors own the AI answers and you do not — take them over.",
+        "errors": {
+          "ideasTariff": "Idea generation is not included in your plan.",
+          "ideasFailed": "Could not generate ideas.",
+          "competitorsTariff": "Not included in your plan.",
+          "competitorsFailed": "Could not collect competitor ideas."
+        },
+        "empty": {
+          "title": "No ideas yet",
+          "brand": "Generate headline options for your brand.",
+          "competitors": "Collect topics where competitors beat you in AI answers."
+        },
+        "intent": {
+          "informational": "info",
+          "commercial": "commercial",
+          "transactional": "transact.",
+          "navigational": "navig."
+        },
+        "aeoTitle": "Average AEO score of the queries",
+        "aeo": "AEO {n}",
+        "source": "source",
+        "write": "Write article",
+        "hide": "Hide idea",
+        "subtitle": "Headlines for your brand and topics competitors already own.",
+        "loadFailed": "Could not load ideas."
+      },
+      "plan": {
+        "title": "Content plan",
+        "today": "Today",
+        "perWeek": "{n}/wk",
+        "generate": "Generate plan",
+        "addTopic": "Add topic",
+        "topicPlaceholder": "Topic…",
+        "lockedHint": "{title} — the post is already generated, change the publication date in the post itself",
+        "refreshing": "Refreshing…",
+        "empty": "The plan is empty — generate one for the month or add topics day by day (+).",
+        "errors": {
+          "move": "Could not move the slot",
+          "tariff": "Plan generation is not included in your plan.",
+          "failed": "Could not generate the plan.",
+          "add": "Could not add the topic.",
+          "remove": "Could not remove the slot.",
+          "save": "Could not save the slot.",
+          "write": "Could not start the article.",
+          "moveSchedule": "Could not move the scheduled post"
+        },
+        "slot": {
+          "title": "Plan slot · {date}",
+          "titleWithTime": "Plan slot · {date} · {time}",
+          "status": {
+            "published": "published",
+            "draft": "draft",
+            "skipped": "skipped",
+            "planned": "planned"
+          },
+          "topic": "Topic",
+          "datetime": "Publication date and time",
+          "aeoTitle": "Average AEO score of the queries",
+          "open": "Open article",
+          "write": "Write article",
+          "remove": "Remove from plan"
+        },
+        "subtitle": "Publishing calendar: drag slots between days and turn them into articles.",
+        "append": "Extend the plan",
+        "rebuild": "Rebuild the month",
+        "rebuildHint": "Replaces every slot of the month that has no article yet",
+        "rebuildDialog": {
+          "title": "Rebuild the plan for {month}?",
+          "body": "The agent will build the month from scratch. Slots to be deleted: {n} (including the ones you added by hand). Slots with an article already written stay."
+        },
+        "removeDialog": {
+          "title": "Remove this slot from the plan?",
+          "body": "“{title}” disappears from the calendar. The article, if it was written, stays in Topics."
+        },
+        "prevMonth": "Previous month",
+        "nextMonth": "Next month",
+        "loadFailed": "Could not load the plan for this month.",
+        "schedule": {
+          "done": "sent",
+          "error": "delivery failed"
+        },
+        "legend": {
+          "slot": "topic",
+          "autopost": "auto-post",
+          "done": "sent",
+          "error": "failed"
+        }
+      },
+      "agent": {
+        "saving": "Saving…",
+        "saved": "Saved",
+        "dirty": "Unsaved changes",
+        "unavailable": "Agent settings are unavailable — check your sign-in and plan (Blog Writer starts with Pro).",
+        "model": "Model",
+        "profileTitle": "Agent profile",
+        "profileHint": "On top — the {main} (goes into every step). Below — sections the pipeline applies selectively. Do not delete the headings.",
+        "profileHintMain": "main prompt",
+        "voicePending": "Your brand voice is still being built (site crawl + LLM) — neutral defaults apply for now.",
+        "editorPlaceholder": "# Agent persona\nWho writes and with what goal…\n\n# Tone\n…",
+        "aiBusy": "AI is editing the fragment…",
+        "editorHint": "Select text → a toolbar with formatting and “Ask AI” pops up. Everything saves itself.",
+        "sections": {
+          "tone": "Tone",
+          "delivery": "Delivery and originality",
+          "requirements": "Requirements",
+          "brandFacts": "Brand facts",
+          "author": "Default author",
+          "categories": "Categories",
+          "targetWords": "Target length, words",
+          "minCitations": "Minimum citations"
+        },
+        "subtitle": "Who writes for the brand: model, quality gates and the agent prompt.",
+        "saveFailed": "Not saved",
+        "leaveUnsaved": "Profile changes were not saved. Leave the page and lose them?",
+        "globalIgnored": "Not everything was saved: the model and the numeric gates are platform-wide and can only be changed by an administrator.",
+        "aiFailed": "The edit could not be applied.",
+        "voiceAnalyze": "Build voice from the site",
+        "voiceReady": "Voice built from {domain} ({n} pages) — review the text below and adjust it, saving happens automatically.",
+        "voiceFailed": "Could not build the voice from the site."
+      },
+      "integration": {
+        "breadcrumb": "Integration",
+        "heading": "Integrations",
+        "subtitle": "Connect channels so finished Blog Writer articles land where your audience is.",
+        "searchPlaceholder": "Search integrations…",
+        "tabs": {
+          "all": "All",
+          "connected": "Connected",
+          "soon": "Coming soon"
+        },
+        "notFound": "Nothing found — change the query or the filter.",
+        "soonBadge": "soon",
+        "soonAction": "Soon",
+        "connectedBadge": "connected",
+        "configure": "Configure",
+        "connect": "Connect",
+        "groups": {
+          "blog": "Blog and CMS",
+          "social": "Social",
+          "soon": "Coming soon"
+        },
+        "cardNote": {
+          "announce": "announcement with a link",
+          "howto": "setup guide"
+        },
+        "notice": {
+          "connected": "{channel} connected.",
+          "failed": "Could not connect {channel}: {reason}",
+          "errors": {
+            "disabled": "the channel is off on the server — app keys are missing.",
+            "no_brand": "no brand selected: a connection belongs to a brand, not to the account.",
+            "auth": "your session expired — sign in again.",
+            "denied": "you declined access on the platform side.",
+            "state": "the return link expired, try again.",
+            "exchange": "the platform did not return a token. Try again later.",
+            "unknown": "the platform returned an error. Try again."
+          }
+        },
+        "channels": {
+          "telegram": {
+            "title": "Telegram",
+            "desc": "A short post with a link to the article, posted to your channel via a bot. Not the full article: a 4096-character message cap would break it into walls of text."
+          },
+          "site": {
+            "title": "Website",
+            "desc": "Finished articles are published to your site's blog automatically via a secret receiver token."
+          },
+          "vk": {
+            "title": "VK",
+            "desc": "Native community posts built from finished articles — the format adapted for VK."
+          },
+          "dzen": {
+            "title": "Dzen",
+            "desc": "Dzen pulls new articles from your blog's RSS feed itself. No code needed — connect once.",
+            "s1": "Open your Dzen channel settings and verify ownership of ideata.io. The meta tag and verification file are already on the site.",
+            "s2": "In the import section paste the RSS feed URL — the Russian one for a Russian-language channel.",
+            "s3": "Save. From then on every new article travels to Dzen on its own; the feed carries full texts and covers.",
+            "link": "Open channel settings",
+            "note": "Dzen picks up posts published AFTER the feed is connected. Older archives will not be pulled in — that is their policy, not a feed problem."
+          },
+          "threads": {
+            "title": "Threads",
+            "desc": "An announcement with a link goes to your Threads account. A long title is split into a thread."
+          },
+          "x": {
+            "title": "X (Twitter)",
+            "desc": "A thread from the article is posted to your X account. Connect by signing in — no tokens to paste.",
+            "oauthNote": "Threads are posted to your X account. Access renews itself. The right to write comes from your X API tier, not from signing in: a free key returns 403 on publish."
+          },
+          "medium": {
+            "desc": "Medium imports a published article by its URL and sets canonical back to the original — better for SEO than publishing via API.",
+            "s1": "Copy the URL of a published article from your blog.",
+            "s2": "Open Medium's import page and paste the URL — it pulls the text, images and tables.",
+            "s3": "Review the draft and publish. Medium sets the canonical to your original automatically.",
+            "link": "Open Medium import",
+            "note": "Medium has issued no new API tokens since 2023. Import by URL replaces it and gives a better result: without canonical the copy would compete with your own site in search."
+          },
+          "devto": {
+            "desc": "Publishes via an API key together with a canonical to the original. The key comes from your dev.to settings."
+          },
+          "bluesky": {
+            "desc": "A thread on Bluesky via app password. Open protocol, no review, no cost."
+          },
+          "mastodon": {
+            "desc": "An announcement with a link on your Mastodon account. Any instance — it is a federation."
+          },
+          "linkedin": {
+            "desc": "Posts to your LinkedIn feed over OAuth — just sign in. Their API does not publish articles, only posts."
+          },
+          "wordpress": {
+            "desc": "Publishing to a WordPress blog: application password for self-hosted, OAuth for WordPress.com.",
+            "modeLabel": "How to connect",
+            "modes": {
+              "app": {
+                "title": "Application password",
+                "desc": "For any self-hosted site. Works right away, no plugins and no app registration."
+              },
+              "oauth": {
+                "title": "WordPress.com OAuth",
+                "desc": "For WordPress.com blogs and self-hosted sites connected through Jetpack — they show up in the same account."
+              }
+            }
+          },
+          "ghost": {
+            "desc": "The full article into your Ghost blog, with a canonical link to the original."
+          },
+          "telegraph": {
+            "desc": "The whole article on telegra.ph — a fast page, no signup, no ads.",
+            "createAccount": "Create account",
+            "createAccountHint": "Telegraph has no token page: a token is only issued when an account is created. Press the button — we create one and store the token.",
+            "createFailed": "Could not create the Telegraph account",
+            "authUrlNote": "Save this link: it opens the account in your browser, and there is no second chance to get it."
+          },
+          "threadsNote": "Threads has no delete in its API, so unpublishing an article does not remove the announcement from your feed."
+        },
+        "fields": {
+          "tgBotToken": {
+            "label": "Bot token",
+            "hint": "Get it from {'@'}BotFather and add the bot as a channel admin."
+          },
+          "tgChannel": {
+            "label": "Channel",
+            "hint": "{'@'}name of a public channel, or a numeric id like -100… for a private one. The bot must be an admin there with permission to post."
+          },
+          "tgPublishEnabled": {
+            "label": "Post announcements to Telegram",
+            "hint": "Off — nothing goes to the channel. On: publishing an article sends a short post with a link, unpublishing removes it."
+          },
+          "extPublishToken": {
+            "label": "Receiver token",
+            "hint": "Set the same token on your site in the /blog/ingest receiver."
+          },
+          "extPublishUrl": {
+            "label": "Blog API base URL",
+            "hint": "Your API address without a path — we append /blog/ingest ourselves."
+          },
+          "extPublishAuthHeader": {
+            "label": "Auth header",
+            "hint": "The header the token arrives in. Defaults to Authorization; the value is the token itself, no “Bearer”."
+          },
+          "extPublishEnabled": {
+            "label": "Publish articles to the site automatically",
+            "hint": "Off — articles stay in Blog Writer and nothing is sent to your site."
+          },
+          "devtoApiKey": {
+            "label": "dev.to API key",
+            "hint": "From dev.to: Settings → Extensions → DEV Community API Keys. Stored masked."
+          },
+          "devtoEnabled": {
+            "label": "Publish articles to dev.to",
+            "hint": "Sends the full text with a canonical to your original. Unpublishing turns the copy into a draft."
+          },
+          "blueskyHandle": {
+            "label": "Bluesky handle",
+            "hint": "For example name.bsky.social, or your own domain if it is linked."
+          },
+          "blueskyAppPassword": {
+            "label": "App password",
+            "hint": "Settings → App Passwords in Bluesky. Not your account password: an app password can be revoked with one click."
+          },
+          "blueskyEnabled": {
+            "label": "Post announcements to Bluesky",
+            "hint": "Sends a short announcement with a link to the article. Unpublishing deletes the post from your feed."
+          },
+          "wpSiteUrl": {
+            "label": "Site URL",
+            "hint": "No path: https://example.com. For WordPress.com use the blog address."
+          },
+          "wpUser": {
+            "label": "WordPress login",
+            "hint": "The user we publish as. Needs publishing rights."
+          },
+          "wpAppPassword": {
+            "label": "Application password",
+            "hint": "User profile → Application Passwords. Spaces are fine, we strip them."
+          },
+          "wpEnabled": {
+            "label": "Publish articles to WordPress",
+            "hint": "The full article is sent. Unpublishing turns the post into a draft."
+          },
+          "mastodonInstance": {
+            "label": "Instance URL",
+            "hint": "For example https://mastodon.social — the server your account lives on."
+          },
+          "mastodonToken": {
+            "label": "Application token",
+            "hint": "Preferences → Development → New application, scope write:statuses. Leave empty to keep the stored one."
+          },
+          "mastodonEnabled": {
+            "label": "Announce articles on Mastodon",
+            "hint": "Publishing an article posts an announcement with a link."
+          },
+          "ghostSiteUrl": {
+            "label": "Site URL",
+            "hint": "The root of your Ghost blog, e.g. https://blog.example.com."
+          },
+          "ghostAdminKey": {
+            "label": "Admin API key",
+            "hint": "Ghost → Settings → Integrations → your integration. Format id:secret. Leave empty to keep the stored one."
+          },
+          "ghostEnabled": {
+            "label": "Publish articles to Ghost",
+            "hint": "The full article goes to the blog; the original stays canonical."
+          },
+          "telegraphAuthorName": {
+            "label": "Author byline",
+            "hint": "The name under the article on telegra.ph. Empty — the brand name."
+          },
+          "telegraphEnabled": {
+            "label": "Publish articles to Telegraph",
+            "hint": "Telegraph has no delete: unpublishing leaves the page, pointing at the original."
+          }
+        },
+        "threads": {
+          "connectedShort": "connected",
+          "connectedTitle": "Threads account connected",
+          "note": "Access is granted over OAuth and renews automatically. The token lives for 60 days — we refresh it ahead of time, nothing to do manually.",
+          "expires": "The current one is valid until {date}.",
+          "revokeNote": "The app secret stays on the server — we only store the account token. You can revoke access here or in your Meta app settings.",
+          "reconnect": "Reconnect",
+          "disconnect": "Disconnect"
+        },
+        "save": "Save configuration",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveFailed": "Could not save — try again.",
+        "secretSaved": "saved",
+        "status": {
+          "connected": "Connected",
+          "disconnected": "Not connected",
+          "tokenNote": "The key is stored in the agent settings and is only shown masked. To replace it — enter a new one and save."
+        },
+        "test": {
+          "action": "Test connection",
+          "actionSite": "Send a test article",
+          "running": "Testing…",
+          "ok": "The receiver accepted the test article:",
+          "okCleaned": "The receiver accepted the test article — the draft was created and deleted right away:",
+          "leftover": "The draft was created but could not be deleted — remove the test article on your site manually:",
+          "native": "The base URL points at Ideata — publishing goes straight to our blog, no HTTP receiver needed.",
+          "notConfigured": "Base URL or token is missing."
+        },
+        "noBrand": "Auto-publishing settings belong to a brand — pick a brand in the header first, otherwise there is nowhere to save them.",
+        "docs": {
+          "title": "Receiver contract",
+          "subtitle": "Everything Blog Writer sends to your site — the full contract.",
+          "copyPrompt": "Spec for an AI assistant",
+          "promptHint": "You build the receiver on your side: a few routes on your backend. The button above copies a ready-made spec — paste it into Claude Code or Cursor, or hand it to a developer. The base URL and header are already filled in from the fields above; the token never goes into the text.",
+          "flowTitle": "How it works",
+          "flow": {
+            "s1": {
+              "t": "You publish an article",
+              "d": "we POST {base}/blog/ingest with a sourceId field. Publishing again reuses the same sourceId, so it is an update, not a second post."
+            },
+            "s2": {
+              "t": "The receiver answers id and slug",
+              "d": "we use them to show a link to the article and to remember it is live. We wait no longer than 15 seconds."
+            },
+            "s3": {
+              "t": "You unpublish it",
+              "d": "we send DELETE {base}/blog/ingest?sourceId=… A 404 reads as “already gone” and counts as success."
+            }
+          },
+          "endpointsTitle": "Endpoints",
+          "required": "required",
+          "payloadTitle": "POST /blog/ingest body",
+          "responseTitle": "Success response",
+          "fieldsTitle": "Body fields",
+          "col": {
+            "field": "Field",
+            "type": "Type",
+            "meaning": "Meaning"
+          },
+          "requiredNote": "* — required field. Empty values are never sent.",
+          "curlTitle": "Verify with curl",
+          "curlHint": "The same request we make. Put your token in the BLOG_INGEST_TOKEN environment variable.",
+          "codesTitle": "Response codes",
+          "timeoutNote": "Our timeout is 15 seconds: move heavy work (re-uploading the cover, rebuilding a static site) to the background and answer right away. Drafts (status: draft) must not be publicly reachable — not in listings, not by direct link."
+        },
+        "howto": {
+          "feedRu": "RSS feed, Russian articles",
+          "feedEn": "RSS feed, English articles"
+        },
+        "flow": {
+          "auto": "No separate step: the article goes here on its own when you press Publish in the article. Per-channel results are shown right there.",
+          "x": "The thread is built in the article, under Social, and goes to X with the Publish button.",
+          "threads": "An announcement with a link is sent on its own when you press Publish in the article."
+        },
+        "linkedin": {
+          "connectedShort": "connected",
+          "connectedTitle": "LinkedIn account connected",
+          "note": "Posts go to your LinkedIn feed. Their API does not publish articles — posts only. Access renews itself; if it is revoked, the channel will ask you to reconnect.",
+          "revokeNote": "The app secret stays on the server — we only store the account token. You can revoke access here or under LinkedIn “Permitted services”."
+        },
+        "x": {
+          "connectedTitle": "X account connected",
+          "oauthNote": "Threads are posted to your X account. Access renews itself. The right to write comes from your X API tier, not from signing in: a free key returns 403 on publish.",
+          "revokeNote": "The app secret stays on the server — we only store the account token. You can revoke access here or under X “Connected apps”."
+        }
+      },
+      "run": {
+        "status": {
+          "generating": "Generating…",
+          "awaitingSources": "Step: sources",
+          "awaitingOutline": "Step: outline",
+          "published": "Published",
+          "error": "Error",
+          "draft": "Draft"
+        },
+        "notFound": "Article not found",
+        "loadFailed": "Could not load the article",
+        "titlePlaceholder": "Article title",
+        "saved": "Saved",
+        "showPanel": "Show panel",
+        "hidePanel": "Hide panel",
+        "preview": "Preview",
+        "export": "Export .md",
+        "publish": "Publish",
+        "pipelineFailed": "The pipeline failed",
+        "restarting": "Restarting…",
+        "restart": "Restart",
+        "stages": {
+          "research": "Research",
+          "sources": "Sources",
+          "search": "Search",
+          "keywords": "Keywords",
+          "outline": "Outline",
+          "draft": "Draft",
+          "write": "Writing",
+          "antislop": "Anti-slop",
+          "slop": "Anti-slop",
+          "factcheck": "Fact-check",
+          "eeat": "E-E-A-T",
+          "seo": "SEO",
+          "cover": "Cover",
+          "translate": "Translation",
+          "publish": "Publishing",
+          "finalize": "Finalizing",
+          "done": "Done"
+        },
+        "generatingHint": "The agent is writing the article — follow the progress above",
+        "regen": {
+          "label": "Rewrite a section:",
+          "run": "Rewrite",
+          "running": "Writing…",
+          "exclude": "Exclude:",
+          "presets": {
+            "noSources": "no sources",
+            "noOtherArticles": "no mentions of other articles",
+            "noExternalLinks": "no links to third-party sites"
+          },
+          "title": "Rewrite a section"
+        },
+        "cover": {
+          "alt": "cover",
+          "articleAlt": "article cover",
+          "edit": "Edit the cover in the studio",
+          "create": "Make a cover in the studio",
+          "label": "Cover",
+          "none": "No cover yet",
+          "studio": "Studio",
+          "dialogTitle": "Article cover",
+          "generateBg": "Generate background",
+          "remove": "Remove",
+          "failed": "The cover did not work out"
+        },
+        "editorPlaceholder": "The article text will appear here…",
+        "meta": {
+          "title": "Meta",
+          "category": "Category",
+          "categoryPlaceholder": "e.g. Guides",
+          "author": "Author",
+          "authorFallback": "{brand} editorial team",
+          "authorFallbackBrand": "Blog"
+        },
+        "blog": {
+          "title": "Publish to blog",
+          "publishedBadge": "live",
+          "draftBadge": "draft",
+          "slug": "slug:",
+          "openInBlog": "Open in the blog",
+          "localeLabel": "Version language",
+          "update": "Update",
+          "publish": "Publish",
+          "toDraft": "To draft",
+          "unpublish": "Remove from blog",
+          "needTitle": "A title and article text are required.",
+          "errors": {
+            "tariff": "Publishing is not included in your plan",
+            "failed": "Could not publish",
+            "unpublishFailed": "Could not remove",
+            "unpublishPartial": "The copy on the external site was not removed ({reason}) — the article is still marked as published, try again"
+          },
+          "targets": {
+            "title": "Where it went",
+            "site": "Site",
+            "dzen": "Dzen",
+            "updated": "updated",
+            "skipped": "already there",
+            "manual": "publish manually",
+            "open": "Open"
+          },
+          "channels": {
+            "offByDefault": "off by default"
+          },
+          "goesTo": "Goes to",
+          "notPublished": "This article is not published anywhere yet."
+        },
+        "locales": {
+          "title": "Locales",
+          "versions": "Article versions",
+          "blogStatus": "blog: {status}",
+          "translateTo": "Translate into",
+          "translating": "Translating…",
+          "translate": "Translate ({n})",
+          "choose": "Pick languages",
+          "note": {
+            "created": "created: {list}",
+            "failed": "failed: {list}",
+            "nothing": "nothing to translate",
+            "error": "translation error"
+          }
+        },
+        "delivery": {
+          "title": "Delivery and originality",
+          "set": "set",
+          "hint": "How to write for this brand. Applies to {all} articles (the same field as in “Agent profile”).",
+          "hintAll": "all",
+          "presets": {
+            "expert": "Expert, in first person",
+            "simple": "Conversational, plain language",
+            "opinion": "Clear stance, no fluff",
+            "differentiate": "Differentiate: write the brand's positions, not the usual take",
+            "facts": "Weave in real brand facts and cases"
+          },
+          "placeholder": "Differentiation, voice, brand positions… (empty = neutral delivery)",
+          "save": "Save delivery",
+          "saved": "Saved"
+        },
+        "quality": {
+          "title": "Quality and AEO",
+          "ok": "ok",
+          "antislop": "Anti-slop",
+          "clean": "clean",
+          "score": "score {n}",
+          "tier": {
+            "clean": "clean",
+            "some": "some clichés",
+            "many": "lots of slop"
+          },
+          "aeoCoverage": "AEO coverage:",
+          "aeoCoverageTail": "target queries present in the text",
+          "citations": "Source links:",
+          "leadFaq": "Lead/FAQ:",
+          "removedLinks": "Fabricated links removed: {n}",
+          "factfix": "Remove made-up facts ({n})",
+          "factfixing": "Cleaning…",
+          "sources": "Sources · {n}"
+        },
+        "previewTitle": "Article preview",
+        "sourcePicker": {
+          "title": "Sources for the article",
+          "hint": "The agent found material on the topic. Pick what the outline should be built on — or add your own links.",
+          "empty": "Sources are still being collected…",
+          "ownLinks": "Your own links (one per line)",
+          "extraCount": "+ {n} URL will be parsed",
+          "next": "Next: an outline based on {n} sources",
+          "submit": "Build the outline"
+        },
+        "outlineEditor": {
+          "title": "Article outline",
+          "hint": "Review and adjust the plan — the agent writes the text from it.",
+          "titlePlaceholder": "Article title",
+          "anglePlaceholder": "Angle / stance (optional)",
+          "audiencePlaceholder": "Audience (optional)",
+          "sectionHeading": "Section heading",
+          "sectionIntent": "What this section covers",
+          "sectionPoints": "Key points — one per line",
+          "sectionWords": "Length, words",
+          "addSection": "Add section",
+          "summary": "{sections} sections · ~{words} words",
+          "submit": "Write article"
+        },
+        "social": {
+          "title": "Social",
+          "generate": "Prepare posts",
+          "regenerate": "Rebuild",
+          "regenerateOne": "Rebuild for {name}",
+          "media": {
+            "add": "Attach a photo or video",
+            "unsupported": "this platform has no media support yet",
+            "remove": "Remove file",
+            "video": "Video",
+            "count": "+{n} media",
+            "limit": "The platform accepts no more than {n} files",
+            "failed": "Couldn't upload the file",
+            "warn": "The post went out, the media didn't attach",
+            "max": "up to {n} files"
+          },
+          "hint": "We repack the article for each platform — character limit, thread, hashtags.",
+          "needBody": "Finish the article first: title and body are required.",
+          "publish": "Publish",
+          "republish": "Publish again",
+          "unpublish": "Remove",
+          "publishedBadge": "published",
+          "open": "Open post",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyOnly": "We do not publish to this network — copy the text and paste it there.",
+          "errors": {
+            "adapt": "Could not prepare the posts",
+            "publish": "Could not publish",
+            "unpublish": "Could not remove the post",
+            "tariff": "Cross-posting is not available on your plan"
+          },
+          "pickTitle": "Prepare for which platforms",
+          "addPost": "Add a post to the thread",
+          "removePost": "Remove post",
+          "overLimit": "{n} post(s) over the limit. The platform will reject them — shorten the text.",
+          "openIn": "Open in {name}",
+          "publishIn": "Publish to {name}",
+          "republishIn": "Publish again to {name}",
+          "copyAll": "Copy the whole text",
+          "postPlaceholder": "Post text",
+          "publishTitle": "Publish",
+          "publishNowhere": "Pick where to send it.",
+          "publishNow": "Publish now",
+          "addBelow": "Add post below",
+          "reorder": "Drag to reorder",
+          "emptyTitle": "Where to spread the article",
+          "setUp": "Set up",
+          "delivery": {
+            "auto": "We publish it",
+            "copy": "Text only — copy and paste",
+            "rss": "Pulls articles from the RSS feed on its own"
+          },
+          "publishToPrefix": "Sending to",
+          "and": "and",
+          "preview": "Preview",
+          "now": "now",
+          "groupArticle": "Full article",
+          "groupPosts": "Short posts",
+          "emoji": "Emoji",
+          "draftFailed": "Draft didn't save — edits will stay in this tab only"
+        },
+        "saveState": {
+          "dirty": "Unsaved changes"
+        },
+        "leaveConfirm": "This article has unsaved changes. Leave and lose them?",
+        "backToTopics": "Back to topics",
+        "errors": {
+          "tooLarge": "The article is too large to save. Remove some media or split the text.",
+          "tariff": "This action is not included in your plan",
+          "network": "No connection to the server — try again",
+          "saveFailed": "Could not save",
+          "actionFailed": "The action did not go through"
+        },
+        "menu": {
+          "more": "More",
+          "copyText": "Copy text"
+        },
+        "inspector": {
+          "title": "Article panel",
+          "hint": "Meta, markup, publishing, quality."
+        },
+        "markup": {
+          "title": "Markup",
+          "hint": "What goes into <head> and JSON-LD. Built from the finished text, costs no credits.",
+          "titles": "Title options",
+          "descriptions": "Description options",
+          "faq": "FAQ {n}",
+          "copyHead": "Copy the whole markup",
+          "failed": "Could not build the markup"
+        },
+        "publishDialog": {
+          "title": "Publish the article",
+          "hint": "Check the language and the destinations — after sending, the article goes live.",
+          "doneTitle": "Published",
+          "doneHint": "Where the article went:",
+          "noChannels": "to the site blog only",
+          "noReport": "The server sent no per-channel report.",
+          "openArticle": "Open the article",
+          "tabNow": "Now"
+        },
+        "unpublishDialog": {
+          "title": "Unpublish the article?",
+          "body": "It will disappear from: {list}. The text and settings stay in the app.",
+          "bodyPlain": "Readers will no longer see it. The text and settings stay in the app."
+        },
+        "delete": {
+          "action": "Delete the article",
+          "title": "Delete the article?",
+          "body": "The text, media and settings will be gone. Versions of this topic: {n}.",
+          "published": "The published version will be taken down.",
+          "failed": "Could not delete the article"
+        },
+        "schedule": {
+          "tab": "Schedule",
+          "add": "Add",
+          "remove": "Remove from schedule",
+          "sent": "sent",
+          "failed": "failed",
+          "retry": "Retry",
+          "save": "Save schedule",
+          "noChannels": "No channels support auto-posting. Connect Telegram, X, Bluesky, Mastodon or LinkedIn in integrations.",
+          "hint": "Times are local. Channels we can only hand you text to copy cannot be scheduled.",
+          "summary": "Scheduled: {n} channel(s) · next — {at}",
+          "errors": {
+            "save": "Could not save the schedule."
+          }
+        }
+      }
+    },
+    "editor": {
+      "placeholder": {
+        "body": "Article text…",
+        "media": "Media — use “+” on the left or drop a file right into the text."
+      },
+      "link": {
+        "resolving": "Reading the link…",
+        "noEmbed": "No embed available — inserted as a plain link",
+        "asCard": "Show as card"
+      },
+      "kind": {
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "file": "File",
+        "embed": "Embed",
+        "link": "Link card"
+      },
+      "size": {
+        "b": "{n} B",
+        "kb": "{n} KB",
+        "mb": "{n} MB"
+      },
+      "upload": {
+        "notReady": "The article is not ready yet — uploads unavailable",
+        "badFile": "This file will not do",
+        "svg": "SVG cannot go into the article body — it is an executable document. Save it as PNG or WebP.",
+        "badFormat": "Format of “{name}” is not supported. Allowed: JPEG, PNG, WebP, GIF, AVIF, MP4, WebM, MOV, MP3, OGG, WAV, PDF, ZIP, DOCX, XLSX, PPTX, TXT, CSV.",
+        "tooBig": "{kind} weighs {size} — over the {limit} limit.",
+        "aborted": "Upload cancelled",
+        "plan": "Media upload is not part of your plan",
+        "forbidden": "No access to this article",
+        "tooLarge": "File is too large",
+        "offline": "No connection to the server — try again",
+        "failed": "Could not upload the file"
+      },
+      "plus": {
+        "aria": "Insert a block",
+        "group": "What to insert",
+        "image": "Image",
+        "video": "Video",
+        "attach": "File or audio",
+        "embed": "Link or embed",
+        "code": "Code block",
+        "rule": "Divider"
+      },
+      "mediaDialog": {
+        "title": "Insert media",
+        "library": "Article library",
+        "urlPlaceholder": "https://youtu.be/… , vk.com/video… , a link to an article or image",
+        "check": "Check",
+        "providers": "YouTube, VK Video, Rutube, Dzen, Vimeo, OK, Telegram, SoundCloud, Yandex Music, Google Docs, maps, CodePen… If there is no embed, we build a link card.",
+        "errorPlan": "Embeds are not part of your plan",
+        "insert": "Insert",
+        "insertAsCard": "Insert as card",
+        "loading": "Loading…",
+        "libraryError": "Could not load the library",
+        "libraryEmpty": "Nothing has been uploaded to this article yet",
+        "removeTitle": "Delete from library",
+        "confirmDelete": "Delete “{name}” from the library? The file will stop opening in blocks where it is already used.",
+        "removeError": "Could not delete the file."
+      },
+      "align": {
+        "center": "Normal",
+        "wide": "Wide",
+        "full": "Full width"
+      },
+      "media": {
+        "file": "file",
+        "drag": "Drag",
+        "caption": "Caption",
+        "captionPlaceholder": "Caption…",
+        "replaceFile": "Replace file",
+        "otherLink": "Another link",
+        "openLink": "Open link",
+        "apply": "Apply",
+        "uploading": "Uploading… {n}%",
+        "errorResolve": "Could not read the link"
+      },
+      "format": {
+        "bold": "Bold",
+        "italic": "Italic",
+        "strike": "Strikethrough",
+        "bulletList": "Bullet list",
+        "orderedList": "Numbered list",
+        "quote": "Quote",
+        "code": "Code"
+      },
+      "rich": {
+        "placeholder": "Start writing…",
+        "askAi": "Ask AI",
+        "askAiTitle": "Ask the AI agent",
+        "askPlaceholder": "What to do with the selection? e.g. “make it shorter”",
+        "submit": "Send"
+      },
+      "ai": {
+        "title": "Magic pen",
+        "actions": "Actions",
+        "tone": "Tone",
+        "ask": "What to do with the selection?",
+        "askMore": "What else to fix?",
+        "send": "Send to the agent",
+        "working": "The agent is editing the selection…",
+        "suggestDelete": "The agent suggests deleting the selection.",
+        "mock": "No LLM key (mock mode) — the selection came back unchanged.",
+        "errorLimit": "Plan limit reached — editing unavailable.",
+        "errorFailed": "The agent did not answer. Try again or pick another model.",
+        "replace": "Replace selection",
+        "insertBelow": "Insert below",
+        "totalCost": "{cost} for this thread",
+        "tokens": "no tokens | {n} token | {n} tokens",
+        "tokensUnknown": "— tokens",
+        "model": "Model",
+        "modelNote": "On the right — the rough price of one edit. Hover a model to see its rates.",
+        "priceEdit": "Edit",
+        "priceIn": "Input",
+        "priceOut": "Output",
+        "context": "Context",
+        "per1m": "{n} cr./1M",
+        "contextM": "{n}M tokens",
+        "contextK": "{n}K tokens",
+        "quick": [
+          {
+            "label": "Rewrite",
+            "prompt": "Rewrite this passage livelier and more concrete, same meaning and length."
+          },
+          {
+            "label": "Shorten",
+            "prompt": "Cut the passage roughly in half without losing any facts."
+          },
+          {
+            "label": "Expand",
+            "prompt": "Expand the passage: add specifics and an example."
+          },
+          {
+            "label": "Simpler",
+            "prompt": "Rewrite it simpler, in short sentences, with no bureaucratese."
+          },
+          {
+            "label": "Drop clichés",
+            "prompt": "Remove AI clichés and filler, keep only the specifics."
+          }
+        ],
+        "tones": [
+          {
+            "label": "Expert",
+            "prompt": "Rewrite the passage in an expert tone: specific, no filler, no hype."
+          },
+          {
+            "label": "Conversational",
+            "prompt": "Rewrite the passage in a conversational tone, as if explaining to a colleague, without being chummy."
+          },
+          {
+            "label": "Drier",
+            "prompt": "Rewrite the passage drier and stricter: facts only, no judgements."
+          },
+          {
+            "label": "With examples",
+            "prompt": "Rewrite the passage, adding a concrete example or number to every point."
+          }
+        ]
+      }
+    },
+    "modelPick": {
+      "modelNote": "On the right — the rough price of an article. Hover a model to see its rates.",
+      "rows": {
+        "post": "Article",
+        "input": "Input",
+        "output": "Output",
+        "context": "Context"
+      },
+      "per1M": "{n} cr./1M",
+      "contextM": "{n}M tokens",
+      "contextK": "{n}K tokens"
+    }
+  }
+}

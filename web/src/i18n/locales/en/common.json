@@ -1,0 +1,148 @@
+{
+  "nav": {
+    "myBrand": "My brand",
+    "overview": "Overview",
+    "monitoring": "Monitoring",
+    "prompts": "Prompts",
+    "links": "Links",
+    "competitors": "Competitors",
+    "traffic": "AI traffic",
+    "blogWriter": "Blog Writer",
+    "account": "Account",
+    "subscription": "Subscription",
+    "team": "Team",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "admin": "Admin"
+  },
+  "routeTitle": {
+    "overview": "Overview",
+    "onboarding": "Brand setup",
+    "monitoring": "Monitoring",
+    "prompts": "Prompts",
+    "links": "Links",
+    "competitors": "Competitors",
+    "traffic": "AI traffic",
+    "subscription": "Subscription",
+    "team": "Team",
+    "settings": "Settings",
+    "invite": "Team invitation",
+    "notFound": "Page not found",
+    "blogTopics": "Blog Writer · Topics",
+    "blogPreview": "Blog Writer · Covers",
+    "blogNew": "Blog Writer · New topic",
+    "blogRun": "Blog Writer · Article",
+    "blogIdeas": "Blog Writer · Topic ideas",
+    "blogPlan": "Blog Writer · Content plan",
+    "blogAgent": "Blog Writer · Agent profile",
+    "blogIntegration": "Blog Writer · Integration"
+  },
+  "action": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "retry": "Try again",
+    "copy": "Copy",
+    "copied": "Copied",
+    "export": "Export",
+    "refresh": "Refresh",
+    "more": "Details",
+    "confirm": "Confirm",
+    "search": "Search"
+  },
+  "state": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "empty": "Nothing here yet",
+    "error": "Something went wrong",
+    "noData": "No data",
+    "notEnoughData": "Not enough data yet"
+  },
+  "lang": {
+    "label": "Interface language",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "time": {
+    "today": "today",
+    "yesterday": "yesterday",
+    "daysAgo": "no days | {n} day ago | {n} days ago",
+    "updated": "Last updated {when}"
+  },
+  "user": {
+    "noName": "No name",
+    "guest": "Guest",
+    "admin": "admin",
+    "anonymous": "not signed in",
+    "demo": "Demo account"
+  },
+  "brandSwitcher": {
+    "brands": "Brands",
+    "noBrands": "no brands",
+    "notFound": "No brands found",
+    "addBrand": "Add brand",
+    "brandFallback": "brand"
+  },
+  "warmup": {
+    "title": {
+      "analysing": "Collecting your brand data",
+      "idle": "No data for this brand yet"
+    },
+    "hint": {
+      "analysing": "We're reading {domain} and the first answers from AI engines. This page refreshes itself — no need to stay.",
+      "idle": "We haven't analysed {domain} yet. Start the analysis to get prompts, competitors and sources."
+    },
+    "steps": {
+      "brand": {
+        "title": "Brand created",
+        "done": "Done",
+        "active": "Creating",
+        "wait": "Waiting"
+      },
+      "site": {
+        "title": "Site analysis",
+        "done": "Done",
+        "active": "Reading pages and semantics",
+        "wait": "Queued"
+      },
+      "prompts": {
+        "title": "Audience prompts",
+        "done": "Done",
+        "active": "Picking questions",
+        "wait": "After site analysis"
+      },
+      "run": {
+        "title": "First run across engines",
+        "done": "Done",
+        "active": "Asking the engines",
+        "wait": "After prompts"
+      }
+    },
+    "eta": "Usually 5–20 minutes: engines answer one by one, and some of them are slow.",
+    "refresh": "Refresh",
+    "start": "Start analysis",
+    "startError": "Couldn't start the analysis. Please try again.",
+    "yourSite": "your site",
+    "rivals": {
+      "title": "Competitors found during analysis",
+      "note": "Monitoring will compare them with you after the first run",
+      "traffic": "traffic {v}",
+      "dr": "DR {v}"
+    }
+  },
+  "demo": {
+    "badge": "Demo data",
+    "exit": "Exit demo mode"
+  },
+  "theme": {
+    "label": "Colour theme",
+    "light": "Light",
+    "dark": "Dark"
+  }
+}

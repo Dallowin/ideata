@@ -1,0 +1,202 @@
+{
+  "prompts": {
+    "page": {
+      "loading": "Loading the panel…",
+      "noData": "No data yet — the first run will fill the panel",
+      "tracked": "no tracked audience queries | {n} tracked audience query | {n} tracked audience queries"
+    },
+    "kpi": {
+      "shown": "Shown",
+      "avgVis": "Average visibility",
+      "top3": "In top-3 answers",
+      "noMention": "No mentions"
+    },
+    "tabs": {
+      "prompts": "Prompts",
+      "sources": "Sources",
+      "graph": "Graph"
+    },
+    "filters": {
+      "search": "Search prompts…",
+      "intent": "Intent",
+      "allIntents": "All intents",
+      "topic": "Section",
+      "allTopics": "All sections",
+      "noTopic": "— no section —",
+      "engines": "Engines",
+      "mentionedIn": "Mentioned in…",
+      "group": "Group by",
+      "groupNone": "No grouping",
+      "groupIntent": "By intent",
+      "groupTopic": "By section",
+      "groupRegion": "By region",
+      "reset": "Reset"
+    },
+    "intent": {
+      "brand": "Brand",
+      "compare": "Comparison",
+      "commercial": "Commercial",
+      "info": "Informational"
+    },
+    "region": {
+      "RU": "Russia",
+      "KZ": "Kazakhstan",
+      "BY": "Belarus",
+      "UZ": "Uzbekistan",
+      "US": "USA",
+      "DE": "Germany"
+    },
+    "engine": {
+      "alice": "Yandex Alice",
+      "yandex": "Yandex Search"
+    },
+    "run": {
+      "running": "run in progress",
+      "last": "last run"
+    },
+    "table": {
+      "prompt": "Prompt",
+      "engines": "Engines",
+      "visibility": "Visibility",
+      "trend": "Trend",
+      "citations": "Citations",
+      "selectAll": "select all",
+      "selectRow": "select: {text}",
+      "avgVis": "avg. visibility",
+      "notMentioned": "no",
+      "trendHint": "The trend shows up from the second weekly run",
+      "emptyHint": "Prompts appear after the first run of the brand AEO tracker. Check that you are signed in and monitoring is on.",
+      "noMatch": "Nothing found — change the filters.",
+      "groupFooter": "Selected {selected} of {total} rows · grouped {group}",
+      "groupBy": {
+        "intent": "by intent",
+        "topic": "by section",
+        "region": "by region"
+      }
+    },
+    "bulk": {
+      "selected": "Selected:",
+      "clear": "clear selection"
+    },
+    "add": {
+      "button": "Add prompt",
+      "title": "New prompt",
+      "description": "The query the way your audience asks answer engines. We will check it across every engine in the next run.",
+      "placeholder": "for example: best ai visibility monitoring service",
+      "type": "Prompt type",
+      "region": "Region"
+    },
+    "errors": {
+      "quotaCap": "You hit the plan pool: no more than {cap} active prompts. Remove the extra ones or upgrade the plan.",
+      "quota": "You hit the plan's prompt pool.",
+      "paywall": "Editing the prompt panel is available on a paid plan.",
+      "forbidden": "Only the brand owner or an editor can edit prompts.",
+      "generic": "Could not save the changes — please try again."
+    },
+    "csv": {
+      "prompt": "Prompt",
+      "intent": "Intent",
+      "region": "Region",
+      "visibility": "Visibility %",
+      "citations": "Citations"
+    },
+    "footer": {
+      "selectedOf": "Selected {selected} of {total} rows",
+      "perPage": "Rows per page",
+      "pageOf": "Page {page} of {pages}",
+      "first": "first page",
+      "prev": "previous",
+      "next": "next",
+      "last": "last page"
+    },
+    "sources": {
+      "search": "Search domains…",
+      "host": "Domain",
+      "category": "Category",
+      "engines": "Engines",
+      "citations": "Citations",
+      "share": "Share",
+      "trend": "Trend",
+      "lastSeen": "Last citation",
+      "you": "you",
+      "cat": {
+        "media": "Media",
+        "blog": "Blog",
+        "own": "Your site",
+        "forum": "Forum",
+        "catalog": "Directory"
+      },
+      "links": "Links",
+      "nPrompts": "no prompts | {n} prompt | {n} prompts",
+      "resetFilter": "Reset filter",
+      "showPrompts": "Show prompts for this link",
+      "openLink": "Open link",
+      "noUrls": "Exact URLs will show up with the next run.",
+      "citedIn": "Cited in prompts",
+      "openPrompt": "Open prompt details",
+      "noPrompts": "No prompts linked.",
+      "emptyHint": "Sources are collected from citations in engine answers after a tracker run.",
+      "noMatch": "Nothing found."
+    },
+    "modal": {
+      "meta": {
+        "model": "Model",
+        "run": "Run",
+        "language": "Language",
+        "brandMentioned": "Brand mentioned",
+        "siteCited": "Site cited",
+        "sentiment": "Sentiment"
+      },
+      "languageValue": "Russian",
+      "mentionedPos": "Yes · position #{pos}",
+      "yes": "Yes",
+      "no": "No",
+      "metrics": {
+        "title": "Prompt metrics",
+        "visibility": "Visibility",
+        "intent": "Intent",
+        "citations": "Citations",
+        "trendWeeks": "Trend, {n} wk",
+        "noData": "no data"
+      },
+      "sentiment": {
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative",
+        "mixed": "Mixed"
+      },
+      "engineNoMention": "no mention",
+      "openPrompt": "Open prompt",
+      "copyPrompt": "Copy prompt",
+      "details": "Details",
+      "brands": "Brands",
+      "score": "Answer score",
+      "sources": "Sources",
+      "showAll": "Show all",
+      "emptyAnswer": "The answer text for this engine will show up after the next run."
+    },
+    "graph": {
+      "title": "Prompt and source links",
+      "nPrompts": "no prompts | {n} prompt | {n} prompts",
+      "nSources": "no sources | {n} source | {n} sources",
+      "nLinks": "no links | {n} link | {n} links",
+      "hidden": "{n} rare hidden",
+      "search": "Find a domain or prompt…",
+      "allEngines": "All engines",
+      "onlyMissing": "Where I am not named",
+      "from": "from",
+      "minCites": "{n} cit.",
+      "emptyTitle": "No links yet",
+      "emptyHint": "The graph is built from the sources engines cited in their answers.",
+      "nCites": "no citations | {n} citation | {n} citations",
+      "kindPrompt": "prompt",
+      "kindSource": "source",
+      "legend": {
+        "own": "your site",
+        "rival": "competitor",
+        "prompt": "prompt"
+      },
+      "hint": "click to highlight links, click a prompt to open its card"
+    }
+  }
+}

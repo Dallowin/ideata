@@ -1,0 +1,145 @@
+/*
+ * Оформление медиа-блоков тела статьи. Файл глобальный (без scoped) и его
+ * импортируют И редактор, И превью статьи: классы из контракта одни и те же,
+ * а держать две копии правил — гарантированный расход, при котором превью
+ * рано или поздно начинает врать.
+ *
+ * Цвета берём от currentColor через color-mix: тот же блок рисуется и на
+ * тёмном фоне редактора, и на белой «бумаге» превью. Токены темы — oklch,
+ * поэтому прозрачность только через color-mix, не через hsl(var(--x) / α).
+ */
+
+.bw-media {
+  position: relative;
+  margin: 1.7em 0;
+  clear: both;
+}
+
+/* --- выравнивание -----------------------------------------------------------
+   center (по умолчанию) — ширина колонки; wide — шире колонки; full — почти
+   во всю ширину. min() не даёт вылезти за вьюпорт и получить горизонтальный
+   скролл там, где блок живёт в узком контейнере (превью, инспектор). */
+.bw-media[data-align="wide"] {
+  --bw-w: min(100vw - 32px, 100% + 128px);
+  width: var(--bw-w);
+  max-width: none;
+  margin-left: calc(50% - var(--bw-w) / 2);
+}
+.bw-media[data-align="full"] {
+  --bw-w: min(100vw - 32px, 1100px);
+  width: var(--bw-w);
+  max-width: none;
+  margin-left: calc(50% - var(--bw-w) / 2);
+}
+
+.bw-media > img,
+.bw-media > video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+.bw-media > audio {
+  display: block;
+  width: 100%;
+}
+
+.bw-media > figcaption {
+  margin-top: .6em;
+  font-size: .82em;
+  line-height: 1.5;
+  text-align: center;
+  opacity: .62;
+}
+
+/* --- встраивание (iframe с фиксированной пропорцией) ------------------------ */
+.bw-embed {
+  position: relative;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.bw-embed > iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- файл ------------------------------------------------------------------- */
+.bw-file {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 12px;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background .12s, border-color .12s;
+}
+.bw-file:hover { background: color-mix(in srgb, currentColor 5%, transparent); }
+.bw-file__name { font-size: .95em; font-weight: 600; word-break: break-word; }
+.bw-file__meta { font-size: .78em; opacity: .6; }
+
+/* --- карточка ссылки -------------------------------------------------------- */
+.bw-linkcard {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 12px;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background .12s, border-color .12s;
+}
+.bw-linkcard:hover { background: color-mix(in srgb, currentColor 5%, transparent); }
+.bw-linkcard__thumb {
+  flex: 0 0 168px;
+  width: 168px;
+  align-self: stretch;
+  object-fit: cover;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.bw-linkcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px 12px 0;
+}
+.bw-linkcard__thumb + .bw-linkcard__body { padding-left: 0; }
+.bw-linkcard:not(:has(.bw-linkcard__thumb)) .bw-linkcard__body { padding-left: 14px; }
+.bw-linkcard__title {
+  font-size: .95em;
+  font-weight: 600;
+  line-height: 1.35;
+  /* две строки максимум: карточка в потоке текста не должна расти в простыню */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bw-linkcard__desc {
+  font-size: .82em;
+  line-height: 1.45;
+  opacity: .7;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bw-linkcard__site { font-size: .76em; opacity: .5; margin-top: auto; }
+
+@media (max-width: 560px) {
+  .bw-linkcard { flex-direction: column; }
+  .bw-linkcard__thumb { flex: none; width: 100%; height: 150px; }
+  .bw-linkcard__body { padding: 12px 14px; }
+}

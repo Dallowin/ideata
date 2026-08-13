@@ -1,0 +1,34 @@
+{
+  "settings": {
+    "subtitle": "Data integrations and account settings",
+    "integrations": {
+      "title": "Integrations",
+      "connected": "connected",
+      "notConnected": "not connected",
+      "unknown": "status unknown",
+      "configure": "Configure",
+      "disconnect": "Disconnect",
+      "connect": "Connect",
+      "disconnectConfirm": "Disconnect {title}? Its data will stop updating.",
+      "tokenPrompt": "{title}: paste an API token with zone analytics permissions"
+    },
+    "error": {
+      "refresh": "Could not refresh the status",
+      "disconnect": "Could not disconnect the integration",
+      "noBrand": "Pick a brand first",
+      "token": "Token rejected — check its permissions and expiry"
+    },
+    "account": {
+      "name": "Name",
+      "status": "Status",
+      "admin": "Administrator",
+      "user": "User",
+      "anonymous": "Not signed in"
+    },
+    "appearance": {
+      "title": "Interface",
+      "langLabel": "Interface language",
+      "langHint": "Shared with ideata.io — the site opens in the same language."
+    }
+  }
+}
