@@ -117,8 +117,8 @@ Engines are split across providers. Set the keys for the engines you actually wa
 | Grok — official xAI API | `XAI_API_KEY` | [console.x.ai](https://console.x.ai) |
 | Perplexity — official Sonar API | `PERPLEXITY_API_KEY` | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) |
 | Google AI Overviews | `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` | [dataforseo.com](https://app.dataforseo.com/api-access) |
-| GigaChat | `GIGACHAT_API_KEY` | regional |
-| Yandex Alice, Yandex Neuro | `YANDEX_SEARCH_API_KEY` | regional |
+| GigaChat (RU market) | `GIGACHAT_API_KEY` | [developers.sber.ru/studio](https://developers.sber.ru/studio) |
+| Yandex Alice, Yandex Neuro (RU market) | `YANDEX_SEARCH_API_KEY` + `YANDEX_CLOUD_FOLDER_ID` | [console.yandex.cloud](https://console.yandex.cloud) |
 
 > **One key is enough — the rest is per engine.** With just `OPENROUTER_API_KEY` all six global engines run. Each engine then runs through its vendor's official API when that key is set, and through OpenRouter otherwise — mix the two freely, engine by engine, and the app shows you the active route on every row. Images are the one exception: covers and illustrations need `GEMINI_API_KEY`, there is no fallback for them.
 
