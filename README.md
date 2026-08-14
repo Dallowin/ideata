@@ -56,7 +56,7 @@ Ideata is the open, self-hosted way to measure it and win it.
 - **Full pipeline** — brief → research → outline → draft → anti-slop → fact-check
 - **Per-article model** with a live price estimate before you spend a token
 - **Brand-voice agent** — one prompt, quality gates, target length & sources
-- **Cover studio** — 50+ templates, PNG composited in the browser
+- **Cover studio** — 12 built-in templates, PNG composited in the browser
 - **Content calendar** + idea generator
 - **Bilingual** — interface and generated content in English or Russian
 
