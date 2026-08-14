@@ -53,7 +53,8 @@ function maskTail(v: string): string {
 /**
  * Engines. Each one's model is an override of AEO_<ENGINE>_MODEL (getSettingKey).
  *   • openrouter=true: available on OpenRouter (vendor is the catalog prefix for
- *     the dropdown); in native mode uses its own provider key (nativeKeys).
+ *     the dropdown); with its own provider key set (nativeKeys) the engine runs
+ *     through the vendor's official API instead — the choice is per engine.
  *   • openrouter=false: native only (GigaChat/Yandex — not on OpenRouter), model
  *     comes from presetModels, provider key(s) always required. help — where to get the key.
  */
@@ -72,9 +73,9 @@ interface EngineSpec {
 export const ENGINE_SPECS: EngineSpec[] = [
   { slug: 'chatgpt', label: 'ChatGPT', key: 'AEO_CHATGPT_MODEL', vendor: 'openai/', default: 'openai/gpt-4o-mini', openrouter: true, nativeKeys: ['OPENAI_API_KEY'], presetModels: [], help: 'https://platform.openai.com/api-keys' },
   { slug: 'claude', label: 'Claude', key: 'AEO_CLAUDE_MODEL', vendor: 'anthropic/', default: 'anthropic/claude-haiku-4.5', openrouter: true, nativeKeys: ['ANTHROPIC_API_KEY'], presetModels: [], help: 'https://console.anthropic.com/settings/keys' },
-  { slug: 'gemini', label: 'Gemini', key: 'AEO_GEMINI_MODEL', vendor: 'google/', default: 'google/gemini-2.5-flash', openrouter: true, nativeKeys: ['GEMINI_API_KEY'], presetModels: [], help: 'https://aistudio.google.com/app/apikey' },
-  { slug: 'deepseek', label: 'DeepSeek', key: 'AEO_DEEPSEEK_MODEL', vendor: 'deepseek/', default: 'deepseek/deepseek-chat', openrouter: true, nativeKeys: ['DEEPSEEK_API_KEY'], presetModels: [], help: 'https://platform.deepseek.com/api_keys' },
-  { slug: 'grok', label: 'Grok', key: 'AEO_GROK_MODEL', vendor: 'x-ai/', default: 'x-ai/grok-2', openrouter: true, nativeKeys: ['XAI_API_KEY'], presetModels: [], help: 'https://console.x.ai' },
+  { slug: 'gemini', label: 'Gemini', key: 'AEO_GEMINI_MODEL', vendor: 'google/', default: 'google/gemini-3.5-flash', openrouter: true, nativeKeys: ['GEMINI_API_KEY'], presetModels: [], help: 'https://aistudio.google.com/app/apikey' },
+  { slug: 'deepseek', label: 'DeepSeek', key: 'AEO_DEEPSEEK_MODEL', vendor: 'deepseek/', default: 'deepseek/deepseek-v3.2', openrouter: true, nativeKeys: ['DEEPSEEK_API_KEY'], presetModels: [], help: 'https://platform.deepseek.com/api_keys' },
+  { slug: 'grok', label: 'Grok', key: 'AEO_GROK_MODEL', vendor: 'x-ai/', default: 'x-ai/grok-4.3', openrouter: true, nativeKeys: ['XAI_API_KEY'], presetModels: [], help: 'https://console.x.ai' },
   { slug: 'perplexity', label: 'Perplexity', key: 'AEO_PERPLEXITY_MODEL', vendor: 'perplexity/', default: 'perplexity/sonar', openrouter: true, nativeKeys: ['PERPLEXITY_API_KEY'], presetModels: [], help: 'https://www.perplexity.ai/account/api/keys' },
   { slug: 'gigachat', label: 'GigaChat', key: 'AEO_GIGACHAT_MODEL', vendor: '', default: 'GigaChat', openrouter: false, nativeKeys: ['GIGACHAT_API_KEY'], presetModels: ['GigaChat', 'GigaChat-Pro', 'GigaChat-Max'], help: 'https://developers.sber.ru/studio' },
   { slug: 'yandex', label: 'Yandex GPT', key: 'AEO_YANDEX_MODEL', vendor: '', default: 'yandexgpt-lite', openrouter: false, nativeKeys: ['YANDEX_SEARCH_API_KEY', 'YANDEX_CLOUD_FOLDER_ID'], presetModels: ['yandexgpt-lite', 'yandexgpt'], help: 'https://console.yandex.cloud' },
@@ -82,8 +83,6 @@ export const ENGINE_SPECS: EngineSpec[] = [
 
 const ENGINE_KEYS = ENGINE_SPECS.map((e) => e.key);
 const NATIVE_KEYS = ENGINE_SPECS.flatMap((e) => e.nativeKeys);
-// Run mode: 'openrouter' (one key for all) | 'native' (each engine's own key).
-const PROVIDER_MODE_KEY = 'AEO_PROVIDER_MODE';
 
 // OpenRouter model catalog with an hourly cache (public list, no key needed).
 let modelCache: { at: number; models: { id: string; label: string }[] } | null = null;
@@ -152,7 +151,6 @@ export class SettingsController {
       ...SETTING_KEYS.map((k) => k.key),
       ...ENGINE_KEYS,
       ...NATIVE_KEYS,
-      PROVIDER_MODE_KEY,
     ]);
     let saved = 0;
     for (const [key, raw] of Object.entries(body || {})) {
@@ -172,10 +170,10 @@ export class SettingsController {
     return { ok: true, saved };
   }
 
-  /** Current model for each engine (app_settings → env → default). */
+  /** Current model and route of each engine (app_settings → env → default). */
   @Get('engines')
   async engines() {
-    const keys = [...ENGINE_KEYS, ...NATIVE_KEYS, PROVIDER_MODE_KEY];
+    const keys = [...ENGINE_KEYS, ...NATIVE_KEYS];
     const rows = await this.prisma.appSetting.findMany({ where: { key: { in: keys } } });
     const byKey = new Map(rows.map((r) => [r.key, (r.value || '').trim()]));
     const updAt = new Map(rows.map((r) => [r.key, r.updatedAt]));
@@ -184,9 +182,7 @@ export class SettingsController {
       const ts = ks.map((k) => updAt.get(k)).filter(Boolean).map((d) => +new Date(d as Date));
       return ts.length ? new Date(Math.max(...ts)).toISOString() : null;
     };
-    const mode = eff(PROVIDER_MODE_KEY).toLowerCase() === 'native' ? 'native' : 'openrouter';
     return {
-      mode,
       engines: ENGINE_SPECS.map((e) => {
         const dbVal = byKey.get(e.key) || '';
         const envVal = (process.env[e.key] || '').trim();
@@ -194,6 +190,7 @@ export class SettingsController {
           const v = eff(nk);
           return { key: nk, configured: !!v, preview: maskTail(v) };
         });
+        const nativeReady = native.every((n) => n.configured);
         return {
           slug: e.slug,
           label: e.label,
@@ -209,7 +206,10 @@ export class SettingsController {
           source: dbVal ? 'app_settings' : envVal ? 'env' : 'default',
           // the engine's native provider key(s) (+ status of each).
           native,
-          nativeReady: native.every((n) => n.configured),
+          nativeReady,
+          // which route a run takes: own provider key set (or no OpenRouter route
+          // at all — GigaChat/Yandex) → the vendor's official API, otherwise OpenRouter.
+          route: !e.openrouter || nativeReady ? 'native' : 'openrouter',
           // when it was last changed (model or native key) — for "last updated".
           updatedAt: lastUpdated([e.key, ...e.nativeKeys]),
         };

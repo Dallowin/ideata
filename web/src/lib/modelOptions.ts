@@ -14,7 +14,7 @@ import { USD_RUB, postPriceText } from '@/data/credits'
 const t = (key: string, named?: Record<string, unknown>) =>
   (named ? i18n.global.t(key, named) : i18n.global.t(key))
 
-/** каталожная модель из /blogwriter/models/kie */
+/** каталожная модель из /blogwriter/models/catalog */
 export interface CatalogModel {
   id: string
   label: string

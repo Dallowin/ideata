@@ -21,7 +21,7 @@
  *
  * The judge/sentiment calls go to the cheap flash engine THROUGH THE SAME
  * provider layer (askPlatform('claude'|'gemini') = FLASH_MODELS aa_agents.py:36,
- * kie-haiku/gemini-flash with an OpenRouter fallback). Any judge/sentiment
+ * claude-haiku/gemini-flash with an OpenRouter fallback). Any judge/sentiment
  * failure does not fail the run (port of _run_safe aeo.py:2290 and general
  * failure isolation).
  */
@@ -186,7 +186,7 @@ export async function runSnapshot(
 
 // ── cheap flash-JSON via the provider layer (judge/sentiment) ─────────────────
 
-/** FLASH_MODELS aa_agents.py:36 in terms of the dispatcher's slugs (kie-haiku, gemini-flash). */
+/** FLASH_MODELS aa_agents.py:36 in terms of the dispatcher's slugs (claude-haiku, gemini-flash). */
 const FLASH_SLUGS = ['claude', 'gemini'] as const;
 
 /**

@@ -216,8 +216,8 @@ export class PlanController {
         created = await generatePlanIdeas(String(body?.seed ?? ''), freeSlots.length, llm, s, avoid);
       } catch (e: any) {
         // surface the provider failure reason to the user: "generated 0" with no
-        // explanation looked like a broken button (real case: kie 500 + OpenRouter
-        // "empty response" on the same model at the same time)
+        // explanation looked like a broken button (real case: the vendor API 500 +
+        // OpenRouter "empty response" on the same model at the same time)
         const reason = String(e?.message || e || '').slice(0, 300);
         throw new ServiceUnavailableException(
           `The model didn't respond${reason ? `: ${reason}` : ''} — try again or switch models in the "Agent profile"`,

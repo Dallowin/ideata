@@ -18,10 +18,11 @@ import { PrismaSnapshotStore } from './snapshot-store';
  *
  * The LLM layer (LLM_LAYER) is the live LiveLlmLayer: run_llm_layer (clusters/
  * priorities/plan with number-guard), _run_aeo_snapshot (a real AEO snapshot on
- * top of aeo/*) and content_guide. Gated on the KIE key via getSettingKey:
- * without a key run_llm_layer leaves facts alone and snapshot/guide → null (the
- * deterministic report is still complete). The unified brand panel and the
- * monitoring seed come from PrismaSnapshotStore.
+ * top of aeo/*) and content_guide. Gated on an available LLM key via
+ * getSettingKey (ANTHROPIC_API_KEY or OPENROUTER_API_KEY): with neither,
+ * run_llm_layer leaves facts alone and snapshot/guide → null (the deterministic
+ * report is still complete). The unified brand panel and the monitoring seed
+ * come from PrismaSnapshotStore.
  */
 @Module({
   providers: [

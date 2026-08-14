@@ -9,9 +9,9 @@
  * instead of on every call.
  *
  * 1 credit = 1 RUB of OFFICIAL cost. We do NOT compute from llm_usage.cost_rub:
- * that holds the actual amount paid (to kie/OpenRouter), and the difference
- * between the actual cost and the vendor price list is our margin. The price to
- * the client is the same regardless of which provider we routed the call through.
+ * that column reflects the route a call actually took, while the price shown to
+ * the client is the vendor's list price — the same regardless of which provider
+ * the call went through.
  */
 import { officialRub } from '../../../credits/official-price'
 import { flushLlmUsage } from './llmUsage'

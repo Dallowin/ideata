@@ -1,25 +1,26 @@
 /**
  * Unified model catalog for the assistant AND the blog writer. Built from two
  * sources, marking a route for each model:
- *  - kie (kieCatalog) — cheap Claude (pctOfficial discount) + a couple of gpt/gemini models;
+ *  - Anthropic (anthropicCatalog) — Claude, served by the official Messages API;
  *  - OpenRouter — everything else (deepseek, qwen, llama, mistral, xai…).
- * Claude is routed through kie (cheaper), everything else through OpenRouter.
  * The provider is chosen BY MODEL (providerForModel), not globally in settings.
  *
  * The {id,label,provider,format,inUsd,outUsd} shape is compatible with the old
  * blog catalog ({id,label,format,inUsd,outUsd}) — the old frontend won't break.
  */
-import { getKieCatalog, KIE_SNAPSHOT, type KieModel } from './kieCatalog'
+import { ANTHROPIC_MODELS, anthropicSlugFor, isAnthropicModel, type AnthropicModel } from './anthropicCatalog'
+
+export { anthropicSlugFor, isAnthropicModel }
 
 export interface UnifiedModel {
-  id: string // OpenRouter style (`deepseek/deepseek-chat`); kie-claude is also `anthropic/claude-*`
+  id: string // OpenRouter style (`deepseek/deepseek-chat`); Claude is `anthropic/claude-*`
   label: string
-  provider: 'kie' | 'openrouter'
+  provider: 'anthropic' | 'openrouter'
   format: 'claude' | 'openai'
   inUsd: number | null // $/1M input tokens
   outUsd: number | null // $/1M output tokens
   // For the model card in the selector (hover): one "what is it" sentence and the context window.
-  // Only present for OpenRouter models; the kie catalog doesn't have these fields — empty there.
+  // Only present for OpenRouter models; the static Claude list doesn't have these fields — empty there.
   desc: string
   context: number | null // context size in tokens
 }
@@ -27,9 +28,7 @@ export interface UnifiedModel {
 const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models'
 const TTL_MS = 60 * 60 * 1000 // 1 hour
 
-// kieSlugs: catalog id → the ACTUAL kie slug (claude-sonnet-5, gemini-3-5-flash-openai).
-// The slug can't be guessed from the id: some models don't expose it (…-openai suffix).
-interface Cache { at: number; models: UnifiedModel[]; kieIds: Set<string>; kieSlugs: Map<string, string> }
+interface Cache { at: number; models: UnifiedModel[] }
 let cache: Cache | null = null
 
 /** OpenRouter price arrives as a $/token string → round to $/1M */
@@ -82,12 +81,12 @@ async function fetchOpenRouter(): Promise<UnifiedModel[]> {
     .filter((m): m is UnifiedModel => !!m)
 }
 
-const kieToUnified = (k: KieModel): UnifiedModel => ({
-  id: k.id, label: k.label, provider: 'kie', format: k.format, inUsd: k.inUsd, outUsd: k.outUsd,
+const claudeToUnified = (k: AnthropicModel): UnifiedModel => ({
+  id: k.id, label: k.label, provider: 'anthropic', format: 'claude', inUsd: k.inUsd, outUsd: k.outUsd,
   desc: '', context: null,
 })
 
-/** vendor from the id: for OpenRouter — the prefix before `/`; for bare kie slugs — by the start */
+/** vendor from the id: for OpenRouter — the prefix before `/`; for bare slugs — by the start */
 export function vendorOf(id: string): string {
   if (id.includes('/')) return id.split('/')[0]
   if (id.startsWith('claude')) return 'anthropic'
@@ -110,10 +109,10 @@ function sortModels(list: UnifiedModel[]): UnifiedModel[] {
   )
 }
 
-// Curated model list — exactly the kie/LobeHub menu, not all of OpenRouter.
-// The ids are verified against the live catalogs (kie + OpenRouter). Claude goes
-// through kie (cheaper), everything else through OpenRouter; providerForModel
-// picks the route. Order here doesn't matter — the result is sorted by price.
+// Curated model list — a hand-picked menu, not all of OpenRouter. The ids are
+// verified against the live catalog. Claude goes to the Anthropic Messages API,
+// everything else to OpenRouter; providerForModel picks the route. Order here
+// doesn't matter — the result is sorted by price.
 const CURATED: { id: string; label: string }[] = [
   { id: 'deepseek/deepseek-v4-pro', label: 'DeepSeek V4 Pro' },
   { id: 'deepseek/deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
@@ -143,81 +142,67 @@ const CURATED: { id: string; label: string }[] = [
   { id: 'xiaomi/mimo-v2.5-pro', label: 'MiMo-V2.5 Pro' },
 ]
 
-/** Unified catalog: only the curated list, prices/route from the live catalogs. */
+/** Unified catalog: only the curated list, prices/route from the live catalog. */
 export async function getUnifiedCatalog(force = false): Promise<{ models: UnifiedModel[]; source: 'live' | 'snapshot'; at: string }> {
   const now = Date.now()
   if (!force && cache && now - cache.at < TTL_MS) {
     return { models: cache.models, source: 'live', at: new Date(cache.at).toISOString() }
   }
-  // kie — the authority on "what kie can do" (and on the cheap Claude price)
-  let kie: KieModel[]
-  try { kie = (await getKieCatalog(force)).models } catch { kie = KIE_SNAPSHOT }
-  if (!kie.length) kie = KIE_SNAPSHOT
-  const kieIds = new Set(kie.map((k) => k.id))
-
-  // OpenRouter — the price/label source for non-kie models
+  // OpenRouter — the live price/label/description source
   let or: UnifiedModel[] = []
   try { or = await fetchOpenRouter() } catch { /* network failure → fall back below */ }
 
-  // index of live data: kie overrides OpenRouter on PRICE (kie is cheaper for
-  // Claude), but description and context are kept from OpenRouter — kie has none
+  // Index of live data. The OpenRouter price is the vendor's list price, so it
+  // wins where it exists; the static Claude list fills the gaps (and stands in
+  // whole when OpenRouter is unreachable). The route always stays Anthropic for
+  // Claude — that's what decides which API the call goes to, not the price.
   const byId = new Map<string, UnifiedModel>()
   for (const m of or) byId.set(m.id, m)
-  for (const k of kie) {
+  for (const k of ANTHROPIC_MODELS) {
     const prev = byId.get(k.id)
-    const u = kieToUnified(k)
-    byId.set(k.id, prev ? { ...u, desc: prev.desc, context: prev.context } : u)
+    const u = claudeToUnified(k)
+    byId.set(k.id, prev
+      ? { ...u, inUsd: prev.inUsd ?? u.inUsd, outUsd: prev.outUsd ?? u.outUsd, desc: prev.desc, context: prev.context }
+      : u)
   }
 
-  // take ONLY the curated list; price/provider come from the live data,
-  // and if a model hasn't arrived (network/withdrawn) — show it without a price
+  // take ONLY the curated list; price comes from the live data, and if a model
+  // hasn't arrived (network/withdrawn) — show it without a price. The route is
+  // decided by the id, so the card always says where the call will actually go.
   const models = sortModels(CURATED.map(({ id, label }): UnifiedModel => {
+    const claude = isAnthropicModel(id)
+    const provider = claude ? 'anthropic' as const : 'openrouter' as const
+    const format = claude ? 'claude' as const : 'openai' as const
     const live = byId.get(id)
-    if (live) return { ...live, label }
-    return {
-      id, label, provider: kieIds.has(id) ? 'kie' : 'openrouter', format: 'openai',
-      inUsd: null, outUsd: null, desc: '', context: null,
-    }
+    if (live) return { ...live, label, provider, format }
+    return { id, label, provider, format, inUsd: null, outUsd: null, desc: '', context: null }
   }))
 
-  cache = { at: now, models, kieIds, kieSlugs: new Map(kie.map(k => [k.id, k.kieSlug])) }
+  cache = { at: now, models }
   return { models, source: or.length ? 'live' : 'snapshot', at: new Date(now).toISOString() }
-}
-
-/** Whether the model is in the kie catalog (kie only knows its own slugs, others get a 422). */
-export function isKieModel(id: string): boolean {
-  return cache?.kieIds.has(id) ?? KIE_SNAPSHOT.some(k => k.id === id)
-}
-
-/** kie slug for a catalog model; null — kie doesn't have this model. */
-export function kieSlugFor(id: string): string | null {
-  const fromCache = cache?.kieSlugs.get(id)
-  if (fromCache) return fromCache
-  return KIE_SNAPSHOT.find(k => k.id === id)?.kieSlug ?? null
 }
 
 /**
  * Keep only the models in the catalog that will actually work with the current
- * keys: without an OpenRouter key, non-kie models can't be selected — kie
- * responds to them with "The model is not supported", which looks like a
- * broken product.
+ * keys: with an Anthropic key alone, everything outside Claude has nowhere to go —
+ * offering it would look like a broken product.
  */
-export function modelsForKeys(models: UnifiedModel[], keys: { kieKey?: string; orKey?: string }): UnifiedModel[] {
-  if (keys.kieKey && keys.orKey) return models
+export function modelsForKeys(models: UnifiedModel[], keys: { anthropicKey?: string; orKey?: string }): UnifiedModel[] {
+  if (keys.anthropicKey && keys.orKey) return models
   if (keys.orKey) return models // OpenRouter can also do Claude — the route will move to it
-  if (keys.kieKey) return models.filter(m => isKieModel(m.id))
+  if (keys.anthropicKey) return models.filter(m => isAnthropicModel(m.id))
   return models
 }
 
 /**
- * Route for a specific model. Claude/the gpt-gemini pair from the kie catalog →
- * kie (cheaper, if a key is present); everything else → OpenRouter. Synchronous:
- * uses the catalog cache, and before it's warmed up — the static KIE_SNAPSHOT.
+ * Route for a specific model. Claude → the Anthropic Messages API (if a key is
+ * present); everything else → OpenRouter. Synchronous: decided by the model id,
+ * so it works before the catalog cache is warmed up.
  */
-export function providerForModel(id: string, keys: { kieKey?: string; orKey?: string }): 'kie' | 'openrouter' {
-  if (isKieModel(id) && keys.kieKey) return 'kie'
+export function providerForModel(id: string, keys: { anthropicKey?: string; orKey?: string }): 'anthropic' | 'openrouter' {
+  if (isAnthropicModel(id) && keys.anthropicKey) return 'anthropic'
   if (keys.orKey) return 'openrouter'
-  if (keys.kieKey) return 'kie'
+  if (keys.anthropicKey) return 'anthropic'
   return 'openrouter'
 }
 

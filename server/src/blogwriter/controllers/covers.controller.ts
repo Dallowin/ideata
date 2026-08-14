@@ -5,12 +5,11 @@
  * garble letters) and return {bgUrl}; the client overlays a title+logo on a canvas
  * and sends the finished JPEG composition to cover-save (RAW image/jpeg via express.raw,
  * registered in main.ts at /blogwriter/runs/:id/cover-save). GET covers/:file
- * — public serving of saved jpegs from data/covers.
+ * — public serving of saved images from data/covers.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  BadGatewayException,
   BadRequestException,
   Body,
   Controller,
@@ -25,17 +24,21 @@ import {
 import type { Request, Response } from 'express';
 import { PlanGuard } from '../../auth/plan.guard';
 import { resolveSettings } from '../server/utils/appSettings';
-import { coverPrompt, generateImage, kieKey } from '../server/utils/nanoBanana';
+import { coverPrompt, generateImage, geminiKey } from '../server/utils/googleImage';
 import { getImageByFile, saveImage } from '../server/utils/previewStore';
 import { dataDir, getRunRow, updateRun } from '../server/utils/store';
 import { BlogBrandContext } from '../brand-context';
+
+/** Mime of the bytes on disk: the generator returns png as often as jpeg. */
+const sniffMime = (b: Buffer): string =>
+  b.length > 8 && b[0] === 0x89 && b[1] === 0x50 ? 'image/png' : 'image/jpeg';
 
 @Controller('blogwriter')
 export class CoversController {
   constructor(private readonly brandCtx: BlogBrandContext) {}
 
   /**
-   * Step 1: generate an AI background via Nano Banana (kie.ai) and save it locally.
+   * Step 1: generate an AI background via Nano Banana (Google API) and save it locally.
    * { prompt? } → { bgUrl, prompt }.
    */
   @UseGuards(PlanGuard)
@@ -45,23 +48,20 @@ export class CoversController {
     if (!row) throw new NotFoundException('run not found');
     await this.brandCtx.assertRunMutate(req, row);
 
-    const key = await kieKey();
-    if (!key) throw new BadRequestException('no kie.ai key (Settings) — Nano Banana only works via kie');
+    const key = await geminiKey();
+    if (!key) throw new BadRequestException('no Gemini key (Settings) — image generation needs a Google API key');
 
     const brand = (await resolveSettings(row.brandId ?? 0)).brand;
     const title = row.title || row.topic;
     const prompt = body?.prompt?.trim() || coverPrompt(title, brand);
 
-    const tempUrl = await generateImage(prompt, key, { aspectRatio: '16:9' });
-    const img = await fetch(tempUrl, { signal: AbortSignal.timeout(30_000) });
-    if (!img.ok) throw new BadGatewayException('failed to download the generated image');
-    const buf = Buffer.from(await img.arrayBuffer());
+    const { bytes: buf, mime } = await generateImage(prompt, key, { aspectRatio: '16:9' });
 
     const dir = join(dataDir(), 'covers');
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, `${id}-bg.jpg`), buf);
     // copy in the DB: the worker's disk is a cache, not storage
-    await saveImage({ runId: id, brandId: row.brandId ?? null, kind: 'bg', prompt, aspect: '16:9', bytes: buf, fileName: `${id}-bg.jpg` });
+    await saveImage({ runId: id, brandId: row.brandId ?? null, kind: 'bg', prompt, aspect: '16:9', mime, bytes: buf, fileName: `${id}-bg.jpg` });
 
     return { bgUrl: `/blogwriter/covers/${id}-bg.jpg?t=${Date.now()}`, prompt };
   }
@@ -111,7 +111,7 @@ export class CoversController {
     // Disk is a fast cache; if the file is missing (moved, cleaned up, another worker) —
     // fetch it from the DB and restore the file on disk so it's served from disk next time.
     let bytes: Buffer | null = existsSync(path) ? readFileSync(path) : null;
-    let mime = 'image/jpeg';
+    let mime = bytes ? sniffMime(bytes) : 'image/jpeg';
     if (!bytes) {
       const row = await getImageByFile(safe);
       if (!row) throw new NotFoundException('cover not found');

@@ -135,20 +135,20 @@ async function saveKeys() {
   }
 }
 
-// ── Движки: выбор моделей OpenRouter (только владелец) ────────────────────────
+// ── Движки: модель и маршрут каждого движка (только владелец) ─────────────────
 interface NativeKeyRow { key: string; configured: boolean; preview: string }
 interface EngineRow {
   slug: string; label: string; key: string; vendor: string; default: string
   openrouter: boolean; presetModels: string[]; help: string
   model: string; configured: boolean; source: string
-  native: NativeKeyRow[]; nativeReady: boolean; updatedAt: string | null
+  native: NativeKeyRow[]; nativeReady: boolean; route: 'native' | 'openrouter'
+  updatedAt: string | null
 }
 interface ModelRow { id: string; label: string }
 const engines = ref<EngineRow[]>([])
 const models = ref<ModelRow[]>([])
 const engineModels = ref<Record<string, string>>({})
 const nativeInputs = ref<Record<string, string>>({})
-const providerMode = ref<'openrouter' | 'native'>('openrouter')
 const enginesBusy = ref(false)
 const enginesMsg = ref('')
 
@@ -176,21 +176,29 @@ function fmtUpdated(iso: string | null): string {
   } catch { return '' }
 }
 
-// Статус зависит от режима: native — есть ли ключ; openrouter — задана ли модель.
+// Ключ OpenRouter один на все движки — без него запасного маршрута нет.
+const openrouterReady = computed(() => !!keyRows.value.find((r) => r.key === 'OPENROUTER_API_KEY')?.configured)
+
+// Движок поедет, если задан его собственный ключ или доступен маршрут OpenRouter.
 function engineOk(e: EngineRow): boolean {
-  if (!e.openrouter) return e.nativeReady
-  return providerMode.value === 'native' ? e.nativeReady : e.configured
+  return e.nativeReady || (e.openrouter && openrouterReady.value)
 }
-// первичный ключ провайдера для колонки Name (как OPENAI_API_KEY у Braintrust)
-function primaryKey(e: EngineRow): string {
-  return e.native[0]?.key || e.key
+// Маршрут решает ключ: свой ключ провайдера — официальный API, иначе OpenRouter.
+function routeLabel(e: EngineRow): string {
+  return e.route === 'native' ? 'Официальный API' : 'OpenRouter'
 }
-// Подпись под названием: native/нативные — ENV-ключ; openrouter-режим — модель.
+function routeClass(e: EngineRow): string {
+  return e.route === 'native' ? 'bg-success-soft text-success' : 'bg-surface-hover text-muted-foreground'
+}
+// Подпись под названием: модель и ключ, которым движок реально ходит.
 function engineSub(e: EngineRow): string {
-  if (!e.openrouter) return e.native[0]?.key || e.key
-  return providerMode.value === 'native'
-    ? (e.native[0]?.key || e.key)
-    : (engineModels.value[e.key] || e.model)
+  const model = engineModels.value[e.key] || e.model
+  const key = e.route === 'native' ? (e.native[0]?.key || e.key) : 'OPENROUTER_API_KEY'
+  return `${model} · ${key}`
+}
+// Своё, что можно сбросить: выбранная модель или ключ(и) провайдера.
+function engineCustom(e: EngineRow): boolean {
+  return e.configured || e.native.some((n) => n.configured)
 }
 // «корзина»: сбросить модель + native-ключи движка к дефолту
 async function clearEngine(e: EngineRow) {
@@ -205,10 +213,6 @@ async function clearEngine(e: EngineRow) {
     })
     await loadEngines()
   } catch { /* бэк недоступен */ }
-}
-function engineStatus(e: EngineRow): string {
-  if (!e.openrouter) return e.nativeReady ? 'готов' : 'нужен ключ'
-  return e.configured ? 'настроено' : 'по умолчанию'
 }
 
 // модалка редактирования движка
@@ -228,7 +232,6 @@ async function loadEngines() {
     if (er.ok) {
       const d = await er.json()
       engines.value = d.engines || []
-      providerMode.value = d.mode === 'native' ? 'native' : 'openrouter'
       const init: Record<string, string> = {}
       for (const e of engines.value) init[e.key] = e.model
       engineModels.value = init
@@ -236,21 +239,6 @@ async function loadEngines() {
     }
     if (mr.ok) { const d = await mr.json(); models.value = d.models || [] }
   } catch { /* бэк недоступен — секция пустая */ }
-}
-
-// Переключить режим прогона (openrouter | native) — сохраняем сразу.
-async function setMode(m: 'openrouter' | 'native') {
-  if (m === providerMode.value) return
-  providerMode.value = m
-  try {
-    await fetch('/api/settings/keys', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ AEO_PROVIDER_MODE: m }),
-    })
-    await loadEngines()
-  } catch { /* бэк недоступен */ }
 }
 
 async function saveEngines() {
@@ -382,51 +370,16 @@ onMounted(async () => {
         <section v-else-if="activeTab === 'engines' && auth.isAdmin">
           <h2 class="text-[17px] font-semibold tracking-tight">Движки и модели</h2>
           <p class="mt-0.5 mb-4 text-[12.5px] text-muted-foreground">
-            Режим прогона и модель каждого движка.
+            Модель и маршрут каждого движка: задан свой ключ провайдера — идём в его официальный API,
+            иначе через OpenRouter. Выбор у каждого движка свой.
           </p>
 
-          <!-- свитчер режима прогона -->
-          <div class="mb-5 grid gap-2 sm:grid-cols-2">
-            <button
-              type="button" @click="setMode('openrouter')"
-              class="rounded-xl border p-3.5 text-left transition"
-              :class="providerMode === 'openrouter' ? 'border-foreground bg-surface ring-1 ring-foreground/15' : 'border-border bg-surface hover:border-muted-foreground/40'"
-            >
-              <div class="flex items-center gap-2">
-                <span class="grid size-4 shrink-0 place-items-center rounded-full border" :class="providerMode === 'openrouter' ? 'border-foreground' : 'border-muted-foreground/50'">
-                  <span v-if="providerMode === 'openrouter'" class="size-2 rounded-full bg-foreground"></span>
-                </span>
-                <span class="text-[13px] font-semibold">OpenRouter</span>
-                <span class="ml-auto rounded-full bg-surface-hover px-2 py-0.5 text-[10px] font-medium text-muted-foreground">проще</span>
-              </div>
-              <p class="mt-1.5 text-[11.5px] leading-snug text-muted-foreground">
-                Один ключ OpenRouter на все движки. Быстрый старт, ничего больше настраивать не нужно.
-              </p>
-            </button>
-            <button
-              type="button" @click="setMode('native')"
-              class="rounded-xl border p-3.5 text-left transition"
-              :class="providerMode === 'native' ? 'border-foreground bg-surface ring-1 ring-foreground/15' : 'border-border bg-surface hover:border-muted-foreground/40'"
-            >
-              <div class="flex items-center gap-2">
-                <span class="grid size-4 shrink-0 place-items-center rounded-full border" :class="providerMode === 'native' ? 'border-foreground' : 'border-muted-foreground/50'">
-                  <span v-if="providerMode === 'native'" class="size-2 rounded-full bg-foreground"></span>
-                </span>
-                <span class="text-[13px] font-semibold">Native API</span>
-                <span class="ml-auto rounded-full bg-surface-hover px-2 py-0.5 text-[10px] font-medium text-muted-foreground">гибче</span>
-              </div>
-              <p class="mt-1.5 text-[11.5px] leading-snug text-muted-foreground">
-                Прямые ключи каждого провайдера (OpenAI, xAI…). Гибкая гео-настройка по странам и больше контроля — но ключ нужен на каждый движок.
-              </p>
-            </button>
-          </div>
-
-          <h3 class="mb-3 mt-7 text-[15px] font-semibold">Провайдеры моделей</h3>
           <!-- заголовки таблицы -->
           <div class="flex items-center gap-6 border-b border-border pb-2.5 text-[12.5px] font-medium text-muted-foreground">
             <div class="min-w-0 flex-1">Название</div>
-            <div class="w-52 shrink-0">Статус</div>
-            <div class="w-44 shrink-0">Обновлено</div>
+            <div class="w-44 shrink-0">Маршрут</div>
+            <div class="w-40 shrink-0">Статус</div>
+            <div class="w-40 shrink-0">Обновлено</div>
             <div class="w-16 shrink-0"></div>
           </div>
           <!-- строки -->
@@ -434,7 +387,7 @@ onMounted(async () => {
             v-for="e in engines" :key="e.key"
             class="group flex items-center gap-6 border-b border-border py-4"
           >
-            <!-- Название: иконка + провайдер + ENV-ключ -->
+            <!-- Название: иконка + провайдер + модель с ключом маршрута -->
             <div class="flex min-w-0 flex-1 items-center gap-3.5">
               <img v-if="hasIcon(e.slug)" :src="iconSrc(e.slug)" :alt="e.label" class="size-10 shrink-0 rounded-lg object-contain" />
               <span v-else class="grid size-10 shrink-0 place-items-center text-[18px] font-bold text-muted-foreground">{{ e.label.charAt(0) }}</span>
@@ -443,15 +396,21 @@ onMounted(async () => {
                 <div class="truncate font-mono text-[12px] text-muted-foreground">{{ engineSub(e) }}</div>
               </div>
             </div>
-            <!-- Статус -->
-            <div class="w-52 shrink-0 text-[13.5px]">
-              <span v-if="engineOk(e)" class="inline-flex items-center gap-1 text-success">
-                <Check :size="14" /> Настроено
+            <!-- Маршрут -->
+            <div class="w-44 shrink-0">
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium" :class="routeClass(e)">
+                {{ routeLabel(e) }}
               </span>
-              <span v-else class="text-muted-foreground">Не настроено</span>
+            </div>
+            <!-- Статус -->
+            <div class="w-40 shrink-0 text-[13.5px]">
+              <span v-if="engineOk(e)" class="inline-flex items-center gap-1 text-success">
+                <Check :size="14" /> Готов
+              </span>
+              <span v-else class="text-muted-foreground">Нет ключа</span>
             </div>
             <!-- Обновлено -->
-            <div class="w-44 shrink-0 text-[13.5px] text-muted-foreground">
+            <div class="w-40 shrink-0 text-[13.5px] text-muted-foreground">
               {{ e.updatedAt ? fmtUpdated(e.updatedAt) : '—' }}
             </div>
             <!-- Действия -->
@@ -459,7 +418,7 @@ onMounted(async () => {
               <button type="button" class="rounded-md p-1.5 text-muted-foreground transition hover:bg-surface-hover hover:text-foreground" title="Изменить" @click="openEdit(e)">
                 <Pencil :size="14" />
               </button>
-              <button v-if="engineOk(e)" type="button" class="rounded-md p-1.5 text-muted-foreground transition hover:bg-surface-hover hover:text-destructive" title="Очистить" @click="clearEngine(e)">
+              <button v-if="engineCustom(e)" type="button" class="rounded-md p-1.5 text-muted-foreground transition hover:bg-surface-hover hover:text-destructive" title="Очистить" @click="clearEngine(e)">
                 <Trash2 :size="14" />
               </button>
               <span v-else class="block size-[26px] shrink-0"></span>
@@ -604,6 +563,9 @@ onMounted(async () => {
                 <img v-if="hasIcon(editing.slug)" :src="iconSrc(editing.slug)" :alt="editing.label" class="size-7 shrink-0 rounded-md object-contain" />
                 <span v-else class="grid size-7 shrink-0 place-items-center text-[13px] font-bold text-muted-foreground">{{ editing.label.charAt(0) }}</span>
                 <span class="text-[14px] font-medium">{{ editing.label }}</span>
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium" :class="routeClass(editing)">
+                  {{ routeLabel(editing) }}
+                </span>
               </div>
               <a :href="editing.help" target="_blank" rel="noopener" class="mt-1.5 inline-flex items-center gap-1 text-[13px] text-primary hover:underline">
                 Документация {{ editing.label }} <ExternalLink :size="11" />
@@ -622,23 +584,24 @@ onMounted(async () => {
             </select>
           </div>
 
-          <!-- API-ключи: у нативных всегда; у OpenRouter — в режиме Native API -->
-          <template v-if="!editing.openrouter || providerMode === 'native'">
-            <div v-for="n in editing.native" :key="n.key" class="grid grid-cols-[110px_1fr] items-start gap-4">
-              <label class="pt-2 break-all text-right font-mono text-[12px] text-muted-foreground">{{ n.key }}</label>
-              <div>
-                <input
-                  v-model="nativeInputs[n.key]"
-                  type="password" autocomplete="off"
-                  :placeholder="n.configured ? 'заменить ключ…' : 'вставить ключ'"
-                  class="h-9 w-full rounded-lg border border-border bg-surface px-3 text-[13px] outline-none focus:border-muted-foreground"
-                />
-                <p class="mt-1.5 text-[12.5px] leading-snug text-muted-foreground">
-                  Хранится на сервере (app_settings), в ответах не показывается{{ n.configured ? ` · сейчас ${n.preview}` : '' }}.
-                </p>
-              </div>
+          <!-- Ключ провайдера: задан — движок идёт в официальный API, пусто — через OpenRouter -->
+          <div v-for="n in editing.native" :key="n.key" class="grid grid-cols-[110px_1fr] items-start gap-4">
+            <label class="pt-2 break-all text-right font-mono text-[12px] text-muted-foreground">{{ n.key }}</label>
+            <div>
+              <input
+                v-model="nativeInputs[n.key]"
+                type="password" autocomplete="off"
+                :placeholder="n.configured ? 'заменить ключ…' : 'вставить ключ'"
+                class="h-9 w-full rounded-lg border border-border bg-surface px-3 text-[13px] outline-none focus:border-muted-foreground"
+              />
+              <p class="mt-1.5 text-[12.5px] leading-snug text-muted-foreground">
+                Хранится на сервере (app_settings), в ответах не показывается{{ n.configured ? ` · сейчас ${n.preview}` : '' }}.
+              </p>
+              <p v-if="!n.configured && editing.openrouter" class="mt-1 text-[12.5px] leading-snug text-muted-foreground">
+                Без ключа движок работает через OpenRouter.
+              </p>
             </div>
-          </template>
+          </div>
         </div>
 
         <div class="mt-7 flex items-center gap-3">

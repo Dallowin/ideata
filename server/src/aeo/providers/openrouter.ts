@@ -1,7 +1,8 @@
 /**
- * OpenRouter client for AEO — port of scrapper/core/openrouter.py. A narrow bridge
- * for search engines not available in kie: perplexity (sonar), chatgpt
- * (gpt-4o-mini-search-preview), deepseek/grok (Exa web plugin).
+ * OpenRouter client for AEO — port of scrapper/core/openrouter.py. The shared route
+ * for every engine whose own vendor key is not configured: perplexity (sonar),
+ * chatgpt (plain gpt-4o-mini — no OpenAI search variant exists there), deepseek/grok
+ * (Exa web plugin). It also serves as the fallback route for the claude/gemini engines.
  *
  * PURE VERIFIABLE CORE — `parseOpenRouter(envelope)` (port of `_parse_sources`
  * openrouter.py:77 + `_usage_tokens` openrouter.py:193): envelope →

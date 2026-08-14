@@ -6,7 +6,7 @@
  * into aeo_answers, and updates the run timestamps on the tracker.
  *
  * Engine spend (llm_usage.cost_usd) is recorded BY ITSELF, inside the provider
- * clients (kie/openrouter → recordUsage, usage.ts): the whole run is wrapped in
+ * clients (anthropic/google/openrouter → recordUsage, usage.ts): the whole run is wrapped in
  * runContext ('aeo_run', `${tid}:${date}`), so every spend point picks up the
  * run's run_id/domain/user_id without manual threading (port of
  * usage.run_context, jobs.py:786). There are no manual recordUsage calls here —

@@ -876,10 +876,10 @@ model WordstatCache {
   @@map("wordstat_cache")
 }
 
-/// Личный ключ kie у пользователя — генерация за его счёт, а не за наш.
+/// Личный ключ Gemini у пользователя — генерация идёт за его счёт.
 model UserAiKey {
   userId    Int      @id @map("user_id")
-  kieKey    String   @default("") @map("kie_key")
+  geminiKey String   @default("") @map("gemini_key")
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("user_ai_keys")

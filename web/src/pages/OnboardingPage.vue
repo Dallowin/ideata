@@ -16,7 +16,7 @@ import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
-  ArrowLeft, ArrowRight, ArrowUp, Check, CreditCard, Loader2, Lock,
+  ArrowLeft, ArrowRight, ArrowUp, Check, Loader2, Lock,
   Plus, X,
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -219,7 +219,6 @@ const finalizing = ref(false)
 const finalized = ref(false)
 const finalErr = ref('')
 const brandLimit = ref('')
-const isPaid = ref(false)
 const freeRunAvailable = ref(false)
 const freeRunStarted = ref(false)
 
@@ -231,7 +230,7 @@ async function checkKeys() {
     if (!r.ok) return
     const data = await r.json()
     keysReady.value = (data.keys || []).some(
-      (k: any) => (k.key === 'OPENROUTER_API_KEY' || k.key === 'KIE_API_KEY') && k.configured,
+      (k: any) => (k.key === 'OPENROUTER_API_KEY' || k.key === 'ANTHROPIC_API_KEY') && k.configured,
     )
   } catch { /* бэк недоступен — гейт останется закрытым */ }
 }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Settings,
   Users,

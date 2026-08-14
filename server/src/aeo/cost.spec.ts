@@ -71,6 +71,29 @@ describe('cost.ts — USD, parity with Python ÷ rate', () => {
     );
   });
 
+  it('the search fee follows the ROUTE: xAI Live Search 6.75 RUB instead of the Exa plugin', () => {
+    // grok through OpenRouter — the Exa plugin (1.08 RUB); on the vendor API — xAI's own search
+    expect(tokenCostUsd('x-ai/grok-4.3', 1000, 1000, { grounded: true })).toBe(0.0127);
+    expect(tokenCostUsd('grok-4.3', 1000, 1000, { grounded: true, provider: 'xai' })).toBe(0.0757);
+  });
+
+  it('a vendor API without search pays for tokens only (DeepSeek has no web search)', () => {
+    expect(tokenCostUsd('deepseek-chat', 3000, 1500, { grounded: true, provider: 'deepseek' })).toBe(0.001126);
+  });
+
+  it('openai/perplexity native: the same fees as through OpenRouter (search 0.45, sonar 0.45)', () => {
+    expect(tokenCostUsd('gpt-4o-mini', 900, 450, { grounded: true, provider: 'openai' })).toBe(0.005405);
+    expect(tokenCostUsd('sonar', 800, 400, { provider: 'perplexity' })).toBe(0.0062);
+  });
+
+  it('matchModel recognizes the STRIPPED vendor slugs', () => {
+    expect(matchModel('gpt-4o-mini')).toBe('gpt-mini');
+    expect(matchModel('grok-4.3')).toBe('grok');
+    expect(matchModel('deepseek-chat')).toBe('deepseek');
+    expect(matchModel('deepseek-reasoner')).toBe('deepseek');
+    expect(matchModel('sonar')).toBe('sonar');
+  });
+
   it('standalone fixed fees in USD: Neuro 5.08 RUB, DataForSEO 0.18 RUB at rate 90', () => {
     expect(fixedCostUsd('yandex_neuro')).toBe(0.056444);
     expect(fixedCostUsd('dataforseo')).toBe(0.002);

@@ -6,9 +6,9 @@
  *   • runAeoSnapshot-> aeo-snapshot.runAeoSnapshotCore (AEO recon during analysis);
  *   • contentGuide  -> aa-agents.contentGuide (full AEO guide over the AI answers).
  *
- * The gates mirror Python: without a KIE key run_llm_layer returns an empty merge
- * (facts stay as they were after NORMALIZE) and the snapshot/guide return null
- * (site_analytic.py:696,731); AEO_SNAPSHOT=0 disables the snapshot separately.
+ * The gates mirror Python: with no LLM key at all run_llm_layer returns an empty
+ * merge (facts stay as they were after NORMALIZE) and the snapshot/guide return
+ * null (site_analytic.py:696,731); AEO_SNAPSHOT=0 disables the snapshot separately.
  * Keys are read via getSettingKey (app_settings -> env, live admin override).
  * Providers/store are injected: in production askFlashJson + the Prisma store +
  * dataforseo.keyword_suggestions, in tests mocks (no live LLM/SERP/DB is used).
@@ -29,8 +29,8 @@ import type { Facts, Raw } from './types';
 export interface LiveLlmDeps {
   /** flash-JSON caller for the agents and the guide (askFlashJson by default). */
   askJson?: AskJson;
-  /** the "is a KIE key present" gate (Python `kie.api_key()`); app_settings->env by default. */
-  kieKeyPresent?: () => Promise<boolean>;
+  /** the "is an LLM key available" gate (Anthropic or OpenRouter); app_settings->env by default. */
+  llmKeyPresent?: () => Promise<boolean>;
   /** the AEO_SNAPSHOT gate (Python env; 0/false/no -> off). */
   aeoSnapshotEnabled?: () => Promise<boolean>;
   /** the snapshot provider/store seam (runSnapshot/generatePrompts/buildCompetitors/store…). */
@@ -40,13 +40,17 @@ export interface LiveLlmDeps {
 @Injectable()
 export class LiveLlmLayer implements LlmLayer {
   private readonly askJson: AskJson;
-  private readonly kieKeyPresent: () => Promise<boolean>;
+  private readonly llmKeyPresent: () => Promise<boolean>;
   private readonly aeoSnapshotEnabled: () => Promise<boolean>;
   private readonly snapshotDeps: AeoSnapshotDeps;
 
   constructor(deps: LiveLlmDeps = {}) {
     this.askJson = deps.askJson ?? askFlashJson;
-    this.kieKeyPresent = deps.kieKeyPresent ?? (async () => !!(await getSettingKey('KIE_API_KEY')));
+    this.llmKeyPresent =
+      deps.llmKeyPresent ??
+      (async () =>
+        !!(await getSettingKey('ANTHROPIC_API_KEY')) ||
+        !!(await getSettingKey('OPENROUTER_API_KEY')));
     this.aeoSnapshotEnabled =
       deps.aeoSnapshotEnabled ??
       (async () => {
@@ -59,8 +63,8 @@ export class LiveLlmLayer implements LlmLayer {
   }
 
   async runLlmLayer(facts: Facts, keywords: any[], opts: LlmLayerOpts): Promise<LlmLayerResult> {
-    // Python: without a KIE key run_llm_layer -> {} (facts are left alone).
-    if (!(await this.kieKeyPresent())) return { merge: {}, outputs: {} };
+    // Python: with no LLM key run_llm_layer -> {} (facts are left alone).
+    if (!(await this.llmKeyPresent())) return { merge: {}, outputs: {} };
     const r = await aaRunLlmLayer(facts as unknown as Record<string, unknown>, keywords ?? [], {
       ask: this.askJson,
       progress: opts.progress,
@@ -74,7 +78,7 @@ export class LiveLlmLayer implements LlmLayer {
     raw: Raw,
     opts: LlmLayerOpts,
   ): Promise<AeoSnapshotResult | null> {
-    if (!(await this.kieKeyPresent())) return null;
+    if (!(await this.llmKeyPresent())) return null;
     if (!(await this.aeoSnapshotEnabled())) return null;
     const res = await runAeoSnapshotCore(
       domain,
@@ -91,8 +95,8 @@ export class LiveLlmLayer implements LlmLayer {
   }
 
   async contentGuide(facts: Facts, opts: LlmLayerOpts): Promise<any | null> {
-    // KIE key gate - as in run_site_analytic (site_analytic.py:696).
-    if (!(await this.kieKeyPresent())) return null;
+    // LLM key gate - as in run_site_analytic (site_analytic.py:696).
+    if (!(await this.llmKeyPresent())) return null;
     return aaContentGuide(this.askJson, facts as unknown as Record<string, unknown>, opts.progress);
   }
 }

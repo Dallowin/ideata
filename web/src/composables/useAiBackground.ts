@@ -3,8 +3,8 @@
  * платит баланс кредитов: цена зависит от выбранной модели (каталог text→image
  * приходит с бэка вместе с ценой в кредитах за картинку).
  *
- * Свой ключ kie.ai (BYO) — генерация бесплатна для нас, кредиты не списываются.
- * Статус и каталог общие на приложение: их показывает инспектор.
+ * Личный ключ Gemini (Google AI Studio) — генерация идёт по нему, кредиты не
+ * списываются. Статус и каталог общие на приложение: их показывает инспектор.
  */
 import { computed, ref } from 'vue'
 import { api } from '@/lib/api'
@@ -36,26 +36,20 @@ const history = ref<GeneratedImage[]>([])
 const model = ref('') // '' до загрузки каталога → подставим defaultModel
 
 /**
- * Запасной список моделей — копия снапшота из api/imageCatalog. Нужен, когда
+ * Запасной список моделей — копия статического каталога с бэка. Нужен, когда
  * каталог не отдался (бэкенд старее фронта / сеть): пустой селект выглядит как
  * поломка, а генерация с дефолтной моделью на бэке всё равно работает.
  */
-// Цены в кредитах здесь ДУБЛИРУЮТ бэк (creditsForImageUsd = закуп × 3 × 90):
-// это фолбэк на случай, если каталог не ответил. Меняешь наценку — правь оба.
+// Цены в кредитах здесь ДУБЛИРУЮТ бэк (creditsForImageUsd): это фолбэк на
+// случай, если каталог не ответил. Меняешь формулу на бэке — правь и тут.
 const FALLBACK_MODELS: ImageModelOption[] = [
-  { id: 'z-image', label: 'Z-Image', usdPerImage: 0.004, credits: 2 },
-  { id: 'google/nano-banana', label: 'Nano Banana', usdPerImage: 0.02, credits: 6 },
-  { id: 'google/imagen4-fast', label: 'Imagen 4 Fast', usdPerImage: 0.02, credits: 6 },
-  { id: 'qwen/text-to-image', label: 'Qwen Image', usdPerImage: 0.02, credits: 6 },
-  { id: 'gpt-image/1.5-text-to-image', label: 'GPT Image 1.5', usdPerImage: 0.02, credits: 6 },
-  { id: 'flux-2/pro-text-to-image', label: 'FLUX.2 Pro', usdPerImage: 0.025, credits: 7 },
-  { id: 'seedream/4.5-text-to-image', label: 'Seedream 4.5', usdPerImage: 0.032, credits: 9 },
-  { id: 'google/imagen4', label: 'Imagen 4', usdPerImage: 0.04, credits: 11 },
-  { id: 'google/imagen4-ultra', label: 'Imagen 4 Ultra', usdPerImage: 0.06, credits: 17 },
-  { id: 'flux-2/flex-text-to-image', label: 'FLUX.2 Flex', usdPerImage: 0.07, credits: 19 },
-  { id: 'nano-banana-pro', label: 'Nano Banana Pro', usdPerImage: 0.09, credits: 25 },
+  { id: 'imagen-4.0-fast-generate-001', label: 'Imagen 4 Fast', usdPerImage: 0.02, credits: 6 },
+  { id: 'gemini-2.5-flash-image', label: 'Nano Banana', usdPerImage: 0.039, credits: 11 },
+  { id: 'imagen-4.0-generate-001', label: 'Imagen 4', usdPerImage: 0.04, credits: 11 },
+  { id: 'imagen-4.0-ultra-generate-001', label: 'Imagen 4 Ultra', usdPerImage: 0.06, credits: 17 },
+  { id: 'gemini-3-pro-image', label: 'Nano Banana Pro', usdPerImage: 0.12, credits: 33 },
 ]
-const DEFAULT_MODEL = 'google/nano-banana'
+const DEFAULT_MODEL = 'gemini-2.5-flash-image'
 
 function aspectFor(w: number, h: number): string {
   const r = w / h
@@ -129,7 +123,7 @@ export function useAiBackground() {
       }
       return r.url as string
     } catch (e: any) {
-      // сообщение бэка точнее любого нашего домысла (кончился баланс kie,
+      // сообщение бэка точнее любого нашего домысла (кончилась квота у Gemini,
       // модель не приняла запрос, не хватает кредитов) — показываем его
       error.value = e?.serverMessage
         || (e?.status === 402

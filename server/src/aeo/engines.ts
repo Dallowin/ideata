@@ -11,8 +11,8 @@
  *                         WITHOUT the kill switch ("-" → empty, garbage → default);
  *   • platformsFor       (aeo.py:242) — profileBase MINUS the kill switch;
  *   • platformsForLang   (aeo.py:154) — strips RU-market engines for a non-Russian project;
- *   • availablePlatforms (aeo.py:528) — key-gating (OpenRouter/GigaChat/Yandex) +
- *                         kill switch;
+ *   • availablePlatforms (aeo.py:528) — key-gating (the engine's own vendor key /
+ *                         OpenRouter/GigaChat/Yandex) + kill switch;
  *   • yandexPromptsMax   (aeo.py:1388) + topVolumePrompts (aeo.py:1400) — Yandex
  *                         clamp: Neuro is expensive (fixed price per answer), so we
  *                         run not the whole panel but the top prompts by volume.
@@ -22,13 +22,18 @@
  * worker rolls in from app_settings on every job (jobs._apply_admin_settings).
  * That's why every resolver that reads settings is async.
  *
- * Engine registries (DEFAULT_PLATFORMS / OPENROUTER_ENGINES / RU_MARKET_PLATFORMS)
- * come from providers/dispatcher (single source, no duplication). Prompt-text
- * dedup in topVolumePrompts goes through normPrompt (the same _norm_prompt used
- * by the panel).
+ * Engine registries (DEFAULT_PLATFORMS / OPENROUTER_ENGINES / NATIVE_ENGINES /
+ * RU_MARKET_PLATFORMS) come from providers/dispatcher (single source, no
+ * duplication). Prompt-text dedup in topVolumePrompts goes through normPrompt
+ * (the same _norm_prompt used by the panel).
  */
 import { getSettingKey } from './providers/settings';
-import { DEFAULT_PLATFORMS, OPENROUTER_ENGINES, RU_MARKET_PLATFORMS } from './providers/dispatcher';
+import {
+  DEFAULT_PLATFORMS,
+  NATIVE_ENGINES,
+  OPENROUTER_ENGINES,
+  RU_MARKET_PLATFORMS,
+} from './providers/dispatcher';
 import { normPrompt } from './text';
 import { isDict } from './parse';
 
@@ -151,12 +156,13 @@ export function platformsForLang(platforms: readonly string[], lang: string | nu
 }
 
 /**
- * aeo.py:528 — engines available RIGHT NOW: OpenRouter engines
- * (perplexity/chatgpt/deepseek/grok) only with OPENROUTER_API_KEY, gigachat
- * with GIGACHAT_API_KEY, alice/yandex with YANDEX_SEARCH_API_KEY; claude/gemini
- * (kie) and aio always stay (their availability is decided by their own keys
- * at call time). Plus the kill switch (enginesOff). Order preserved. Keys go
- * through getSettingKey (env→app_settings), the equivalent of Python's
+ * aeo.py:528 — engines available RIGHT NOW: perplexity/chatgpt/deepseek/grok
+ * with EITHER their own vendor key (NATIVE_ENGINES — the engine then runs on the
+ * official API) OR OPENROUTER_API_KEY, gigachat with GIGACHAT_API_KEY,
+ * alice/yandex with YANDEX_SEARCH_API_KEY; claude/gemini (vendor APIs) and aio
+ * always stay (their availability is decided by their own keys at call time).
+ * Plus the kill switch (enginesOff). Order preserved. Keys go through
+ * getSettingKey (env→app_settings), the equivalent of Python's
  * `<client>.api_key()`.
  */
 export async function availablePlatforms(
@@ -168,10 +174,17 @@ export async function availablePlatforms(
     getSettingKey('GIGACHAT_API_KEY'),
     getSettingKey('YANDEX_SEARCH_API_KEY'),
   ]);
+  const nativeKeys = new Map(
+    await Promise.all(
+      Object.entries(NATIVE_ENGINES).map(
+        async ([slug, spec]) => [slug, !!(await getSettingKey(spec.key))] as const,
+      ),
+    ),
+  );
   return platforms.filter(
     (p) =>
       !off.has(p) &&
-      (!Object.prototype.hasOwnProperty.call(OPENROUTER_ENGINES, p) || !!orKey) &&
+      (!Object.prototype.hasOwnProperty.call(OPENROUTER_ENGINES, p) || !!orKey || !!nativeKeys.get(p)) &&
       (p !== 'gigachat' || !!gigaKey) &&
       ((p !== 'alice' && p !== 'yandex') || !!yandexKey),
   );

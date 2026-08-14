@@ -1,25 +1,25 @@
 /**
  * Thin wrapper over the LLM (port of blog_agent/llm.py).
  * Providers:
- *  - kie (default) — api.kie.ai, Anthropic Messages format (/claude/v1/messages),
- *    noticeably cheaper; slugs like claude-opus-4-8 (our OpenRouter slugs are mapped automatically);
+ *  - anthropic — api.anthropic.com, Messages format; slugs like claude-opus-4-8
+ *    (our OpenRouter slugs are mapped automatically);
  *  - openrouter — OpenAI chat-completions format.
  * Plus: per-call model choice (strong/fast), mock mode without a key,
  * a json() helper with resilient parsing and repair of truncated JSON.
  */
 
 import { costRubLive, estimateTokens, type LlmUsageContext, recordLlmUsage } from './llmUsage'
-import { isKieModel, kieSlugFor, providerForModel } from './modelCatalog'
+import { anthropicSlugFor, isAnthropicModel, providerForModel } from './modelCatalog'
 
-export type LlmProvider = 'kie' | 'openrouter'
+export type LlmProvider = 'anthropic' | 'openrouter'
 
 export interface LlmConfig {
   provider?: LlmProvider
   apiKey: string
-  /** keys for both providers — for per-model routing (kie is cheap Claude,
+  /** keys for both providers — for per-model routing (Claude goes to Anthropic,
    *  OpenRouter is everything else). If set, the provider is chosen BY MODEL,
    *  not by cfg.provider. If not set → previous behavior (a single apiKey/provider). */
-  kieKey?: string
+  anthropicKey?: string
   openrouterKey?: string
   modelStrong: string
   modelFast: string
@@ -47,10 +47,10 @@ const strOrNull = (v: any): string | null =>
   typeof v === 'string' && v ? v : null
 
 /**
- * A provider failure, not a request failure: 5xx, network drop, timeout. kie
- * returns "Network error / Server exception, please try again later" in these
- * cases — on long prompts (translating a whole article) this hits regularly.
- * A retry fixes it.
+ * A provider failure, not a request failure: 5xx, network drop, timeout.
+ * Providers answer with "Network error / Server exception, please try again
+ * later" in these cases — on long prompts (translating a whole article) this
+ * hits regularly. A retry fixes it.
  */
 function isTransient(err: unknown): boolean {
   const m = err instanceof Error ? err.message : String(err)
@@ -62,8 +62,8 @@ function isTransient(err: unknown): boolean {
 /**
  * The provider ran out of funds. Retrying against it is pointless — but if a
  * second provider is configured, the request happily goes there instead.
- * Without this, an empty kie balance would stop the ENTIRE blog writer even
- * with a working OpenRouter key at hand.
+ * Without this, an empty Anthropic balance would stop the ENTIRE blog writer
+ * even with a working OpenRouter key at hand.
  */
 function isOutOfCredits(err: unknown): boolean {
   const m = err instanceof Error ? err.message : String(err)
@@ -74,7 +74,7 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 /**
  * Response wait ceiling. Long responses (translating a whole article: 8000
- * output tokens) take a minute-plus on kie — at 100s they were timing out for
+ * output tokens) take a minute-plus — at 100s they were timing out for
  * no good reason.
  */
 function callTimeoutMs(maxTokens: number): number {
@@ -113,18 +113,17 @@ export interface CompleteResult {
 }
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const KIE_URL = 'https://api.kie.ai/claude/v1/messages'
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
+const ANTHROPIC_VERSION = '2023-06-01'
 
 /**
- * kie.ai expects slugs WITHOUT a vendor prefix: `claude-opus-4-8`, `gemini-2.5-pro`,
- * `gpt-4o-mini`. Our settings store the OpenRouter style (`anthropic/claude-opus-4.8`,
- * `google/gemini-2.5-pro`) — we map it automatically: strip the `<vendor>/` from all
- * of them (with the prefix kie returns 404 on `api.kie.ai/<model>/v1/chat/completions`),
- * and for Claude additionally turn version dots into hyphens.
+ * The Messages API expects slugs WITHOUT a vendor prefix and with hyphens instead
+ * of the version dot: `claude-opus-4-8`. Our settings store the OpenRouter style
+ * (`anthropic/claude-opus-4.8`) — we map it automatically. Used as a fallback when
+ * the model isn't in the catalog.
  */
-export function toKieModel(model: string): string {
-  const slug = model.replace(/^[\w.-]+\//, '')
-  return slug.startsWith('claude') ? slug.replace(/\.(?=\d)/g, '-') : slug
+export function toAnthropicModel(model: string): string {
+  return model.replace(/^[\w.-]+\//, '').replace(/\.(?=\d)/g, '-')
 }
 
 /**
@@ -146,8 +145,8 @@ export class LLM {
 
   constructor(cfg: LlmConfig) {
     this.cfg = cfg
-    // at least one key present (active apiKey / kie / openrouter) → not mock
-    const anyKey = cfg.apiKey || cfg.kieKey || cfg.openrouterKey
+    // at least one key present (active apiKey / anthropic / openrouter) → not mock
+    const anyKey = cfg.apiKey || cfg.anthropicKey || cfg.openrouterKey
     this.mock = !!cfg.mock || !anyKey
     this.usage = cfg.usage
   }
@@ -156,29 +155,29 @@ export class LLM {
     return this.mock
   }
 
-  /** keys for both providers: explicit kieKey/openrouterKey → use those; otherwise a single apiKey under cfg.provider */
-  private keys(): { kieKey: string; orKey: string } {
-    const prov = this.cfg.provider ?? 'kie'
+  /** keys for both providers: explicit anthropicKey/openrouterKey → use those; otherwise a single apiKey under cfg.provider */
+  private keys(): { anthropicKey: string; orKey: string } {
+    const prov = this.cfg.provider ?? 'anthropic'
     return {
-      kieKey: this.cfg.kieKey || (prov === 'kie' ? this.cfg.apiKey : ''),
+      anthropicKey: this.cfg.anthropicKey || (prov === 'anthropic' ? this.cfg.apiKey : ''),
       orKey: this.cfg.openrouterKey || (prov === 'openrouter' ? this.cfg.apiKey : ''),
     }
   }
 
-  /** route for a model: provider (from the kie catalog) + its key */
+  /** route for a model: provider (Claude → Anthropic, the rest → OpenRouter) + its key */
   private route(model: string): { provider: LlmProvider; key: string } {
-    const { kieKey, orKey } = this.keys()
-    const provider = providerForModel(model, { kieKey, orKey })
-    // Models outside the kie catalog don't exist for kie: it responds with 200 and
-    // {code:422,"The model is not supported"}. This used to reach the user as an
-    // "empty model response" — say plainly what's wrong and what to do about it.
-    if (provider === 'kie' && !isKieModel(model)) {
+    const { anthropicKey, orKey } = this.keys()
+    const provider = providerForModel(model, { anthropicKey, orKey })
+    // Non-Claude models don't exist for the Messages API: it answers 404
+    // "model not found". This used to reach the user as an "empty model
+    // response" — say plainly what's wrong and what to do about it.
+    if (provider === 'anthropic' && !isAnthropicModel(model)) {
       throw new Error(
         `Model ${model} is only available through OpenRouter, and no OpenRouter key is set. `
-        + 'Add OPENROUTER_API_KEY in the Admin panel or choose a Claude/Gemini model (served by kie.ai).',
+        + 'Add OPENROUTER_API_KEY in the Admin panel or choose a Claude model.',
       )
     }
-    return { provider, key: provider === 'kie' ? kieKey : orKey }
+    return { provider, key: provider === 'anthropic' ? anthropicKey : orKey }
   }
 
   async complete(prompt: string, opts: CompleteOpts = {}): Promise<string> {
@@ -200,7 +199,7 @@ export class LLM {
       || (research
         ? (this.cfg.modelResearch || this.cfg.modelFast)
         : (strong ? this.cfg.modelStrong : this.cfg.modelFast))
-    // provider is chosen BY MODEL: Claude → kie (cheaper), everything else → OpenRouter
+    // provider is chosen BY MODEL: Claude → Anthropic, everything else → OpenRouter
     const { provider, key } = this.route(model)
 
     // Accounting wrapper: measures latency, extracts usage tokens and request_id,
@@ -208,8 +207,8 @@ export class LLM {
     const runOnce = async (mt: number, prov: LlmProvider, k: string): Promise<LlmCallResult> => {
       const started = Date.now()
       try {
-        const r = prov === 'kie'
-          ? await this.completeKie(model, k, prompt, { system, maxTokens: mt, temperature })
+        const r = prov === 'anthropic'
+          ? await this.completeAnthropic(model, k, prompt, { system, maxTokens: mt, temperature })
           : await this.completeOpenRouter(model, k, prompt, { system, maxTokens: mt, temperature })
         void recordLlmUsage({
           provider: prov, model, status: 'ok',
@@ -230,14 +229,14 @@ export class LLM {
       }
     }
 
-    // Backup provider in case kie flaps: the same model through OpenRouter
-    // (Claude's id is already in its format). More expensive, but the pipeline step gets through.
+    // Backup provider in case Anthropic flaps: the same model through OpenRouter
+    // (Claude's id is already in its format). The pipeline step gets through.
     const { orKey } = this.keys()
     const backup: { provider: LlmProvider; key: string } | null =
-      provider === 'kie' && orKey && model.includes('/') ? { provider: 'openrouter', key: orKey } : null
+      provider === 'anthropic' && orKey && model.includes('/') ? { provider: 'openrouter', key: orKey } : null
 
     // Transient provider failure — up to two retries with a pause, the second one
-    // already through the backup (if any). Without this a single 500 from kie breaks
+    // already through the backup (if any). Without this a single 500 breaks
     // a whole pipeline step (locale translation, article section), and it flaps regularly.
     let usedProvider = provider
     const runWithRetry = async (mt: number): Promise<LlmCallResult> => {
@@ -318,64 +317,54 @@ export class LLM {
   }
 
   /**
-   * kie.ai. Two formats:
-   *  - Claude models → Anthropic Messages API (/claude/v1/messages, response content[].text,
-   *    usage.input_tokens/output_tokens);
-   *  - everything else (gemini-*, gpt-5-2…) → a per-model OpenAI endpoint
-   *    api.kie.ai/<model>/v1/chat/completions (choices[0].message.content,
-   *    usage.prompt_tokens/completion_tokens).
-   * Some kie responses arrive without usage — then tokens are NULL (cost gets backfilled by the scrapper).
+   * Anthropic Messages API: response content[].text, usage.input_tokens/output_tokens.
+   * Only Claude models come here — everything else goes through OpenRouter.
    */
-  private async completeKie(
+  private async completeAnthropic(
     model: string,
     key: string,
     prompt: string,
     o: { system: string, maxTokens: number, temperature: number },
   ): Promise<LlmCallResult> {
-    // slug comes from the catalog (for some models it can't be derived from the id:
-    // gemini-3-5-flash-openai), and only as a fallback do we guess it from the id
-    const slug = kieSlugFor(model) || toKieModel(model)
+    // slug comes from the catalog, and only as a fallback do we derive it from the id
+    const slug = anthropicSlugFor(model) || toAnthropicModel(model)
     const system = o.system || 'Ты — редактор и автор технического блога.'
-    const isClaude = slug.startsWith('claude')
 
-    const url = isClaude ? KIE_URL : `https://api.kie.ai/${slug}/v1/chat/completions`
-    const body = isClaude
-      ? { model: slug, max_tokens: o.maxTokens, temperature: o.temperature, system, messages: [{ role: 'user', content: prompt }] }
-      : { model: slug, max_tokens: o.maxTokens, temperature: o.temperature, messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }] }
-
-    const res = await fetch(url, {
+    const res = await fetch(ANTHROPIC_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${key}`,
+        'x-api-key': key,
+        'anthropic-version': ANTHROPIC_VERSION,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        model: slug,
+        max_tokens: o.maxTokens,
+        temperature: o.temperature,
+        system,
+        messages: [{ role: 'user', content: prompt }],
+      }),
       signal: AbortSignal.timeout(callTimeoutMs(o.maxTokens)),
     })
     if (!res.ok) {
       const errBody = (await res.text()).slice(0, 300)
-      throw new Error(`kie.ai ${res.status} (${slug}): ${errBody}`)
+      throw new Error(`Anthropic ${res.status} (${slug}): ${errBody}`)
     }
     const data: any = await res.json()
-    // kie also returns errors with HTTP 200 — its own envelope {code,msg,data:null}
-    // (e.g. code:422 "The model is not supported") and the Anthropic style {type:'error'}.
-    if (typeof data?.code === 'number' && data.code !== 200) {
-      throw new Error(`kie.ai ${data.code} (${slug}): ${data?.msg || 'provider error'}`)
-    }
+    // an error envelope can also arrive with HTTP 200
     if (data?.type === 'error') {
-      throw new Error(`kie.ai (${slug}): ${data?.error?.message || 'provider error'}`)
+      throw new Error(`Anthropic (${slug}): ${data?.error?.message || 'provider error'}`)
     }
-    const text = isClaude
-      ? (Array.isArray(data?.content) ? data.content.filter((c: any) => c?.type === 'text').map((c: any) => c.text).join('') : '')
-      : (typeof data?.choices?.[0]?.message?.content === 'string' ? data.choices[0].message.content : '')
-    if (!text) throw new Error(`kie.ai: empty model response (${JSON.stringify(data).slice(0, 200)})`)
-    // usage: Anthropic format (input/output_tokens) or OpenAI format (prompt/completion_tokens)
+    const text = Array.isArray(data?.content)
+      ? data.content.filter((c: any) => c?.type === 'text').map((c: any) => c.text).join('')
+      : ''
+    if (!text) throw new Error(`Anthropic: empty model response (${JSON.stringify(data).slice(0, 200)})`)
     const u = data?.usage || {}
-    let tokensIn = numOrNull(u.input_tokens ?? u.prompt_tokens)
-    let tokensOut = numOrNull(u.output_tokens ?? u.completion_tokens)
-    // Some kie responses arrive without usage. NULL tokens = "price unknown" =
-    // zero credits for the call, i.e. a free article. We estimate from length —
-    // approximate, but not free (the estimated flag carries through to accounting).
+    let tokensIn = numOrNull(u.input_tokens)
+    let tokensOut = numOrNull(u.output_tokens)
+    // A response without usage means NULL tokens = "price unknown" = zero credits
+    // for the call, i.e. a free article. We estimate from length — approximate,
+    // but not free (the estimated flag carries through to accounting).
     const estimated = tokensIn == null || tokensOut == null
     if (estimated) {
       if (tokensIn == null) tokensIn = estimateTokens(`${system}\n${prompt}`)
@@ -387,8 +376,7 @@ export class LLM {
       tokensOut,
       estimated,
       requestId: strOrNull(data?.id),
-      // Anthropic: stop_reason=max_tokens; OpenAI style: finish_reason=length
-      truncated: data?.stop_reason === 'max_tokens' || data?.choices?.[0]?.finish_reason === 'length',
+      truncated: data?.stop_reason === 'max_tokens',
     }
   }
 

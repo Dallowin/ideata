@@ -3,11 +3,10 @@
  *   • the endpoint is NOT tied to an article (run) — only to the user;
  *   • available to any logged-in user (LoginGuard), not just Pro;
  *   • no cap on quantity — paid for from the credits balance (CreditsService).
- *     Price = our cost per image × IMAGE_MARKUP: without the markup, a credit
- *     spent on an image would cost us three times more than a credit spent on text
- *     (text is priced off the vendor's official price, and we pay a third of it);
- *   • with the user's own (BYO) kie.ai key (user_ai_keys) — generation is free for us
- *     and no credits are deducted: the user pays the provider directly;
+ *     Price = the model's official price per image, converted to credits
+ *     (creditsForImageUsd);
+ *   • with the user's own (BYO) Gemini key (user_ai_keys) — no credits are
+ *     deducted: the user pays the provider directly;
  *   • the user picks the model from the text→image catalog (imageCatalog).
  *
  * The text-free image (models garble letters) is saved to data/covers and served
@@ -38,7 +37,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { LoginGuard } from '../../auth/login.guard';
 import { CreditsService, creditsForImageUsd } from '../../credits/credits.service';
 import { DEFAULT_IMAGE_MODEL, findImageModel, getImageCatalog } from '../server/utils/imageCatalog';
-import { generateImage, kieKey } from '../server/utils/nanoBanana';
+import { generateImage, geminiKey } from '../server/utils/googleImage';
 import { deleteScene, listImages, listScenes, saveImage, saveScene } from '../server/utils/previewStore';
 import { dataDir } from '../server/utils/store';
 import { resolveSettings } from '../server/utils/appSettings';
@@ -49,11 +48,11 @@ import { BlogBrandContext } from '../brand-context';
 const ASPECTS = new Set(['16:9', '1:1', '9:16', '4:3', '3:2', '2:3', '3:4']);
 
 /**
- * Image price when the catalog didn't return a price. Equal to the most expensive
- * known model with markup (Nano Banana Pro, $0.09 × 3 → 25 credits): when the price
- * is unknown, err in our own favor, otherwise a catalog scrape failure becomes a fire sale.
+ * Image price when the catalog entry has no price. Equal to the most expensive
+ * known model (Nano Banana Pro, $0.12 → 33 credits): when the price is unknown,
+ * err on the high side, otherwise the priciest model would go for one credit.
  */
-const IMAGE_PRICE_FALLBACK = 25;
+const IMAGE_PRICE_FALLBACK = 33;
 
 @UseGuards(LoginGuard)
 @Controller('blogwriter')
@@ -74,9 +73,9 @@ export class PreviewBgController {
   /** User's BYO key (or ''), safe against the table not existing. */
   private async ownKey(userId: number): Promise<string> {
     try {
-      const rows = await this.prisma.$queryRawUnsafe<{ kie_key: string }[]>(
-        'SELECT kie_key FROM user_ai_keys WHERE user_id = $1', userId);
-      return (rows?.[0]?.kie_key || '').trim();
+      const rows = await this.prisma.$queryRawUnsafe<{ gemini_key: string }[]>(
+        'SELECT gemini_key FROM user_ai_keys WHERE user_id = $1', userId);
+      return (rows?.[0]?.gemini_key || '').trim();
     } catch { return ''; }
   }
 
@@ -93,11 +92,11 @@ export class PreviewBgController {
 
   /**
    * Catalog of image generation models (text→image only) with price in OUR
-   * credits per image. ?refresh=1 — re-scrape kie.
+   * credits per image.
    */
   @Get('preview/image-models')
-  async imageModels(@Query('refresh') refresh?: string) {
-    const { models, scrapedAt, stale } = await getImageCatalog(refresh === '1');
+  async imageModels() {
+    const { models, scrapedAt, stale } = await getImageCatalog();
     return {
       models: models.map((m) => ({
         id: m.id,
@@ -111,14 +110,14 @@ export class PreviewBgController {
     };
   }
 
-  /** Save/clear the user's own kie.ai key. { key } (empty — clear it). */
+  /** Save/clear the user's own Gemini key. { key } (empty — clear it). */
   @Post('preview/key')
   async saveKey(@Req() req: Request, @Body() body: { key?: string }) {
     const userId = this.userId(req);
     const key = (body?.key || '').trim();
     await this.prisma.$executeRawUnsafe(
-      `INSERT INTO user_ai_keys (user_id, kie_key, updated_at) VALUES ($1, $2, now())
-         ON CONFLICT (user_id) DO UPDATE SET kie_key = EXCLUDED.kie_key, updated_at = now()`,
+      `INSERT INTO user_ai_keys (user_id, gemini_key, updated_at) VALUES ($1, $2, now())
+         ON CONFLICT (user_id) DO UPDATE SET gemini_key = EXCLUDED.gemini_key, updated_at = now()`,
       userId, key);
     return { hasOwnKey: !!key };
   }
@@ -138,22 +137,21 @@ export class PreviewBgController {
     if (prompt.length < 2) throw new BadRequestException('describe the background in a few words');
     const aspect = ASPECTS.has(body?.aspectRatio || '') ? body!.aspectRatio! : '16:9';
 
-    // only accept a model from the catalog — an arbitrary slug would go straight to the jobs API
+    // only accept a model from the catalog — an arbitrary slug would go straight into the API URL
     const wanted = (body?.model || '').trim() || DEFAULT_IMAGE_MODEL;
     const model = await findImageModel(wanted);
     if (!model) throw new BadRequestException('unknown generation model');
 
     const own = await this.ownKey(userId);
     const usingOwnKey = !!own;
-    // Price unknown (catalog scrape failed) → use NOT 1 credit but the upper bound
-    // of known models: otherwise the most expensive model would go for the price of
-    // one, and a catalog failure would turn into a fire sale.
+    // Price unknown → use NOT 1 credit but the upper bound of known models:
+    // otherwise the most expensive model would go for the price of one.
     const price = model.usdPerImage != null
       ? creditsForImageUsd(model.usdPerImage)
       : IMAGE_PRICE_FALLBACK;
 
-    const key = own || await kieKey();
-    if (!key) throw new BadRequestException('no kie.ai key — add your own key to generate a background');
+    const key = own || await geminiKey();
+    if (!key) throw new BadRequestException('no Gemini key — add your own key to generate a background');
 
     // With their own key the user pays directly → we don't touch credits.
     // Otherwise reserve BEFORE generation: the balance check and deduction happen in
@@ -171,34 +169,26 @@ export class PreviewBgController {
     const full = `${prompt}. Абстрактный фон/обои для превью, современно, атмосферно. `
       + 'БЕЗ текста, БЕЗ букв, БЕЗ надписей, без логотипов.';
 
-    let tempUrl: string;
+    let buf: Buffer;
+    let mime: string;
     try {
-      tempUrl = await generateImage(full, key, { aspectRatio: aspect, model: model.id });
+      ({ bytes: buf, mime } = await generateImage(full, key, { aspectRatio: aspect, model: model.id }));
     } catch (e: any) {
       await refund('generate_failed');
       const msg = String(e?.message || '');
-      // OUR kie account ran out of balance — this isn't about the user's credits,
-      // and retrying is pointless: tell them plainly what to do.
-      if (msg.startsWith('KIE_NO_CREDITS')) {
+      // The Gemini account ran out of quota/balance — this isn't about the user's
+      // credits, and retrying is pointless: tell them plainly what to do.
+      if (msg.startsWith('GEMINI_NO_CREDITS')) {
         throw new HttpException(
           usingOwnKey
-            ? 'Your kie.ai key ran out of balance — top up your kie.ai account.'
-            : `Image provider declined: insufficient kie.ai balance for model "${model.label}". `
-              + 'Pick a cheaper model or top up the kie.ai account.',
+            ? 'Your Gemini key ran out of balance — top up your Google AI Studio account.'
+            : `Image provider declined: insufficient Gemini balance for model "${model.label}". `
+              + 'Pick a cheaper model or top up the Google AI Studio account.',
           503,
         );
       }
       throw new BadGatewayException(msg || 'image generation failed');
     }
-    const img = await fetch(tempUrl, { signal: AbortSignal.timeout(30_000) }).catch(async (e) => {
-      await refund('download_failed');
-      throw new BadGatewayException(e?.message || 'failed to download the generated image');
-    });
-    if (!img.ok) {
-      await refund('download_failed');
-      throw new BadGatewayException('failed to download the generated image');
-    }
-    const buf = Buffer.from(await img.arrayBuffer());
 
     // The image goes to the DB — it survives server relocation and disk cleanup.
     // We also put a copy on disk as before: it's a serving cache and a safety net in
@@ -212,6 +202,7 @@ export class PreviewBgController {
       prompt,
       aspect,
       credits: usingOwnKey ? 0 : price,
+      mime,
       bytes: buf,
       fileName: file,
     });

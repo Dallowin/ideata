@@ -7,7 +7,7 @@
  * the interface and the composition points; the live implementation is
  * LiveLlmLayer (live-llm-layer.ts) on top of aa-agents/aeo-snapshot.
  *
- * NoopLlmLayer is the degradation to Python's behaviour without a KIE key:
+ * NoopLlmLayer is the degradation to Python's behaviour with no LLM key:
  * run_llm_layer -> {}, no snapshot/guide; the same facts fields stay null while
  * the deterministic report is still complete.
  */
@@ -46,7 +46,8 @@ export const LLM_LAYER = Symbol('LLM_LAYER');
 
 /**
  * No-op layer: the pipeline composes end to end, but the LLM fields stay null -
- * Python's behaviour without KIE_API_KEY (run_llm_layer -> {}, no snapshot/guide).
+ * Python's behaviour with neither ANTHROPIC_API_KEY nor OPENROUTER_API_KEY
+ * (run_llm_layer -> {}, no snapshot/guide).
  */
 @Injectable()
 export class NoopLlmLayer implements LlmLayer {

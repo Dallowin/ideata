@@ -4,7 +4,8 @@
  * No live LLM/SERP burned — the entire non-deterministic layer is mocked.
  * Checks language/market, lite, fail-soft panelOnlyBlock, competitor validation
  * with a RE-parse of mentions, the aggregateFacts composition, seeding
- * monitoring through the store, and the KIE/AEO_SNAPSHOT gates.
+ * monitoring through the store, and the note the panel-only block carries when
+ * the engines stay silent.
  */
 import { runAeoSnapshotCore, type AeoSnapshotDeps, type AeoSnapshotStore } from './aeo-snapshot';
 import type { Facts, Raw } from './types';
@@ -53,6 +54,8 @@ describe('runAeoSnapshotCore — fail-soft', () => {
     const res = await runAeoSnapshotCore('acme.com', mkFacts(), RAW, {}, deps);
     expect(res.run).toBeNull();
     expect((res.block as any).aeoStatus).toBe('engines_unavailable');
+    // the note points at the keys the engines actually run on
+    expect((res.block as any).aeoStatusNote).toContain('ANTHROPIC_API_KEY / OPENROUTER_API_KEY');
     expect((res.block as any).aiPromptsRows).toHaveLength(1); // panel is still returned
     expect(res.competitors).toBeUndefined();
   });

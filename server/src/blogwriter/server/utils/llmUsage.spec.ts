@@ -7,14 +7,14 @@ import { costRub, costRubLive, estimateTokens, recordLlmUsage } from './llmUsage
 import { setBlogPrisma } from './prisma'
 
 // Mock the model catalog: it's the price source for accounting, and the test
-// shouldn't hit the network (or depend on what kie/OpenRouter return today).
+// shouldn't hit the network (or depend on what the catalogs return today).
 // Prices here are deliberately NOT equal to the local price list — so it's
 // visible which source was used.
 jest.mock('./modelCatalog', () => ({
   ...jest.requireActual('./modelCatalog'),
   getUnifiedCatalog: jest.fn(async () => ({
     models: [
-      { id: 'kie/claude-sonnet-5', label: 'Sonnet (kie)', provider: 'kie', format: 'anthropic', inUsd: 0.9, outUsd: 4.5, desc: '', context: null },
+      { id: 'anthropic/claude-sonnet-4.5', label: 'Claude Sonnet 4.5', provider: 'anthropic', format: 'claude', inUsd: 0.9, outUsd: 4.5, desc: '', context: null },
       { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', provider: 'openrouter', format: 'openai', inUsd: 0.25, outUsd: 2, desc: '', context: null },
     ],
     source: 'snapshot' as const,
@@ -44,7 +44,7 @@ describe('costRub — RUB estimate from the catalog price list (rate 90 RUB/$)',
       costRub('anthropic/claude-sonnet-5', 1000, 2000)!,
     )
   })
-  it('no tokens → NULL (kie without usage)', () => {
+  it('no tokens → NULL (provider sent no usage)', () => {
     expect(costRub('anthropic/claude-sonnet-5', null, null)).toBeNull()
     expect(costRub('anthropic/claude-sonnet-5', 100, null)).toBeNull()
   })
@@ -56,7 +56,7 @@ describe('costRub — RUB estimate from the catalog price list (rate 90 RUB/$)',
 describe('costRubLive — price from the live catalog, local price list as fallback', () => {
   it('model is in the catalog → priced from it, not from regex', async () => {
     // 1000 in × $0.9/1M + 2000 out × $4.5/1M = $0.0099 × 90 RUB = 0.891 RUB
-    await expect(costRubLive('kie/claude-sonnet-5', 1000, 2000)).resolves.toBeCloseTo(0.891, 6)
+    await expect(costRubLive('anthropic/claude-sonnet-4.5', 1000, 2000)).resolves.toBeCloseTo(0.891, 6)
   })
 
   it('used to cost ZERO: a model outside the five regexes now has a price', async () => {
@@ -75,7 +75,7 @@ describe('costRubLive — price from the live catalog, local price list as fallb
   })
 
   it('no tokens → null either way', async () => {
-    await expect(costRubLive('kie/claude-sonnet-5', null, null)).resolves.toBeNull()
+    await expect(costRubLive('anthropic/claude-sonnet-4.5', null, null)).resolves.toBeNull()
   })
 })
 
@@ -118,8 +118,8 @@ describe('recordLlmUsage — usage row in llm_usage', () => {
   it('error: status error, error text, tokens and RUB = NULL', async () => {
     const exec = mkPrisma(jest.fn(() => Promise.resolve(1)))
     await recordLlmUsage({
-      provider: 'kie', model: 'anthropic/claude-opus-4.8', status: 'error',
-      error: 'kie.ai 402 (claude-opus-4-8): insufficient credits', latencyMs: 50,
+      provider: 'anthropic', model: 'anthropic/claude-opus-4.8', status: 'error',
+      error: 'Anthropic 402 (claude-opus-4-8): insufficient credits', latencyMs: 50,
     })
     const a = exec.mock.calls[0]
     expect(a[P.status]).toBe('error')
@@ -133,7 +133,7 @@ describe('recordLlmUsage — usage row in llm_usage', () => {
   it('insert failure (missing table) does NOT throw', async () => {
     mkPrisma(jest.fn(() => Promise.reject(new Error('relation "llm_usage" does not exist'))))
     await expect(
-      recordLlmUsage({ provider: 'kie', model: 'x', status: 'ok', latencyMs: 1 }),
+      recordLlmUsage({ provider: 'anthropic', model: 'x', status: 'ok', latencyMs: 1 }),
     ).resolves.toBeUndefined()
   })
 })
@@ -143,7 +143,7 @@ describe('LLM.complete — usage-tracking wrapper around the actual call', () =>
   afterEach(() => { global.fetch = realFetch })
 
   const cfg = {
-    provider: 'kie' as const, apiKey: 'k',
+    provider: 'anthropic' as const, apiKey: 'k',
     modelStrong: 'anthropic/claude-sonnet-5', modelFast: 'anthropic/claude-haiku-4.5',
     usage: { runId: 'r1', userId: 9, domain: 'd.io' },
   }
@@ -161,7 +161,7 @@ describe('LLM.complete — usage-tracking wrapper around the actual call', () =>
     expect(out).toBe('hello')
     expect(exec).toHaveBeenCalledTimes(1)
     const a = exec.mock.calls[0]
-    expect(a[P.provider]).toBe('kie')
+    expect(a[P.provider]).toBe('anthropic')
     expect(a[P.model]).toBe('anthropic/claude-sonnet-5')
     expect(a[P.status]).toBe('ok')
     expect(a[P.runId]).toBe('r1')
@@ -172,9 +172,9 @@ describe('LLM.complete — usage-tracking wrapper around the actual call', () =>
     expect(a[P.requestId]).toBe('msg_1')
   })
 
-  // A kie response without usage used to give tokens NULL → price "unknown" →
+  // A response without usage used to give tokens NULL → price "unknown" →
   // ZERO contribution to the charge: an article on such responses came out free.
-  it('kie without usage: tokens estimated from length, row marked estimated', async () => {
+  it('provider without usage: tokens estimated from length, row marked estimated', async () => {
     const exec = mkPrisma(jest.fn(() => Promise.resolve(1)))
     global.fetch = jest.fn(async () => ({
       ok: true,

@@ -1,8 +1,8 @@
 /**
  * Cost tracking for the blog writer's LLM calls, in the SHARED `llm_usage` table
- * (created by the scrapper in the same Postgres). Every actual kie/OpenRouter call
- * from llm.ts writes one row here: provider, model, tokens, latency, status, and a
- * RUB cost estimate.
+ * (created by the scrapper in the same Postgres). Every actual Anthropic/OpenRouter
+ * call from llm.ts writes one row here: provider, model, tokens, latency, status,
+ * and a RUB cost estimate.
  *
  * Resilience contract: the table may NOT exist yet on first deploy (the scrapper
  * creates it) — the insert goes through $executeRawUnsafe in try/catch, and any
@@ -20,7 +20,7 @@ export interface LlmUsageContext {
 
 /** A single usage record — what the wrapper around a provider call knows. */
 export interface LlmUsageEntry extends LlmUsageContext {
-  provider: 'kie' | 'openrouter'
+  provider: 'anthropic' | 'openrouter'
   model: string
   status: 'ok' | 'error'
   latencyMs: number
@@ -67,14 +67,14 @@ export function costRub(
 }
 
 /**
- * Cost of a call from the LIVE model catalog (kie + OpenRouter, 1h cache inside
- * getUnifiedCatalog), falling back to the local regexes.
+ * Cost of a call from the LIVE model catalog (Anthropic + OpenRouter, 1h cache
+ * inside getUnifiedCatalog), falling back to the local regexes.
  *
- * Why: the local price list only knows opus/sonnet/haiku/gemini-pro/grok, while the
- * default provider is kie, and the whole GPT/DeepSeek/Qwen/Kimi range falls through.
- * For those, costRub returned NULL → chargeRunCredits saw "price unknown" and charged
- * ZERO credits. So an article on any model outside the five was free, even though the
- * composer showed the user a price.
+ * Why: the local price list only knows opus/sonnet/haiku/gemini-pro/grok, and the
+ * whole GPT/DeepSeek/Qwen/Kimi range falls through. For those, costRub returned
+ * NULL → chargeRunCredits saw "price unknown" and charged ZERO credits. So an
+ * article on any model outside the five was free, even though the composer showed
+ * the user a price.
  *
  * The estimate in the gate (CreditsService.estimatePost) is computed from this same
  * catalog — now the displayed price and the actual charge come from one source.
@@ -99,7 +99,7 @@ export async function costRubLive(
 }
 
 /**
- * Rough token estimate from text length. Needed because some kie responses
+ * Rough token estimate from text length. Needed because some provider responses
  * arrive WITHOUT a usage block: tokens ended up NULL, the call's cost was
  * treated as "unknown", and that call's contribution to the credit charge was
  * ZERO — an article generated entirely from such responses turned out free.

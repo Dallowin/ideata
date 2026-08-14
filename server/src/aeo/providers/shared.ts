@@ -1,6 +1,6 @@
 /**
- * Shared bits of the AEO providers layer (port of helper functions from
- * scrapper/core/{kie,openrouter,gigachat,yandex_ai}.py). Only pure field-extraction
+ * Shared bits of the AEO providers layer (port of helper functions from the
+ * scrapper/core/* provider clients). Only pure field-extraction
  * code from the response envelope lives here — no network. The "who was mentioned /
  * cited by what" dashboard rests on these functions, so parity with Python matters,
  * not just "the same meaning": the Python clients hand back res with the same
@@ -36,7 +36,7 @@ export interface RawSource {
 }
 
 /**
- * Python's `_int` (kie.py:281 / openrouter.py:199 / yandex_ai.py:166):
+ * Python's `_int` (openrouter.py:199 / yandex_ai.py:166):
  * `int(v) if v is not None else None`, None on error. Python's `int()`
  * truncates a float toward zero and parses numeric strings; here
  * `Math.trunc(Number(v))` has the same failure modes, falling back to null on
@@ -70,7 +70,7 @@ export function joinContent(content: unknown): string {
 }
 
 /**
- * Python's `_dedup_sources` (kie.py:101 / openrouter.py:57): dedup sources by
+ * Python's `_dedup_sources` (openrouter.py:57): dedup sources by
  * URL, preserving order; the title is taken from the FIRST occurrence where
  * it's non-empty (the same URL can arrive both bare and with a title).
  * URL/title are normalized with Python's `str(x or "").strip()`

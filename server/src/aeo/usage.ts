@@ -78,7 +78,17 @@ export function platformContext<T>(slug: string | null, fn: () => T): T {
 
 /** A single usage entry — what the provider client knows at the call site. */
 export interface UsageEntry {
-  provider: 'kie' | 'openrouter' | 'yandex' | 'gigachat' | 'dataforseo';
+  provider:
+    | 'anthropic'
+    | 'google'
+    | 'openai'
+    | 'xai'
+    | 'deepseek'
+    | 'perplexity'
+    | 'openrouter'
+    | 'yandex'
+    | 'gigachat'
+    | 'dataforseo';
   model?: string | null;
   status?: 'ok' | 'error';
   error?: string | null;
@@ -98,12 +108,14 @@ export interface UsageEntry {
  * Dollar cost of a usage entry (without writing it) — for parity checks/tests.
  * Honors an explicit `costUsd`; otherwise computes from tokens ONLY for
  * successful calls (a failed request usually doesn't spend money —
- * usage.py:277-282). Returns null when there's nothing to compute from.
+ * usage.py:277-282). The provider goes into the price as well: the search fee
+ * depends on the route (vendor search vs the Exa plugin). Returns null when
+ * there's nothing to compute from.
  */
 export function costUsdFor(e: UsageEntry): number | null {
   if (e.costUsd !== undefined && e.costUsd !== null) return e.costUsd;
   if ((e.status ?? 'ok') !== 'ok') return null;
-  return tokenCostUsd(e.model, e.tokensIn, e.tokensOut, { grounded: e.grounded });
+  return tokenCostUsd(e.model, e.tokensIn, e.tokensOut, { grounded: e.grounded, provider: e.provider });
 }
 
 /**

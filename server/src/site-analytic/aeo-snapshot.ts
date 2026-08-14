@@ -238,10 +238,11 @@ export interface AeoSnapshotResult {
 const dedup = <T>(xs: T[]): T[] => [...new Set(xs)];
 
 const ENGINES_NOTE =
-  'ИИ-движки не ответили. Проверьте KIE_API_KEY (валидность/баланс) и перепрогоните разбор.';
+  'ИИ-движки не ответили. Проверьте ANTHROPIC_API_KEY / OPENROUTER_API_KEY ' +
+  '(валидность/баланс) и перепрогоните разбор.';
 
 /**
- * Port of _run_aeo_snapshot (site_analytic.py:711-910). The KIE-key/AEO_SNAPSHOT
+ * Port of _run_aeo_snapshot (site_analytic.py:711-910). The LLM-key/AEO_SNAPSHOT
  * gate lives on the caller's side (LiveLlmLayer); here — the recon core. Returns
  * {block, run, competitors}, or a panel-only block when the engines stay silent.
  */
@@ -351,7 +352,7 @@ export async function runAeoSnapshotCore(
 
   if (!answers.length) {
     // Fail-soft: the key is there, prompts are there, but ALL engines came back empty.
-    progress?.('AEO: engines unavailable — check KIE_API_KEY');
+    progress?.('AEO: engines unavailable — check ANTHROPIC_API_KEY / OPENROUTER_API_KEY');
     return { block: panelOnlyBlock(panel, platforms, { note: ENGINES_NOTE }), run: null };
   }
 

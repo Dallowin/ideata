@@ -109,15 +109,26 @@ Engines are split across providers. Set the keys for the engines you actually wa
 
 | Engine | Variable | Where |
 | --- | --- | --- |
-| ChatGPT, DeepSeek, Grok, Perplexity | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| Claude, Gemini | `KIE_API_KEY` | [kie.ai](https://kie.ai) |
+| ChatGPT, Claude, Gemini, DeepSeek, Grok, Perplexity | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
+| ChatGPT — official OpenAI API | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) |
+| Claude — official Anthropic API | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| Gemini — official Google API **+ all image generation** | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| DeepSeek — official DeepSeek API | `DEEPSEEK_API_KEY` | [platform.deepseek.com](https://platform.deepseek.com/api_keys) |
+| Grok — official xAI API | `XAI_API_KEY` | [console.x.ai](https://console.x.ai) |
+| Perplexity — official Sonar API | `PERPLEXITY_API_KEY` | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) |
 | Google AI Overviews | `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` | [dataforseo.com](https://app.dataforseo.com/api-access) |
 | GigaChat | `GIGACHAT_API_KEY` | regional |
 | Yandex Alice, Yandex Neuro | `YANDEX_SEARCH_API_KEY` | regional |
 
-> **Claude and Gemini do not fall back to OpenRouter.** Without `KIE_API_KEY` they are skipped silently — the run completes, those rows are just missing. Set both keys if you want the full ten engines.
+> **One key is enough — the rest is per engine.** With just `OPENROUTER_API_KEY` all six global engines run. Each engine then runs through its vendor's official API when that key is set, and through OpenRouter otherwise — mix the two freely, engine by engine, and the app shows you the active route on every row. Images are the one exception: covers and illustrations need `GEMINI_API_KEY`, there is no fallback for them.
 
-Per-provider native keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY` and friends) are accepted by the settings screen but are **not wired into the engine dispatcher yet** — see the roadmap. Today the two keys above are what actually drives the tracker.
+**Grounding depends on the route.** In grounded ("full") runs the engines search the live web like this:
+
+- **ChatGPT** — official OpenAI `web_search` with real citations. Through OpenRouter it gets no web search at all, so this key is a real upgrade.
+- **Claude**, **Gemini** — official `web_search` / `google_search` with real citations; the OpenRouter route serves these models without a search tool.
+- **Grok** — official xAI Live Search with real citations; through OpenRouter, the web plugin.
+- **Perplexity** — Sonar searches on every call, on both routes.
+- **DeepSeek** — the vendor API has **no web search**: on the official route a grounded run returns a plain answer with no citations. The OpenRouter route keeps its web plugin, so leave `DEEPSEEK_API_KEY` empty if citations matter more than a direct connection.
 
 ### Everything else (all optional)
 
@@ -165,7 +176,7 @@ New UI locales are welcome — they live in the frontend translation dictionarie
 ## Roadmap
 
 - [ ] More answer engines & regional assistants
-- [ ] Native-API dispatch with per-country geo-targeting
+- [ ] Per-country geo-targeting for the answer engines
 - [ ] Scheduled PDF/email visibility reports out of the box
 - [ ] One-click deploy templates (Railway / Render / Coolify)
 

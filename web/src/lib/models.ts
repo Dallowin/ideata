@@ -4,7 +4,8 @@
  * генерация картинок в обложках) — чтобы селектор везде выглядел одинаково.
  *
  * Слаги приходят в двух видах: OpenRouter-стиль `vendor/model` и голые слаги
- * kie (`nano-banana-pro`, `z-image`, `gemini-3-pro`) — второй разбираем по началу.
+ * официальных API (`claude-haiku-4-5`, `gemini-3-pro-image`, `imagen-4.0-generate-001`),
+ * вторые разбираем по началу.
  */
 const VENDOR_LABEL: Record<string, string> = {
   anthropic: 'Claude', openai: 'OpenAI', google: 'Google', deepseek: 'DeepSeek',
@@ -22,22 +23,13 @@ const HAS_ICON = new Set([
 
 export function vendorKey(id: string): string {
   const s = (id || '').toLowerCase()
-  if (s.includes('/')) {
-    const v = s.split('/')[0]
-    // картиночные слаги kie: `seedream/4.5-…`, `flux-2/pro-…`, `gpt-image/1.5-…`
-    if (v.startsWith('seedream')) return 'bytedance'
-    if (v.startsWith('flux')) return 'black-forest-labs'
-    if (v.startsWith('gpt-image')) return 'openai'
-    return v
-  }
+  if (s.includes('/')) return s.split('/')[0]
   if (s.startsWith('claude')) return 'anthropic'
-  if (s.startsWith('gemini') || s.startsWith('nano-banana') || s.startsWith('imagen')) return 'google'
+  // картиночные слаги Google: `gemini-2.5-flash-image`, `imagen-4.0-generate-001`
+  if (s.startsWith('gemini') || s.startsWith('imagen')) return 'google'
   if (s.startsWith('gpt') || s.startsWith('4o-')) return 'openai'
   if (s.startsWith('grok')) return 'x-ai'
   if (s.startsWith('qwen')) return 'qwen'
-  if (s.startsWith('seedream') || s.startsWith('seedance')) return 'bytedance'
-  if (s.startsWith('flux')) return 'black-forest-labs'
-  if (s.startsWith('z-image') || s.startsWith('glm')) return 'z-ai'
   return 'other'
 }
 

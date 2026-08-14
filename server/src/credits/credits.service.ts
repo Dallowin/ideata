@@ -9,10 +9,9 @@
  * way the journal and the balance never drift apart, and "expiring at
  * month's end" happens automatically.
  *
- * 1 credit = 1 ₽ of the model's OFFICIAL cost (sold for 2 ₽). Official,
- * specifically: kie sells Claude at 30-40% of the vendor's price, and that
- * difference is our margin, not a discount for the client. What we actually
- * pay the provider lives separately, in llm_usage.cost_rub (see
+ * 1 credit = 1 ₽ of the model's OFFICIAL cost — the vendor's list price,
+ * taken regardless of which route the call actually went through. What the
+ * call really cost lives separately, in llm_usage.cost_rub (see
  * official-price.ts).
  */
 import { HttpException, Injectable } from '@nestjs/common';
@@ -32,19 +31,17 @@ export function creditsForUsd(usd: number): number {
 /**
  * Markup on image generation.
  *
- * Text credits are computed from the vendor's OFFICIAL price, and we pay kie
- * roughly a third of that — meaning a credit spent on text costs us ~0.3 ₽.
- * Images have no official price in the catalog, only our purchase price per
- * image, and the price used to be set directly from that: an image credit
- * cost us 0.9 ₽, three times more. The same pool meant something different
- * depending on what it was spent on.
+ * Text credits are computed from the vendor's OFFICIAL price per token, which
+ * is what the catalog carries. Images have no token price at all — only a
+ * price per image — and taking credits straight from that number made the same
+ * pool mean something different depending on what it was spent on.
  *
- * The multiplier evens out the scale: an image costs the client more
- * credits, but a credit costs us roughly the same everywhere.
+ * The multiplier evens out the scale: an image costs the client more credits,
+ * but one credit stands for roughly the same amount everywhere.
  */
 export const IMAGE_MARKUP = 3;
 
-/** Image price in credits, based on our purchase price per image. */
+/** Image price in credits, based on the vendor's price per image. */
 export function creditsForImageUsd(usd: number): number {
   return creditsForUsd(usd * IMAGE_MARKUP);
 }
@@ -136,8 +133,8 @@ export class CreditsService {
   /**
    * Estimated cost of a single article in credits for model `model`.
    * Price is OFFICIAL (see official-price): credits are computed from the
-   * vendor price, not from what we actually pay kie. A model with no price →
-   * a conservative 15.
+   * vendor's list price, whichever route the call takes. A model with no
+   * price → a conservative 15.
    */
   async estimatePost(model: string | null | undefined): Promise<number> {
     const p = await officialUsd(String(model || ''));
@@ -200,8 +197,7 @@ export class CreditsService {
   /**
    * Charge at the OFFICIAL cost of the call in rubles. Rounded up to a whole
    * credit (minimum 1) — same as posts and images: the journal is
-   * integer-only, and there's no point splitting kopecks at a sale price of
-   * 2 ₽ per credit.
+   * integer-only, and there's no point splitting kopecks.
    * @returns how much was charged (0 — price unknown, nothing to charge)
    */
   async chargeRub(
@@ -220,7 +216,7 @@ export class CreditsService {
 
   /**
    * Charge for a call by token count: the price is official, regardless of
-   * which provider the call actually went through.
+   * which provider the call actually went through (see official-price).
    */
   async chargeCall(
     userId: number,

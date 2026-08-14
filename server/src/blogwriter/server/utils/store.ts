@@ -30,7 +30,7 @@ export interface RunRow {
   notes_json: string
   queries_json: string
   search_queries_json: string // search queries generated for the topic (research fan-out)
-  cover_url: string // post cover image (nano-banana), path /blogtool/covers/<id>.jpg
+  cover_url: string // post cover image, path /blogtool/covers/<id>.jpg
   category: string // post category (e.g. CS2, Guides...) - for filter/chip/related
   author: string // post author (empty -> "{brand} Editorial Team")
   views: number // view counter (incremented by the public API)
@@ -318,7 +318,7 @@ export async function clearPlannedItems(brandId: number, from: string, to: strin
 
 /**
  * Shared keys from the scrapper's `app_settings` table (set in the Admin panel:
- * KIE_API_KEY, OPENROUTER_API_KEY... plaintext KV in the same DB). The table is
+ * ANTHROPIC_API_KEY, OPENROUTER_API_KEY... plaintext KV in the same DB). The table is
  * declared in the Prisma schema (AppSetting) - we just read it client-side; no
  * table/rows -> {}. It's tiny, so we pull it whole.
  */

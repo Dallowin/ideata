@@ -1,6 +1,6 @@
 /**
- * Credits: estimate before the call, charge after the fact. Catalogs are
- * mocked — the price shouldn't depend on what kie/OpenRouter happen to
+ * Credits: estimate before the call, charge after the fact. The catalog is
+ * mocked — the price shouldn't depend on what the live catalog happens to
  * return today. Credits are computed from the OFFICIAL price (see
  * official-price.spec).
  */
@@ -9,16 +9,12 @@ import { CreditsService, USD_RUB, creditsForImageUsd, creditsForUsd } from './cr
 jest.mock('../blogwriter/server/utils/modelCatalog', () => ({
   getUnifiedCatalog: jest.fn(async () => ({
     models: [
-      { id: 'anthropic/claude-sonnet-5', label: 'Sonnet', provider: 'openrouter', format: 'openai', inUsd: 3, outUsd: 15, desc: '', context: null },
+      { id: 'anthropic/claude-sonnet-5', label: 'Sonnet', provider: 'anthropic', format: 'claude', inUsd: 3, outUsd: 15, desc: '', context: null },
       { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', provider: 'openrouter', format: 'openai', inUsd: 0.25, outUsd: 2, desc: '', context: null },
     ],
     source: 'snapshot' as const,
     at: '2026-07-26T00:00:00.000Z',
   })),
-}));
-
-jest.mock('../blogwriter/server/utils/kieCatalog', () => ({
-  getKieCatalog: jest.fn(async () => ({ models: [], scrapedAt: '', stale: false })),
 }));
 
 function mkService(opts: { pool?: number; spent?: number; dbFails?: boolean; plan?: string } = {}) {
@@ -49,7 +45,7 @@ describe('estimateAsk — assistant question price', () => {
     await expect(svc.estimateAsk('anthropic/claude-sonnet-5')).resolves.toBe(4);
   });
 
-  it('a kie slug costs the same as the vendor one: the discount is not for the client', async () => {
+  it('a bare slug costs the same as the vendor-prefixed one — the route does not change the price', async () => {
     const { svc } = mkService();
     await expect(svc.estimateAsk('claude-sonnet-5')).resolves.toBe(4);
   });
@@ -61,33 +57,31 @@ describe('estimateAsk — assistant question price', () => {
   });
 });
 
-describe('balance — pool window depends on the plan', () => {
-  it('free: pool is one-time, charges are counted over all time', async () => {
+describe('balance — accounting is not wired in this build', () => {
+  it('reports a degraded balance instead of guessing a pool', async () => {
     const { svc, prisma } = mkService({ plan: 'free', pool: 100, spent: 100 });
-    await expect(svc.balance(1)).resolves.toMatchObject({ pool: 100, spent: 100, balance: 0 });
-    // no monthly window: spent it once — a new month won't bring the pool back
-    expect(String(prisma.$queryRawUnsafe.mock.calls[0][0])).not.toContain('date_trunc');
+    await expect(svc.balance(1)).resolves.toMatchObject({
+      pool: 0, granted: 0, spent: 0, balance: 0, degraded: true,
+    });
+    // no ledger to read: the journal query is never issued
+    expect(prisma.$queryRawUnsafe).not.toHaveBeenCalled();
   });
 
-  it('paid: pool renews every calendar month', async () => {
-    const { svc, prisma } = mkService({ plan: 'pro', pool: 1500, spent: 200 });
-    await expect(svc.balance(1)).resolves.toMatchObject({ balance: 1300 });
-    expect(String(prisma.$queryRawUnsafe.mock.calls[0][0])).toContain("date_trunc('month', now())");
+  it('the plan still comes from the plan service', async () => {
+    const { svc, plans } = mkService({ plan: 'pro' });
+    await expect(svc.balance(1)).resolves.toMatchObject({ plan: 'pro' });
+    expect(plans.resolveLimits).toHaveBeenCalledWith(1);
   });
 });
 
 describe('assertEnough — gate before hitting the model', () => {
-  it('passes through when the balance is enough', async () => {
+  it('degraded accounting does not block the product, however large the ask', async () => {
     const { svc } = mkService({ pool: 100, spent: 10 });
-    await expect(svc.assertEnough(1, 5)).resolves.toMatchObject({ balance: 90 });
+    await expect(svc.assertEnough(1, 5)).resolves.toMatchObject({ degraded: true });
+    await expect(svc.assertEnough(1, 999_999)).resolves.toMatchObject({ degraded: true });
   });
 
-  it('throws 402 when it is not enough', async () => {
-    const { svc } = mkService({ pool: 10, spent: 9 });
-    await expect(svc.assertEnough(1, 5)).rejects.toMatchObject({ status: 402 });
-  });
-
-  it('accounting unavailable → does not block the product', async () => {
+  it('survives a dead journal the same way', async () => {
     const { svc } = mkService({ pool: 10, dbFails: true });
     await expect(svc.assertEnough(1, 999)).resolves.toMatchObject({ degraded: true });
   });
@@ -96,8 +90,8 @@ describe('assertEnough — gate before hitting the model', () => {
 describe('chargeRub — charging at actual cost', () => {
   it('writes a negative row, rounding up to a credit', async () => {
     const { svc, inserts } = mkService();
-    await expect(svc.chargeRub(7, 0.82, 'ask', 'kie/claude-sonnet-5')).resolves.toBe(1);
-    await expect(svc.chargeRub(7, 3.2, 'ask', 'kie/claude-sonnet-5')).resolves.toBe(4);
+    await expect(svc.chargeRub(7, 0.82, 'ask', 'anthropic/claude-sonnet-5')).resolves.toBe(1);
+    await expect(svc.chargeRub(7, 3.2, 'ask', 'anthropic/claude-sonnet-5')).resolves.toBe(4);
     expect(inserts).toHaveLength(2);
     expect(inserts[0][1]).toBe(7);      // user_id
     expect(inserts[0][2]).toBe(-1);     // amount as negative
@@ -120,18 +114,18 @@ describe('chargeRub — charging at actual cost', () => {
 
 describe('creditsForImageUsd — image markup', () => {
   it('evens out the scale: an image costs the client three times more credits', () => {
-    // Nano Banana Pro: our purchase price $0.09 → 0.09 × 3 × 90 = 24.3 → 25 credits.
-    // It used to be 9 credits, and one credit cost us 0.9 ₽ vs 0.3 ₽ for
-    // text — the same pool meant something different depending on the spend.
+    // an image at $0.09 → 0.09 × 3 × 90 = 24.3 → 25 credits. Without the
+    // multiplier it would be 9, and the same pool would mean something
+    // different depending on whether it went on text or on pictures.
     expect(creditsForImageUsd(0.09)).toBe(25);
     expect(creditsForImageUsd(0.02)).toBe(6);
-    expect(creditsForUsd(0.09)).toBe(9);       // old, markup-free formula
+    expect(creditsForUsd(0.09)).toBe(9);       // markup-free formula
   });
 
-  it('credit cost is now on par with text', () => {
+  it('one credit stands for the same amount on images as on text', () => {
     const usd = 0.09;
-    const rubWePay = usd * USD_RUB;            // 8.1 ₽ goes to kie
-    const perCredit = rubWePay / creditsForImageUsd(usd);
+    const rubPerImage = usd * USD_RUB;         // 8.1 ₽ at the vendor's price
+    const perCredit = rubPerImage / creditsForImageUsd(usd);
     expect(perCredit).toBeLessThan(0.35);      // for text it's ≈ 0.28 ₽
   });
 

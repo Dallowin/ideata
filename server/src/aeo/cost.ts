@@ -41,7 +41,8 @@ export const PRICES_RUB: Record<string, readonly [number, number]> = {
 /** Fixed cost per request in RUB (usage.py:169-174, FIXED_*_RUB). Converted to USD at compute time. */
 export const FIXED_RUB = {
   sonar: 0.45, // perplexity/sonar — service search fee
-  search: 0.45, // openai gpt-4o-mini-search-preview — search fee
+  search: 0.45, // openai web search (gpt-4o-mini-search-preview / the Responses tool) — search fee
+  xai_search: 6.75, // xAI Live Search: $25/1k sources × 3 sources at USD_RUB 90
   exa: 1.08, // Exa web plugin: 0.36 RUB/result × 3 (deepseek/grok full)
   dataforseo: 0.18, // SERP advanced — fallback when the envelope has no cost
   yandex_neuro: 5.08, // Neuro's generative answer (Yandex gen search)
@@ -79,13 +80,14 @@ export function matchModel(model?: string | null): string {
  * Cost of a call in USD from tokens + the family's fixed fees. null if
  * neither tokens nor a fixed fee can be computed (background enrichment /
  * call-site fixed fee will fill it in later). Port of token_cost_rub
- * (usage.py:211), output in dollars.
+ * (usage.py:211), output in dollars. `provider` picks the search fee where the
+ * same model family bills differently on the vendor API and on OpenRouter.
  */
 export function tokenCostUsd(
   model: string | null | undefined,
   tokensIn: number | null | undefined,
   tokensOut: number | null | undefined,
-  opts: { grounded?: boolean } = {},
+  opts: { grounded?: boolean; provider?: string | null } = {},
 ): number | null {
   const fam = matchModel(model);
   const ti = tokensIn ? Math.trunc(Number(tokensIn)) : 0;
@@ -101,10 +103,15 @@ export function tokenCostUsd(
   }
   let add = 0;
   const ml = (model || '').toLowerCase();
+  // Which search the call paid for depends on the ROUTE: the vendor API bills its
+  // own search (xAI Live Search), OpenRouter bills the Exa plugin, and the DeepSeek
+  // API has no search at all.
+  const via = opts.provider || '';
   if (fam === 'sonar') add += FIXED_RUB.sonar / rate;
   else if (fam === 'gpt-mini' && (opts.grounded || ml.includes('search')))
     add += FIXED_RUB.search / rate;
-  else if ((fam === 'deepseek' || fam === 'grok') && opts.grounded)
+  else if (via === 'xai' && opts.grounded) add += FIXED_RUB.xai_search / rate;
+  else if ((fam === 'deepseek' || fam === 'grok') && opts.grounded && via !== 'deepseek')
     add += FIXED_RUB.exa / rate;
   if (base === null && add === 0) return null;
   return pyRound((base ?? 0) + add, 6);

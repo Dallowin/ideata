@@ -26,8 +26,8 @@ import {
 /**
  * Brand-data assistant. Answers FREE-FORM questions that the client-side
  * intent router didn't recognize (that router answers common questions for
- * free, without a model). Cheap model (modelFast, usually kie) + a strict
- * system rule "only from the snapshot, never make up numbers".
+ * free, without a model). Cheap model (modelFast) + a strict system rule
+ * "only from the snapshot, never make up numbers".
  *
  * The brand snapshot is assembled by the CLIENT from what's already loaded
  * (tracker aggregates + analysis facts) — the backend doesn't need to hit
@@ -68,7 +68,7 @@ export class AssistantController {
   ) {}
 
   /**
-   * Unified model catalog for the selector (kie + OpenRouter, 1h cache).
+   * Unified model catalog for the selector (Anthropic + OpenRouter, 1h cache).
    * {models:[{id,label,provider,format,inUsd,outUsd,desc,context}], source, at, default}.
    * ?refresh=1 forces a refresh.
    */
@@ -79,7 +79,7 @@ export class AssistantController {
       resolveSettings(await this.brandCtx.brandId(req)),
     ]);
     // only models available with the current keys (see modelsForKeys)
-    const models = modelsForKeys(cat.models, { kieKey: s.kieKey, orKey: s.openrouterKey });
+    const models = modelsForKeys(cat.models, { anthropicKey: s.anthropicKey, orKey: s.openrouterKey });
     return { ...cat, models, default: DEFAULT_ASSISTANT_MODEL };
   }
 
@@ -91,12 +91,12 @@ export class AssistantController {
     const brandId = await this.brandCtx.brandId(req);
     const s = await resolveSettings(brandId);
 
-    // The chosen model is passed through as-is; the LLM provider (kie/OpenRouter)
+    // The chosen model is passed through as-is; the LLM provider (Anthropic/OpenRouter)
     // picks itself by model from the shared catalog. No choice → brand's cheap modelFast.
     const model = isValidModelId(body?.model) ? body!.model! : s.modelFast;
 
     // no keys at all → tell the truth instead of blowing up with a 500
-    if (!s.kieKey && !s.openrouterKey && !s.apiKey) {
+    if (!s.anthropicKey && !s.openrouterKey && !s.apiKey) {
       return {
         answer:
           'Модель ассистента ещё не подключена в настройках. Типовые вопросы я отвечаю и без неё — спросите про видимость, конкурентов, источники или темы для контента.',
@@ -139,9 +139,9 @@ export class AssistantController {
         maxTokens: 700,
         temperature: 0.4,
       });
-      // Charged by the call's actual token counts, but at the model's OFFICIAL
-      // price: what we pay kie is our margin, not passed on to the client. The
-      // ledger doesn't throw — a failed usage log must not turn a successful
+      // Charged by the call's actual token counts, at the model's OFFICIAL price —
+      // the same number regardless of which provider the call was routed through.
+      // The ledger doesn't throw — a failed usage log must not turn a successful
       // answer into an error.
       const spent = user?.i
         ? await this.credits.chargeCall(user.i, r.model, r.tokensIn, r.tokensOut, 'ask', { brandId })

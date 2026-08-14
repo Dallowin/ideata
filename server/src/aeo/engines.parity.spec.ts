@@ -10,8 +10,8 @@
  * Python settings model: os.environ, rolled in from app_settings by the worker
  * (env→app_settings in TS = a single layer). We set AEO_* keys before each
  * call. The dispatcher constants (DEFAULT_PLATFORMS/OPENROUTER_ENGINES/
- * RU_MARKET_PLATFORMS) are real (single source, no duplication), so they are
- * not part of the mock.
+ * NATIVE_ENGINES/RU_MARKET_PLATFORMS) are real (single source, no duplication),
+ * so they are not part of the mock.
  */
 
 const mockSettings: Record<string, string> = {};
@@ -147,9 +147,21 @@ describe('availablePlatforms — key-gating + kill switch (aeo.py:528)', () => {
       'claude', 'gemini', 'perplexity', 'aio', 'gigachat', 'alice', 'yandex', 'chatgpt', 'deepseek', 'grok',
     ]);
   });
-  it('no OPENROUTER_API_KEY → perplexity/chatgpt/deepseek/grok drop out, kie/aio/sber/yandex survive', async () => {
+  it('no OPENROUTER_API_KEY → perplexity/chatgpt/deepseek/grok drop out, claude/gemini/aio/sber/yandex survive', async () => {
     setEnv({ GIGACHAT_API_KEY: 'k', YANDEX_SEARCH_API_KEY: 'k' });
     expect(await availablePlatforms()).toEqual(['claude', 'gemini', 'aio', 'gigachat', 'alice', 'yandex']);
+  });
+  it('no OPENROUTER_API_KEY, but the engine has its OWN vendor key → it stays (native route)', async () => {
+    setEnv({ OPENAI_API_KEY: 'k', XAI_API_KEY: 'k' });
+    const out = await availablePlatforms();
+    expect(out).toContain('chatgpt');
+    expect(out).toContain('grok');
+    expect(out).not.toContain('deepseek'); // no DEEPSEEK_API_KEY and no OpenRouter — no route
+    expect(out).not.toContain('perplexity');
+  });
+  it('the kill switch strips an engine even with its vendor key set', async () => {
+    setEnv({ OPENAI_API_KEY: 'k', AEO_ENGINES_OFF: 'chatgpt' });
+    expect(await availablePlatforms()).not.toContain('chatgpt');
   });
   it('no YANDEX_SEARCH_API_KEY → alice and yandex drop out', async () => {
     setEnv({ OPENROUTER_API_KEY: 'k', GIGACHAT_API_KEY: 'k' });

@@ -1,8 +1,8 @@
 /**
  * Contract for the GET blogwriter/settings response: only the allow-list goes out.
  * This test guards against exactly what bit us before — the response used to be
- * built with a spread `{...s}`, and platform-wide keys (kieKey/openrouterKey) were
- * sent out in plaintext.
+ * built with a spread `{...s}`, and platform-wide keys (anthropicKey/openrouterKey)
+ * were sent out in plaintext.
  */
 import { publicSettings } from './settings.controller';
 import type { AppSettings } from '../server/utils/appSettings';
@@ -10,10 +10,11 @@ import type { AppSettings } from '../server/utils/appSettings';
 /** Settings where EVERY secret is filled with a recognizable string. */
 function settingsWithSecrets(): AppSettings {
   return {
-    provider: 'kie',
+    provider: 'anthropic',
     apiKey: 'SECRET-apiKey',
-    kieKey: 'SECRET-kieKey',
+    anthropicKey: 'SECRET-anthropicKey',
     openrouterKey: 'SECRET-openrouterKey',
+    geminiKey: 'SECRET-geminiKey',
     modelStrong: 'anthropic/claude-sonnet-5',
     modelFast: 'anthropic/claude-haiku-4.5',
     modelResearch: 'google/gemini-2.5-pro',
@@ -72,7 +73,7 @@ function settingsWithSecrets(): AppSettings {
 }
 
 const SECRET_KEYS: Array<keyof AppSettings> = [
-  'apiKey', 'kieKey', 'openrouterKey', 'extPublishToken', 'tgBotToken', 'devtoApiKey',
+  'apiKey', 'anthropicKey', 'openrouterKey', 'geminiKey', 'extPublishToken', 'tgBotToken', 'devtoApiKey',
   'blueskyAppPassword', 'wpAppPassword', 'wpOauthToken', 'mastodonToken', 'ghostAdminKey',
   'telegraphToken', 'usage',
 ];
@@ -99,7 +100,7 @@ describe('publicSettings — no secret fields in the response', () => {
   });
 
   it('non-secret form fields are present', () => {
-    expect(out.provider).toBe('kie');
+    expect(out.provider).toBe('anthropic');
     expect(out.brand).toBe('Ideata');
     expect(out.extPublishUrl).toBe('https://example.com/api');
     expect(out.wpUser).toBe('admin');

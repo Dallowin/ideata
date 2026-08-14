@@ -550,7 +550,7 @@ export const api = {
   blogWordpressTest: () => http<any>('/blogwriter/blog/wordpress/test', { method: 'POST' }),
   /** каталог моделей: {models:[{id,label,inUsd,outUsd,desc,context}], default} —
    *  default = сильная модель бренда, на ней действие поедет без явного выбора */
-  blogModels: () => http<any>('/blogwriter/models/kie'),
+  blogModels: () => http<any>('/blogwriter/models/catalog'),
   /**
    * AI-правка выделенного фрагмента: {html, instruction, model?, history?, title?}
    * → {html, usage:{model,tokensIn,tokensOut,costRub}|null}. model — id из
@@ -606,7 +606,7 @@ export const api = {
    *  kind='bg' — фоны студии, 'cover' — готовые обложки статей */
   previewImages: (kind?: 'bg' | 'cover') =>
     http<any>(`/blogwriter/preview/images${kind ? `?kind=${kind}` : ''}`),
-  /** свой ключ kie.ai (снимает почасовой лимит) → {hasOwnKey} */
+  /** свой ключ Gemini (снимает почасовой лимит) → {hasOwnKey} */
   previewBgKey: (key: string) =>
     http<any>('/blogwriter/preview/key', {
       method: 'POST',

@@ -25,7 +25,7 @@ import { BlogBrandContext } from '../brand-context';
 
 // fields coming from the "Settings" form (allow-list)
 const STRING_KEYS = new Set([
-  'openrouterApiKey', 'kieApiKey', 'provider', 'modelStrong', 'modelFast', 'modelResearch',
+  'openrouterApiKey', 'anthropicApiKey', 'geminiApiKey', 'provider', 'modelStrong', 'modelFast', 'modelResearch',
   'language', 'tone', 'persona', 'requirements', 'delivery', 'brand', 'brandFacts', 'author', 'categories', 'siteUrl',
   'extPublishUrl', 'extPublishAuthHeader', 'extPublishToken',
   // cross-posting: Telegram channel (bot token is a secret) + Dzen link
@@ -44,8 +44,8 @@ const NUMBER_KEYS = new Set([
 /**
  * What settings can even be sent to the browser at all. Deliberately an ALLOW-LIST, not
  * `{...s}` with secrets scrubbed out one by one: the response used to be built with a spread,
- * and every new key added to AppSettings leaked out by default — that's how kieKey and
- * openrouterKey (secrets shared by the WHOLE platform, not per brand) ended up sent in
+ * and every new key added to AppSettings leaked out by default — that's how the provider
+ * keys (secrets shared by the WHOLE platform, not per brand) ended up sent in
  * plaintext to any pro user. Here, a new secret doesn't reach anywhere by default,
  * and a forgotten non-secret field, at worst, just won't show up in the form.
  *
@@ -96,8 +96,11 @@ export class SettingsController {
       hasApiKey: !!s.apiKey,
       apiKeyMasked: s.apiKey ? s.apiKey.slice(0, 8) + '…' + s.apiKey.slice(-4) : '',
       // provider keys are shared across the whole platform: only expose whether one is set
-      hasKieKey: !!s.kieKey,
+      hasAnthropicKey: !!s.anthropicKey,
       hasOpenrouterKey: !!s.openrouterKey,
+      // Google AI Studio key: Gemini image generation runs on it
+      hasGeminiKey: !!s.geminiKey,
+      geminiKeyMasked: s.geminiKey ? s.geminiKey.slice(0, 6) + '…' + s.geminiKey.slice(-4) : '',
       // don't hand over the autopublish secret — only whether it's set
       hasExtPublishToken: !!s.extPublishToken,
       extPublishTokenMasked: s.extPublishToken ? s.extPublishToken.slice(0, 4) + '…' + s.extPublishToken.slice(-4) : '',
@@ -151,11 +154,11 @@ export class SettingsController {
     for (const [k, v] of Object.entries(body ?? {})) {
       if (STRING_KEYS.has(k) && typeof v === 'string') {
         // an empty secret doesn't overwrite the saved one (an empty field in the form = "don't change")
-        if ((k === 'openrouterApiKey' || k === 'kieApiKey' || k === 'extPublishToken'
+        if ((k === 'openrouterApiKey' || k === 'anthropicApiKey' || k === 'geminiApiKey' || k === 'extPublishToken'
           || k === 'tgBotToken' || k === 'devtoApiKey' || k === 'blueskyAppPassword' || k === 'wpAppPassword'
           || k === 'mastodonToken' || k === 'ghostAdminKey' || k === 'telegraphToken') && !v.trim()) continue;
         if (k === 'wpMode' && v !== 'app' && v !== 'oauth') continue;
-        if (k === 'provider' && v !== 'kie' && v !== 'openrouter') continue;
+        if (k === 'provider' && v !== 'anthropic' && v !== 'openrouter') continue;
         // The ingest receiver base: our own server calls out to it, so the address must
         // be a public https URL (otherwise autopublish becomes an SSRF primitive —
         // see wordpressPublish.ts, which has the same check). An empty string resets it.
@@ -184,7 +187,7 @@ export class SettingsController {
     if (Object.keys(perBrand).length) await saveSettings(perBrand, brandId);
     // Account-wide keys (provider, LLM keys, models, pipeline thresholds) are
     // shared across the whole platform: only an admin may change them. Otherwise any
-    // pro user could swap out/burn through the shared kie.ai key or switch the provider for everyone.
+    // pro user could swap out/burn through the shared provider key or switch the provider for everyone.
     // Non-admins can only edit per-brand (voice/autopublish); global changes are silently ignored.
     const globalSaved = Object.keys(global).length > 0 && this.brandCtx.isAdmin(req);
     if (globalSaved) await saveSettings(global, 0);
@@ -192,23 +195,23 @@ export class SettingsController {
   }
 
   /**
-   * The unified model catalog (kie + OpenRouter) with prices ($/1M) and each model's
-   * provider route. The same list the assistant uses. ?refresh=1 forces a refresh.
+   * The unified model catalog (Anthropic + OpenRouter) with prices ($/1M) and each
+   * model's provider route. The same list the assistant uses. ?refresh=1 forces a refresh.
    *
    * default is the brand's strong model: the action runs on it if the UI didn't pick
    * one explicitly. Returned together with the catalog so the selector immediately shows
    * the SPECIFIC model instead of an "as in settings" entry (which doesn't tell you what
    * actually runs).
    */
-  @Get('models/kie')
-  async kieModels(@Req() req: Request, @Query('refresh') refresh?: string) {
+  @Get('models/catalog')
+  async catalogModels(@Req() req: Request, @Query('refresh') refresh?: string) {
     const [cat, s] = await Promise.all([
       getUnifiedCatalog(refresh === '1'),
       resolveSettings(await this.brandCtx.brandId(req)),
     ]);
     // only show what will actually work with the current keys: without an OpenRouter key
-    // non-kie models can't be selected (kie responds with "model is not supported" for them)
-    const models = modelsForKeys(cat.models, { kieKey: s.kieKey, orKey: s.openrouterKey });
+    // everything outside Claude has nowhere to run
+    const models = modelsForKeys(cat.models, { anthropicKey: s.anthropicKey, orKey: s.openrouterKey });
     return { ...cat, models, default: s.modelStrong };
   }
 
@@ -227,7 +230,7 @@ export class SettingsController {
     if (!brand?.domain) throw new BadRequestException('no active brand with a domain');
     const s = await resolveSettings(brand.id);
     const llm = new LLM(s);
-    if (llm.isMock) throw new ConflictException('an LLM key is required (mock mode) — set one for kie.ai in the Admin panel');
+    if (llm.isMock) throw new ConflictException('an LLM key is required (mock mode) — set ANTHROPIC_API_KEY or OPENROUTER_API_KEY in the Admin panel');
 
     let crawl = await crawlBrand(brand.domain, { maxPages: Math.min(Number(body?.maxPages) || 10, 15) });
     // the site can't be parsed (bot protection/JS rendering) — compose from the brand's

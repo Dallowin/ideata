@@ -48,10 +48,11 @@ export const BRAND_SAVABLE_KEYS = new Set([
 ])
 
 export interface AppSettings {
-  provider: 'kie' | 'openrouter'
+  provider: 'anthropic' | 'openrouter'
   apiKey: string // key of the ACTIVE provider
-  kieKey: string // kie key (for per-model routing: Claude runs cheaply through kie)
+  anthropicKey: string // Anthropic key (for per-model routing: Claude goes to the Messages API)
   openrouterKey: string // OpenRouter key (everything that isn't Claude: deepseek/qwen/…)
+  geminiKey: string // Google AI Studio key (Gemini: image generation)
   modelStrong: string
   modelFast: string
   modelResearch: string // research (search queries + theses) — separate model, defaults to Gemini
@@ -278,7 +279,8 @@ const OPUS_FALLBACK_MODEL = 'anthropic/claude-sonnet-5'
 function envConfig() {
   return {
     openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
-    kieApiKey: process.env.KIE_API_KEY || '',
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
     modelStrong: process.env.BLOG_MODEL_STRONG || DEFAULT_STRONG_MODEL,
     modelFast: process.env.BLOG_MODEL_FAST || 'anthropic/claude-haiku-4.5',
     modelResearch: process.env.BLOG_MODEL_RESEARCH || 'google/gemini-2.5-pro',
@@ -347,16 +349,17 @@ export async function resolveSettings(brandId = 0, over?: { modelStrong?: string
     const v = Number(db[key])
     return Number.isFinite(v) && db[key] !== '' && db[key] !== undefined ? v : dflt
   }
-  // Shared kie/OpenRouter key from Admin (app_settings) — one key for the whole backend.
+  // Shared provider keys from Admin (app_settings) — one key for the whole backend.
   // Priority: explicit blog-writer override → shared Admin key → env. `||` (not
   // `??`) so an empty string in blog_writer_settings falls back to the shared key.
-  const common = await getAppSettings(['KIE_API_KEY', 'OPENROUTER_API_KEY'])
-  const kieKey = db.kieApiKey || common.KIE_API_KEY || (rc as any).kieApiKey || ''
+  const common = await getAppSettings(['ANTHROPIC_API_KEY', 'OPENROUTER_API_KEY', 'GEMINI_API_KEY'])
+  const anthropicKey = db.anthropicApiKey || common.ANTHROPIC_API_KEY || rc.anthropicApiKey || ''
   const orKey = db.openrouterApiKey || common.OPENROUTER_API_KEY || rc.openrouterApiKey || ''
-  const provider = (db.provider === 'openrouter' || db.provider === 'kie')
-    ? db.provider as 'kie' | 'openrouter'
-    : (kieKey ? 'kie' : 'openrouter')
-  const apiKey = provider === 'kie' ? kieKey : orKey
+  const geminiKey = db.geminiApiKey || common.GEMINI_API_KEY || rc.geminiApiKey || ''
+  const provider = (db.provider === 'openrouter' || db.provider === 'anthropic')
+    ? db.provider as 'anthropic' | 'openrouter'
+    : (anthropicKey ? 'anthropic' : 'openrouter')
+  const apiKey = provider === 'anthropic' ? anthropicKey : orKey
   // Opus gate: if the brand owner's plan doesn't allow Opus, silently downgrade
   // the selected Opus-class strong model to Sonnet 5 (not a 403 — don't annoy the user).
   // brandId=0 (admin/account-wide) → no gate. Resolver error → don't block.
@@ -374,8 +377,9 @@ export async function resolveSettings(brandId = 0, over?: { modelStrong?: string
   return {
     provider,
     apiKey,
-    kieKey,
+    anthropicKey,
     openrouterKey: orKey,
+    geminiKey,
     modelStrong,
     modelFast: db.modelFast || (rc.modelFast as string),
     modelResearch: db.modelResearch || (rc.modelResearch as string),

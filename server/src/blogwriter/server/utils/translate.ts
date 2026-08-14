@@ -177,7 +177,7 @@ export async function translateRun(sourceId: string, targetLocales: string[]): P
 
   const s = await resolveSettings(src.brandId ?? 0)
   if (s.mock) {
-    throw new Error('Translation is unavailable in mock mode: set an LLM key (OpenRouter/KIE) in settings')
+    throw new Error('Translation is unavailable in mock mode: set an LLM key (Anthropic/OpenRouter) in settings')
   }
   const srcLocale = src.locale || findLanguage(s.language)?.code || 'ru'
   const groupId = src.group_id || src.id
@@ -201,10 +201,10 @@ export async function translateRun(sourceId: string, targetLocales: string[]): P
     // article was free).
     const id = randomUUID()
     try {
-      // Pass the settings as a WHOLE: enumerating fields by hand dropped kieKey/
-      // openrouterKey, and without them model routing degenerates into a single
-      // provider — non-kie models ended up going to kie (422), with nothing to
-      // fall back on when kie flapped.
+      // Pass the settings as a WHOLE: enumerating fields by hand dropped
+      // anthropicKey/openrouterKey, and without them model routing degenerates
+      // into a single provider — non-Claude models ended up at the Messages API
+      // (404), with nothing to fall back on when the provider flapped.
       const llm = new LLM({ ...s, usage: { ...s.usage, runId: id } })
       const t = await translateOne(llm, src, srcLocale, loc, s.brand)
       // The model returned HTML — same write path into body_html as the editor,

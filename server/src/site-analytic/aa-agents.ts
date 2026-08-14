@@ -404,7 +404,7 @@ const MODEL_LABEL = 'flash';
  * Port of run_llm_layer (aa_agents.py:419-483): run the agents and assemble the
  * outputs into facts (clusters/thinCluster/priorities/plan; for keys.so — fixing
  * up keyword intents IN PLACE). Returns {merge (to merge into facts), outputs
- * (for site_analyses)}. The KIE-key gate lives on the caller's side
+ * (for site_analyses)}. The LLM-key gate lives on the caller's side
  * (LiveLlmLayer). `ask` is the injection point for tests. Every "large" number
  * from the agents goes through filterViolations.
  */

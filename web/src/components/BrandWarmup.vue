@@ -13,7 +13,6 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Check, Loader2, Play, RefreshCw } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useBrandBootstrap } from '@/composables/useBrandBootstrap'
 import { useBrands } from '@/composables/useBrands'
@@ -26,7 +25,6 @@ const props = withDefaults(defineProps<{
 }>(), { rows: 3 })
 
 const { t } = useI18n()
-const router = useRouter()
 const { active } = useBrands()
 const { phase, steps, percent, refresh, watchProgress, earlyCompetitors, domain } = useBrandBootstrap()
 watchProgress()
