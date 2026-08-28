@@ -42,7 +42,12 @@ import {
   topVolumePrompts,
   yandexPromptsMax,
 } from './engines';
-import { normalizePanel, promptStatus, normalizeProjectLang, type PanelEntry } from './panel';
+import {
+  normalizePanel,
+  promptStatus,
+  normalizeProjectLang,
+  type PanelEntry,
+} from './panel';
 import { normPrompt } from './text';
 import { isDict, pyStrip, pyStrOrEmpty, type AliasMap } from './parse';
 import {
@@ -87,7 +92,7 @@ function cpSlice(s: string, n: number): string {
 }
 
 /** jobs._tracker_run_meta (jobs.py:608-616): jsonb|text|None → timestamps dict. */
-function normalizeRunMeta(meta: unknown): Record<string, unknown> {
+export function normalizeRunMeta(meta: unknown): Record<string, unknown> {
   let m: unknown = meta;
   if (typeof m === 'string') {
     try {
@@ -130,7 +135,9 @@ function promptTexts(panel: PanelEntry[]): string[] {
 
 /** RU domain/geo → Russian market (simplified port of is_ru_domain; geo map omitted). */
 function isRuDomain(domain: string, geo: string | null | undefined): boolean {
-  return /\.(ru|su|рф|xn--p1ai)$/i.test(domain) || (geo || '').toLowerCase() === 'ru';
+  return (
+    /\.(ru|su|рф|xn--p1ai)$/i.test(domain) || (geo || '').toLowerCase() === 'ru'
+  );
 }
 
 // ── writing answers (storage.insert_aeo_answers, storage.py:2724) ────────────
@@ -148,8 +155,8 @@ export async function writeAnswers(
   runAt: Date,
   answers: SnapshotAnswer[],
   sentiment: Record<string, SentimentEntry> | null,
+  db: Pick<Prisma.TransactionClient, 'aeoAnswer'> = blogPrisma(),
 ): Promise<number> {
-  const db = blogPrisma();
   let inserted = 0;
   if (answers.length) {
     const data: Prisma.AeoAnswerCreateManyInput[] = answers.map((a) => ({
@@ -160,7 +167,9 @@ export async function writeAnswers(
       rawText: cpSlice(a.text || '', 12000),
       brandsFound: (a.brands_found ?? []) as unknown as Prisma.InputJsonValue,
       citations: (a.citations ?? []) as unknown as Prisma.InputJsonValue,
-      judge: isDict(a.judge) ? (a.judge as unknown as Prisma.InputJsonValue) : undefined,
+      judge: isDict(a.judge)
+        ? (a.judge as unknown as Prisma.InputJsonValue)
+        : undefined,
     }));
     const res = await db.aeoAnswer.createMany({ data, skipDuplicates: true });
     inserted = res.count;
@@ -210,7 +219,9 @@ export async function processAeoRun(
   );
   if (!profiles.length) profiles = ['micro', 'mid'];
 
-  const tracker = await blogPrisma().aeoTracker.findUnique({ where: { id: trackerId } });
+  const tracker = await blogPrisma().aeoTracker.findUnique({
+    where: { id: trackerId },
+  });
   if (!tracker) throw new Error(`aeo_tracker #${trackerId} not found`);
 
   const domain = tracker.domain;
@@ -240,12 +251,19 @@ export async function processAeoRun(
   const fullSet = new Set(forLang(await platformsFor('full')));
   const lite: string[] = [];
   if (profiles.includes('micro')) {
-    lite.push(...forLang(await platformsFor('micro')).filter((p) => !(runFull && fullSet.has(p))));
+    lite.push(
+      ...forLang(await platformsFor('micro')).filter(
+        (p) => !(runFull && fullSet.has(p)),
+      ),
+    );
   }
-  if (profiles.includes('mid')) lite.push(...forLang(await platformsFor('mid')));
+  if (profiles.includes('mid'))
+    lite.push(...forLang(await platformsFor('mid')));
   const liteList = [...new Set(lite)]; // jobs.py:758 — don't run the same slug twice
   const fullList = runFull ? [...fullSet] : [];
-  const yandexList = profiles.includes('yandex') ? forLang(await platformsFor('yandex')) : [];
+  const yandexList = profiles.includes('yandex')
+    ? forLang(await platformsFor('yandex'))
+    : [];
   const allPlatforms = [...liteList, ...fullList, ...yandexList];
   if (!allPlatforms.length) {
     // jobs.py:777-782 — nothing left after filtering (diagnosis ≠ "no engines responded").
@@ -262,7 +280,8 @@ export async function processAeoRun(
   const limitRaw = tracker.promptsLimit;
   if (limitRaw !== null && limitRaw !== undefined) {
     const n = pyInt(limitRaw);
-    if (n !== null) prompts = prompts.slice(0, Math.max(5, Math.min(n, prompts.length)));
+    if (n !== null)
+      prompts = prompts.slice(0, Math.max(5, Math.min(n, prompts.length)));
   }
 
   // jobs.py:845 — confirmed brand spellings from the brand card (best-effort).
@@ -273,7 +292,9 @@ export async function processAeoRun(
         where: { id: tracker.brandId },
         select: { aliases: true },
       });
-      const list = Array.isArray(brand?.aliases) ? (brand!.aliases as unknown[]) : [];
+      const list = Array.isArray(brand?.aliases)
+        ? (brand!.aliases as unknown[])
+        : [];
       if (list.length) aliases = { [domain]: list };
     } catch {
       /* no brand card/table — run without aliases (visibility may be understated) */
@@ -315,7 +336,11 @@ export async function processAeoRun(
         // run the whole panel, only the top prompts by volume (topVolumePrompts ×
         // yandexPromptsMax). Without the clamp, the yandex profile would cost
         // more than Python on long panels.
-        const yaPrompts = topVolumePrompts(panel, prompts, await yandexPromptsMax());
+        const yaPrompts = topVolumePrompts(
+          panel,
+          prompts,
+          await yandexPromptsMax(),
+        );
         answers.push(
           ...(await runSnapshot(domain, competitors, yaPrompts, {
             platforms: yandexList,
@@ -331,7 +356,8 @@ export async function processAeoRun(
       // jobs.py:872-876 — sentiment over answer excerpts where the brand is mentioned.
       const brandTexts: Record<string, string[]> = {};
       for (const a of answers) {
-        for (const bf of a.brands_found) (brandTexts[bf.brand] ??= []).push(a.text);
+        for (const bf of a.brands_found)
+          (brandTexts[bf.brand] ??= []).push(a.text);
       }
       const sentiment = await sentimentBatch(brandTexts);
       // jobs.py:880 — LLM judge fills in the judge field on answers in place.
@@ -345,7 +371,10 @@ export async function processAeoRun(
       for (const p of profiles) meta[`${p}_at`] = iso;
       await blogPrisma().aeoTracker.update({
         where: { id: trackerId },
-        data: { lastRunAt: runAt, runMeta: meta as unknown as Prisma.InputJsonValue },
+        data: {
+          lastRunAt: runAt,
+          runMeta: meta as unknown as Prisma.InputJsonValue,
+        },
       });
 
       return {

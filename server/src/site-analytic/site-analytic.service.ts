@@ -28,6 +28,7 @@ import { normalize } from './normalize';
 import { pyRound } from './pyhelpers';
 import { LLM_LAYER, type LlmLayer } from './llm-layer';
 import type { Facts, Raw } from './types';
+import { AeoTrackerProvisioningService } from '../aeo/tracker-provisioning.service';
 
 const ANALYTIC_GEOS = new Set(['us', 'gb', 'de', 'ru']); // web/services.py:24
 
@@ -90,18 +91,23 @@ export class SiteAnalyticService {
     private readonly site: DefaultSiteCollectors,
     @Inject(LLM_LAYER) private readonly llm: LlmLayer,
     private readonly plans: PlanService,
+    private readonly trackerProvisioning: AeoTrackerProvisioningService,
   ) {}
 
   /** ISO week UTC → "YYYY-Www" (port of week_key, web/services.py:69-71). */
   weekKey(now: Date = new Date()): string {
-    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const d = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
     const dayNum = (d.getUTCDay() + 6) % 7; // Mon=0..Sun=6
     d.setUTCDate(d.getUTCDate() - dayNum + 3); // Thursday of this week
     const isoYear = d.getUTCFullYear();
     const firstThu = new Date(Date.UTC(isoYear, 0, 4));
     const firstDayNum = (firstThu.getUTCDay() + 6) % 7;
     firstThu.setUTCDate(firstThu.getUTCDate() - firstDayNum + 3);
-    const week = 1 + Math.round((d.getTime() - firstThu.getTime()) / (7 * 24 * 3600 * 1000));
+    const week =
+      1 +
+      Math.round((d.getTime() - firstThu.getTime()) / (7 * 24 * 3600 * 1000));
     return `${isoYear}-W${String(week).padStart(2, '0')}`;
   }
 
@@ -110,10 +116,17 @@ export class SiteAnalyticService {
    * inside collect are isolated; the LLM layer/snapshot/guide are best-effort
    * (Python failure-isolated) — the deterministic report stays valid without them.
    */
-  async analyzeDomain(domain: string, opts: AnalyzeOpts = {}): Promise<AnalyzeResult> {
+  async analyzeDomain(
+    domain: string,
+    opts: AnalyzeOpts = {},
+  ): Promise<AnalyzeResult> {
     const meter = new CostMeter();
     const progress = opts.progress;
-    const llmOpts = { userId: opts.userId ?? null, lite: !!opts.lite, progress };
+    const llmOpts = {
+      userId: opts.userId ?? null,
+      lite: !!opts.lite,
+      progress,
+    };
 
     const { facts, llmOutputs } = await runWithCostMeter(meter, async () => {
       const raw: Raw = await collect(
@@ -127,7 +140,11 @@ export class SiteAnalyticService {
       // LLM layer (clusters/thinCluster/priorities/plan). No key → {} (no-op).
       let outputs: Record<string, any> = {};
       try {
-        const r = await this.llm.runLlmLayer(f, (raw.keywords as any[]) ?? [], llmOpts);
+        const r = await this.llm.runLlmLayer(
+          f,
+          (raw.keywords as any[]) ?? [],
+          llmOpts,
+        );
         f = { ...f, ...r.merge };
         outputs = r.outputs ?? {};
       } catch (e: any) {
@@ -169,7 +186,12 @@ export class SiteAnalyticService {
    * predicate (_SA_VISIBLE): a private audit of one's own brand isn't served
    * from the shared cache.
    */
-  async findCached(domain: string, geo: string, week: string, userId: number | null) {
+  async findCached(
+    domain: string,
+    geo: string,
+    week: string,
+    userId: number | null,
+  ) {
     const rows = await this.prisma.$queryRaw<any[]>`
       SELECT sa.id, sa.user_id, sa.job_id, sa.compare_domain, sa.status
       FROM site_analyses sa
@@ -188,7 +210,12 @@ export class SiteAnalyticService {
    * until the end of the ISO week would return status='running' forever), so
    * the request goes to a fresh run or a refresh-reset of its own row.
    */
-  async findActive(domain: string, geo: string, week: string, userId: number | null) {
+  async findActive(
+    domain: string,
+    geo: string,
+    week: string,
+    userId: number | null,
+  ) {
     const rows = await this.prisma.$queryRaw<any[]>`
       SELECT sa.id, sa.user_id, sa.job_id, sa.status
       FROM site_analyses sa
@@ -236,7 +263,10 @@ export class SiteAnalyticService {
    * current request's domain: re-analyzing your own domain doesn't take a new
    * slot. Missing tables / error → 0 (the gate shouldn't fail the launch).
    */
-  async countAnalysisDomainsForUser(userId: number, excludeDomain: string): Promise<number> {
+  async countAnalysisDomainsForUser(
+    userId: number,
+    excludeDomain: string,
+  ): Promise<number> {
     try {
       const rows = await this.prisma.$queryRaw<Array<{ n: bigint | number }>>`
         SELECT COUNT(*) AS n FROM (
@@ -260,14 +290,19 @@ export class SiteAnalyticService {
    * coalesced?}: cached→done, fresh→queued.
    */
   async runAnalysis(input: RunAnalysisInput): Promise<{
-    id: number; status: string; cached: boolean; coalesced?: boolean;
+    id: number;
+    status: string;
+    cached: boolean;
+    coalesced?: boolean;
   }> {
     const domain = cleanDomain(input.domain);
     if (!domain || !domain.includes('.')) {
       throw new HttpException('domain required', 400);
     }
     const compare = cleanDomain(input.compare || '') || null;
-    let geo = String(input.geo || '').trim().toLowerCase();
+    let geo = String(input.geo || '')
+      .trim()
+      .toLowerCase();
     if (!ANALYTIC_GEOS.has(geo)) geo = isRuDomain(domain) ? 'ru' : 'us';
     const userId = input.userId ?? null;
     const week = this.weekKey();
@@ -298,13 +333,20 @@ export class SiteAnalyticService {
           const clone = await this.cloneForUser(cached.id, userId);
           if (clone) id = clone;
         }
+        if (userId) await this.recoverTracker(id, domain);
         return { id, status: 'done', cached: true };
       }
     }
 
     // Coalescing: landed on an already-running run — no new job (or spend).
     const active = await this.findActive(domain, geo, week, userId);
-    if (active) return { id: active.id, status: active.status, cached: false, coalesced: true };
+    if (active)
+      return {
+        id: active.id,
+        status: active.status,
+        cached: false,
+        coalesced: true,
+      };
 
     // Per-user quota of concurrent analyses (port of
     // enqueue_analytic→QuotaExceeded, web/jobs.py:415): cache hits and
@@ -325,13 +367,14 @@ export class SiteAnalyticService {
 
     // "Refresh analysis": a re-run updates ITS OWN weekly row in place.
     let saId: number;
-    const own = input.refresh && userId
-      ? await this.prisma.siteAnalysis.findFirst({
-          where: { userId, domain, geo, weekKey: week },
-          orderBy: { id: 'desc' },
-          select: { id: true },
-        })
-      : null;
+    const own =
+      input.refresh && userId
+        ? await this.prisma.siteAnalysis.findFirst({
+            where: { userId, domain, geo, weekKey: week },
+            orderBy: { id: 'desc' },
+            select: { id: true },
+          })
+        : null;
     if (own) {
       // Bump createdAt to now(): the row is reused, but for findActive/
       // reapStale this is "the start of a new run" — otherwise the old
@@ -340,14 +383,25 @@ export class SiteAnalyticService {
       await this.prisma.siteAnalysis.update({
         where: { id: own.id },
         data: {
-          status: 'queued', progress: 0, errorText: null, finishedAt: null,
-          compareDomain: compare, createdAt: new Date(),
+          status: 'queued',
+          progress: 0,
+          errorText: null,
+          finishedAt: null,
+          compareDomain: compare,
+          createdAt: new Date(),
         },
       });
       saId = own.id;
     } else {
       const created = await this.prisma.siteAnalysis.create({
-        data: { userId, domain, compareDomain: compare, geo, weekKey: week, status: 'queued' },
+        data: {
+          userId,
+          domain,
+          compareDomain: compare,
+          geo,
+          weekKey: week,
+          status: 'queued',
+        },
         select: { id: true },
       });
       saId = created.id;
@@ -360,7 +414,12 @@ export class SiteAnalyticService {
     // /analyses/:id (the standard openapi async contract). runPipeline
     // manages running→done/error itself and never throws (an unhandled
     // rejection doesn't crash the process).
-    void this.runPipeline(saId, domain, { compare, geo, userId, lite: !!input.lite });
+    void this.runPipeline(saId, domain, {
+      compare,
+      geo,
+      userId,
+      lite: !!input.lite,
+    });
     return { id: saId, status: 'queued', cached: false };
   }
 
@@ -374,12 +433,23 @@ export class SiteAnalyticService {
   private async runPipeline(
     saId: number,
     domain: string,
-    opts: { compare: string | null; geo: string; userId: number | null; lite: boolean },
+    opts: {
+      compare: string | null;
+      geo: string;
+      userId: number | null;
+      lite: boolean;
+    },
   ): Promise<void> {
     try {
-      await this.prisma.siteAnalysis.update({ where: { id: saId }, data: { status: 'running' } });
+      await this.prisma.siteAnalysis.update({
+        where: { id: saId },
+        data: { status: 'running' },
+      });
       const { facts, llmOutputs, costUsd } = await this.analyzeDomain(domain, {
-        compare: opts.compare, geo: opts.geo, userId: opts.userId, lite: opts.lite,
+        compare: opts.compare,
+        geo: opts.geo,
+        userId: opts.userId,
+        lite: opts.lite,
       });
       await this.prisma.siteAnalysis.update({
         where: { id: saId },
@@ -392,14 +462,37 @@ export class SiteAnalyticService {
           finishedAt: new Date(),
         },
       });
+      await this.recoverTracker(saId, domain);
     } catch (e: any) {
-      this.log.warn(`site_analysis #${saId} (${domain}) failed: ${e?.message ?? e}`);
+      this.log.warn(
+        `site_analysis #${saId} (${domain}) failed: ${e?.message ?? e}`,
+      );
       await this.prisma.siteAnalysis
         .update({
           where: { id: saId },
-          data: { status: 'error', errorText: String(e?.message ?? e).slice(0, 500), finishedAt: new Date() },
+          data: {
+            status: 'error',
+            errorText: String(e?.message ?? e).slice(0, 500),
+            finishedAt: new Date(),
+          },
         })
         .catch(() => undefined);
+    }
+  }
+
+  private async recoverTracker(
+    analysisId: number,
+    domain: string,
+  ): Promise<void> {
+    try {
+      await this.trackerProvisioning.provisionFromAnalysis(analysisId);
+    } catch (e: any) {
+      // Tracker recovery must not turn a complete deterministic site analysis
+      // into an error. A cache hit retries this materialization without LLM spend.
+      this.log.warn(
+        `AEO tracker provisioning for site_analysis #${analysisId} (${domain}) failed: ` +
+          `${e?.message ?? e}`,
+      );
     }
   }
 
@@ -409,7 +502,9 @@ export class SiteAnalyticService {
    * a cache hit doesn't inflate the user's spend.
    */
   async cloneForUser(srcId: number, userId: number): Promise<number | null> {
-    const src = await this.prisma.siteAnalysis.findUnique({ where: { id: srcId } });
+    const src = await this.prisma.siteAnalysis.findUnique({
+      where: { id: srcId },
+    });
     if (!src) return null;
     const created = await this.prisma.siteAnalysis.create({
       data: {

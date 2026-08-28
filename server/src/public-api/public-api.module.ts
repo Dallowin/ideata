@@ -18,11 +18,10 @@ import { SiteAnalyticModule } from '../site-analytic/site-analytic.module';
  * Public REST API for the dashboard and the token API v1 — a migration of
  * /api/public/* from the FastAPI scrapper. Reads go through Prisma against the
  * shared database; self-contained writes (keys, bot-hit) also live here. Launching
- * site_analytic (the dashboard POST and v1 /analyze) is NATIVE via
- * SiteAnalyticService.runAnalysis (imports SiteAnalyticModule); the remaining
- * Python aggregations and launches (analyze_domain — deep product analysis,
- * aeo track/{id}/prompts, discover) are proxied to the scrapper's internal channel
- * (InternalClient → /internal/*): api owns auth/plan/ownership.
+ * site_analytic and AEO tracker provisioning are NATIVE. Remaining Python
+ * launches (analyze_domain — deep product analysis and discover) are proxied
+ * to the scrapper's internal channel (InternalClient → /internal/*): api owns
+ * auth/plan/ownership.
  */
 @Module({
   imports: [AuthModule, DiscoverModule, AeoModule, SiteAnalyticModule],

@@ -44,22 +44,47 @@ function mkClients() {
     domainGapKeywords: jest.fn(async () => null),
   };
   const keysso: any = {
-    domainOverview: jest.fn(async () => ({ total_traffic: 1000, organic_etv: 1000, paid_etv: 0, organic_keywords: 5 })),
+    domainOverview: jest.fn(async () => ({
+      total_traffic: 1000,
+      organic_etv: 1000,
+      paid_etv: 0,
+      organic_keywords: 5,
+    })),
     domainKeywords: jest.fn(async () => []),
     domainCompetitors: jest.fn(async () => []),
   };
   const site: any = {
-    similarweb: jest.fn(async () => null), pagespeed: jest.fn(async () => null),
-    entity: jest.fn(async () => null), crawl: jest.fn(async () => null),
-    ads: jest.fn(async () => null), youtube: jest.fn(async () => null),
-    yandexSerp: jest.fn(async () => null), news: jest.fn(async () => null),
+    similarweb: jest.fn(async () => null),
+    pagespeed: jest.fn(async () => null),
+    entity: jest.fn(async () => null),
+    crawl: jest.fn(async () => null),
+    ads: jest.fn(async () => null),
+    youtube: jest.fn(async () => null),
+    yandexSerp: jest.fn(async () => null),
+    news: jest.fn(async () => null),
   };
   return { dfs, keysso, site };
 }
 
-function mkService(prisma: any, llm: LlmLayer = noopLlm, clients = mkClients(), plans: any = mkPlans()) {
-  const svc = new SiteAnalyticService(prisma, clients.dfs, clients.keysso, clients.site, llm, plans);
-  return { svc, plans, ...clients };
+function mkService(
+  prisma: any,
+  llm: LlmLayer = noopLlm,
+  clients = mkClients(),
+  plans: any = mkPlans(),
+  trackerProvisioning: any = {
+    provisionFromAnalysis: jest.fn(async () => null),
+  },
+) {
+  const svc = new SiteAnalyticService(
+    prisma,
+    clients.dfs,
+    clients.keysso,
+    clients.site,
+    llm,
+    plans,
+    trackerProvisioning,
+  );
+  return { svc, plans, trackerProvisioning, ...clients };
 }
 
 describe('weekKey — ISO week UTC', () => {
@@ -77,7 +102,10 @@ describe('weekKey — ISO week UTC', () => {
 describe('analyzeDomain — pipeline composition', () => {
   it('LLM merge + AEO block + competitor substitution + guide', async () => {
     const llm: LlmLayer = {
-      runLlmLayer: async () => ({ merge: { plan: ['step'] }, outputs: { a: 1 } }),
+      runLlmLayer: async () => ({
+        merge: { plan: ['step'] },
+        outputs: { a: 1 },
+      }),
       runAeoSnapshot: async () => ({
         block: { aiBrands: ['b'], sovSelf: 12 },
         run: { answers: [] },
@@ -86,10 +114,12 @@ describe('analyzeDomain — pipeline composition', () => {
       contentGuide: async () => ({ diagnosis: 'd' }),
     };
     const { svc } = mkService({}, llm);
-    const { facts, llmOutputs, costUsd } = await svc.analyzeDomain('shop.ru', { geo: 'ru' });
+    const { facts, llmOutputs, costUsd } = await svc.analyzeDomain('shop.ru', {
+      geo: 'ru',
+    });
 
-    expect(facts.plan).toEqual(['step']);        // LLM layer merged in
-    expect(facts.aiBrands).toEqual(['b']);        // AEO block merged in
+    expect(facts.plan).toEqual(['step']); // LLM layer merged in
+    expect(facts.aiBrands).toEqual(['b']); // AEO block merged in
     expect(facts.competitors).toEqual([{ domain: 'validated.com' }]); // substitution
     expect(facts.aeoGuide).toEqual({ diagnosis: 'd' });
     expect(llmOutputs.a).toBe(1);
@@ -103,7 +133,13 @@ describe('analyzeDomain — pipeline composition', () => {
     clients.dfs.domainOverview = jest.fn(async (_d: string, geo: any) => {
       dfsCostCtx.getStore()?.addUsd(0.01);
       return geo?.locationCode === 2840
-        ? { organic_etv: 5000, paid_etv: 0, total_traffic: 5000, organic_keywords: 10, pos_dist: { '1-3': 1 } }
+        ? {
+            organic_etv: 5000,
+            paid_etv: 0,
+            total_traffic: 5000,
+            organic_keywords: 10,
+            pos_dist: { '1-3': 1 },
+          }
         : null;
     });
     const { svc } = mkService({}, noopLlm, clients);
@@ -111,12 +147,15 @@ describe('analyzeDomain — pipeline composition', () => {
     const OLD = process.env.AA_GEO_MARKETS;
     process.env.AA_GEO_MARKETS = '3';
     try {
-      const { costUsd, facts } = await svc.analyzeDomain('acme.com', { geo: 'us' });
+      const { costUsd, facts } = await svc.analyzeDomain('acme.com', {
+        geo: 'us',
+      });
       expect(clients.dfs.domainOverview).toHaveBeenCalledTimes(3);
       expect(costUsd).toBe(0.03); // 3 markets × $0.01, banker's rounding to 4 decimals
       expect(facts.meta.cost_usd).toBe(0.03);
     } finally {
-      if (OLD === undefined) delete process.env.AA_GEO_MARKETS; else process.env.AA_GEO_MARKETS = OLD;
+      if (OLD === undefined) delete process.env.AA_GEO_MARKETS;
+      else process.env.AA_GEO_MARKETS = OLD;
     }
   });
 });
@@ -145,32 +184,65 @@ describe('runAnalysis — cache/coalescing/writes', () => {
 
   it('weekly cache hit → done, no row created', async () => {
     const prisma = mkPrisma();
-    prisma.$queryRaw.mockResolvedValueOnce([{ id: 7, user_id: null, compare_domain: null, status: 'done' }]);
+    prisma.$queryRaw.mockResolvedValueOnce([
+      { id: 7, user_id: null, compare_domain: null, status: 'done' },
+    ]);
     const { svc } = mkService(prisma);
     const res = await svc.runAnalysis({ domain: 'acme.com', geo: 'us' });
     expect(res).toEqual({ id: 7, status: 'done', cached: true });
     expect(prisma.siteAnalysis.create).not.toHaveBeenCalled();
   });
 
+  it('owned weekly cache hit retries native tracker materialization', async () => {
+    const prisma = mkPrisma();
+    prisma.$queryRaw
+      .mockResolvedValueOnce([{ n: 0 }])
+      .mockResolvedValueOnce([
+        { id: 7, user_id: 5, compare_domain: null, status: 'done' },
+      ]);
+    const { svc, trackerProvisioning } = mkService(prisma);
+
+    const res = await svc.runAnalysis({
+      domain: 'acme.com',
+      geo: 'us',
+      userId: 5,
+    });
+
+    expect(res).toEqual({ id: 7, status: 'done', cached: true });
+    expect(trackerProvisioning.provisionFromAnalysis).toHaveBeenCalledWith(7);
+    expect(prisma.siteAnalysis.create).not.toHaveBeenCalled();
+  });
+
   it('an active run is in progress → coalescing', async () => {
     const prisma = mkPrisma();
     prisma.$queryRaw
-      .mockResolvedValueOnce([])                                   // findCached
+      .mockResolvedValueOnce([]) // findCached
       .mockResolvedValueOnce([{ id: 8, user_id: null, status: 'running' }]); // findActive
     const { svc } = mkService(prisma);
     const res = await svc.runAnalysis({ domain: 'acme.com', geo: 'us' });
-    expect(res).toEqual({ id: 8, status: 'running', cached: false, coalesced: true });
+    expect(res).toEqual({
+      id: 8,
+      status: 'running',
+      cached: false,
+      coalesced: true,
+    });
     expect(prisma.siteAnalysis.create).not.toHaveBeenCalled();
   });
 
   it('no cache/active → create → queued right away, background running → done with facts and cost_cents', async () => {
     const prisma = mkPrisma();
-    const { svc } = mkService(prisma); // keysso branch (shop.ru), llm no-op
+    const { svc, trackerProvisioning } = mkService(prisma); // keysso branch (shop.ru), llm no-op
     const res = await svc.runAnalysis({ domain: 'shop.ru' });
     // Detach: the response is queued immediately (the client polls GET /analyses/:id).
     expect(res).toEqual({ id: 42, status: 'queued', cached: false });
     expect(prisma.siteAnalysis.create).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ status: 'queued', domain: 'shop.ru', geo: 'ru' }) }),
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'queued',
+          domain: 'shop.ru',
+          geo: 'ru',
+        }),
+      }),
     );
 
     await flush(); // wait for the background write of done
@@ -181,15 +253,56 @@ describe('runAnalysis — cache/coalescing/writes', () => {
     expect(doneCall[0].data.progress).toBe(100);
     expect(doneCall[0].data.facts).toBeTruthy();
     expect(typeof doneCall[0].data.costCents).toBe('number');
+    expect(trackerProvisioning.provisionFromAnalysis).toHaveBeenCalledWith(42);
+  });
+
+  it('tracker provisioning failure is retriable and does not flip a completed analysis to error', async () => {
+    const prisma = mkPrisma();
+    const trackerProvisioning = {
+      provisionFromAnalysis: jest.fn(async () => {
+        throw new Error('tracker write failed');
+      }),
+    };
+    const { svc } = mkService(
+      prisma,
+      noopLlm,
+      mkClients(),
+      mkPlans(),
+      trackerProvisioning,
+    );
+
+    expect(await svc.runAnalysis({ domain: 'shop.ru', userId: 5 })).toEqual({
+      id: 42,
+      status: 'queued',
+      cached: false,
+    });
+    await flush();
+
+    expect(trackerProvisioning.provisionFromAnalysis).toHaveBeenCalledWith(42);
+    expect(
+      prisma.siteAnalysis.update.mock.calls.some(
+        (call: any[]) => call[0]?.data?.status === 'done',
+      ),
+    ).toBe(true);
+    expect(
+      prisma.siteAnalysis.update.mock.calls.some(
+        (call: any[]) => call[0]?.data?.status === 'error',
+      ),
+    ).toBe(false);
   });
 
   it('battle: pipeline error → the row is marked error (the detach does NOT propagate to the client)', async () => {
     const prisma = mkPrisma();
     const clients = mkClients();
-    clients.keysso.domainOverview = jest.fn(async () => { throw new Error('unused'); }); // safe swallows it — not this path
+    clients.keysso.domainOverview = jest.fn(async () => {
+      throw new Error('unused');
+    }); // safe swallows it — not this path
     // Fail the finish write: update(done) throws — runPipeline catches it and writes error.
     prisma.siteAnalysis.update.mockImplementation(async (arg: any) =>
-      arg?.data?.status === 'done' ? Promise.reject(new Error('db write failed')) : {});
+      arg?.data?.status === 'done'
+        ? Promise.reject(new Error('db write failed'))
+        : {},
+    );
     const { svc } = mkService(prisma, noopLlm, clients);
     // Detach: the POST doesn't fail from the pipeline error — the response is queued, the error goes into the row.
     const res = await svc.runAnalysis({ domain: 'shop.ru' });
@@ -221,7 +334,11 @@ describe('runAnalysis — cache/coalescing/writes', () => {
     prisma.$queryRaw.mockResolvedValue([]); // findCached/findActive empty
     const plans = mkPlans(1, 'Старт'); // strict limit, but doesn't apply to admin
     const { svc } = mkService(prisma, noopLlm, mkClients(), plans);
-    const res = await svc.runAnalysis({ domain: 'shop.ru', userId: 9, isAdmin: true });
+    const res = await svc.runAnalysis({
+      domain: 'shop.ru',
+      userId: 9,
+      isAdmin: true,
+    });
     expect(res).toEqual({ id: 42, status: 'queued', cached: false });
     expect(plans.resolveLimits).not.toHaveBeenCalled();
     await flush(); // let the background run settle (avoid "logs after the test")

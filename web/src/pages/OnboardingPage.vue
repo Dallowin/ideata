@@ -26,12 +26,19 @@ import {
 import { useAuth } from '@/composables/useAuth'
 import { OnboardingError, onboardingApi, scenario, useMock } from '@/composables/useOnboardingApi'
 import { useBrands } from '@/composables/useBrands'
+import { useBrandBootstrap } from '@/composables/useBrandBootstrap'
 import OnboardingScenarioPanel from '@/components/OnboardingScenarioPanel.vue'
 
 const router = useRouter()
 const { t, tm, rt } = useI18n()
 const { auth } = useAuth()
 const brands = useBrands()
+const {
+  startAnalysis: startBrandAnalysis,
+  watchProgress,
+  error: bootstrapError,
+} = useBrandBootstrap()
+watchProgress()
 
 type Screen = 'start' | 'gather' | 'locale' | 'topics' | 'final'
 const screen = ref<Screen>('start')
@@ -221,6 +228,7 @@ const finalErr = ref('')
 const brandLimit = ref('')
 const freeRunAvailable = ref(false)
 const freeRunStarted = ref(false)
+const freeRunErr = ref('')
 
 // OSS: без LLM-ключа разбор не запустится — гейтим кнопку «Запустить разбор».
 const keysReady = ref(false)
@@ -274,12 +282,20 @@ const showVerify = ref(false)
 async function runFreeAnalysis() {
   if (freeRunning.value) return
   freeRunning.value = true
+  freeRunErr.value = ''
   try {
-    await onboardingApi.startAnalysis(cleanDomain.value, form.geo)
+    // Мок сохраняет управляемые dev-сценарии; live идёт через общий
+    // idempotent orchestrator, которым пользуются и страницы кабинета.
+    if (useMock) await onboardingApi.startAnalysis(cleanDomain.value, form.geo)
+    else await startBrandAnalysis(cleanDomain.value, form.geo)
     freeRunStarted.value = true
-  } catch (e) {
-    if (e instanceof OnboardingError && e.code === 'EMAIL_NOT_VERIFIED') showVerify.value = true
-    else freeRunAvailable.value = false
+  } catch (e: any) {
+    if (e?.code === 'EMAIL_NOT_VERIFIED') showVerify.value = true
+    else {
+      freeRunAvailable.value = false
+      freeRunErr.value = bootstrapError.value
+        || e?.serverMessage || e?.message || t('onboarding.final.error.fallback')
+    }
   } finally {
     freeRunning.value = false
   }
@@ -339,7 +355,7 @@ function resetFlow() {
   topics.value = []; customTopic.value = ''; topicNote.value = ''
   gatherDesc.value = ''; err.value = ''
   finalizing.value = false; finalized.value = false; finalErr.value = ''
-  brandLimit.value = ''; freeRunStarted.value = false; freeRunning.value = false
+  brandLimit.value = ''; freeRunStarted.value = false; freeRunning.value = false; freeRunErr.value = ''
   showVerify.value = false; codeCells.value = Array(6).fill(''); codeErr.value = ''
 }
 </script>
@@ -554,8 +570,10 @@ function resetFlow() {
               class="mt-7 h-11 w-full max-w-[360px]"
               :disabled="!keysReady || freeRunning" @click="runFreeAnalysis"
             >
-              <Loader2 v-if="freeRunning" :size="15" class="animate-spin" /> Запустить разбор
+              <Loader2 v-if="freeRunning" :size="15" class="animate-spin" />
+              {{ freeRunErr ? $t('action.retry') : $t('warmup.start') }}
             </Button>
+            <p v-if="freeRunErr" class="mt-2 max-w-[360px] text-[12.5px] text-amber-300/80">{{ freeRunErr }}</p>
             <Button
               v-if="!keysReady" variant="outline"
               class="mt-2 h-11 w-full max-w-[360px]" @click="goToSettings"

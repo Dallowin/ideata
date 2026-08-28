@@ -20,15 +20,15 @@ import type { AssistantCtx } from '@/lib/assistant'
 const { t } = useI18n()
 const { auth, check } = useAuth()
 const { activeDomain } = useBrands()
-const { state: tracker, load } = useTracker()
+const { state: tracker } = useTracker()
 // неподключённые интеграции — полоса-подсказка под полем ввода чата
 const { connectors, load: loadConnectors } = useConnectors()
 // разбор сайта нужен ассистенту для тем и техсостояния — грузим лениво
-const { state: site, load: loadSite } = useSiteAnalytic()
-onMounted(() => { check(); load(); loadConnectors(); loadSite() })
+const { state: site } = useSiteAnalytic()
 // Свежий бренд: пока данных нет — шаги разбора вместо пустой сводки и
 // рекомендаций, посчитанных ни на чём.
-const { phase } = useBrandBootstrap()
+const { phase, initialize } = useBrandBootstrap()
+onMounted(() => { check(); void initialize(); loadConnectors() })
 const warming = computed(() => phase.value === 'analysing' || phase.value === 'idle')
 
 // один контекст на все ответы ассистента: те же данные, что рисуют панели

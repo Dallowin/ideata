@@ -36,7 +36,7 @@ import {
 } from '@/data/prompts'
 
 // Свежий бренд: вместо пустой таблицы показываем ход разбора.
-const { phase: bootstrapPhase } = useBrandBootstrap()
+const { phase: bootstrapPhase, initialize } = useBrandBootstrap()
 const warming = computed(() => bootstrapPhase.value === 'analysing' || bootstrapPhase.value === 'idle')
 
 const { t } = useI18n()
@@ -58,7 +58,7 @@ const realSources = computed(() => tracker.sources)
 const dataSource = computed(() => tracker.status)
 
 watch(() => tracker.rows, (r) => { rows.value = [...r] }, { immediate: true })
-onMounted(() => loadTracker())
+onMounted(() => { void initialize() })
 
 // ── состояние UI ───────────────────────────────────────────────────────────
 const q = ref('')

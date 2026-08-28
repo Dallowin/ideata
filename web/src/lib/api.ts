@@ -429,6 +429,25 @@ export const api = {
   aeoGet: (id: number | string, weeks = 8) =>
     isDemo() ? Promise.resolve(demoTracker() as any) : http<any>(`/scrape/aeo/${id}?weeks=${weeks}`),
   /**
+   * Завести (либо вернуть существующий) трекер из уже готового разбора сайта.
+   * analysis_id принципиален: recovery не запускает новый LLM-разбор и сидирует
+   * мониторинг тем же снимком, который пользователь видит во вкладке сайта.
+   */
+  aeoTrack: (domain: string, analysisId: number, competitors: string[] = []) =>
+    http<{
+      id: number
+      tracker_id: number
+      analysis_id: number
+      created: boolean
+      materialized_answers: number
+      status: 'done'
+    }>(
+      '/scrape/aeo/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain, competitors, analysis_id: analysisId }),
+      }),
+  /**
    * Точечные мутации панели промптов: add | archive | delete | accept | reject |
    * set_topic | rename_topic | clear_topic. Ручка была на бэке с самого начала —
    * кабинет её не звал, поэтому «добавить/удалить» жили до первой перезагрузки.

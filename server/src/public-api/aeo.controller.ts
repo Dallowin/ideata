@@ -20,11 +20,11 @@ import { LoginGuard, PaidPlanGuard } from '../auth/login.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { SessionUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { InternalClient } from './internal.client';
 import { cleanDomain } from './clean-domain';
 import { HttpDetailFilter } from '../common/http-detail.filter';
 import { AeoReadService } from '../aeo/aeo-read.service';
 import { AeoMutationsService } from '../aeo/mutations';
+import { AeoTrackerProvisioningService } from '../aeo/tracker-provisioning.service';
 
 // UA classifier → (bot, vendor): substring match on the UA (lowercased). The list
 // grows without redeploying the client-side collector — classification runs server-side.
@@ -112,9 +112,9 @@ function userFromBotToken(token: string | undefined): number | null {
 export class AeoController {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly internal: InternalClient,
     private readonly aeoRead: AeoReadService,
     private readonly mutations: AeoMutationsService,
+    private readonly trackerProvisioning: AeoTrackerProvisioningService,
   ) {}
 
   /**
@@ -139,7 +139,7 @@ export class AeoController {
 
   @Post('track')
   @UseGuards(PaidPlanGuard)
-  track(
+  async track(
     @Body()
     payload: {
       domain?: string;
@@ -148,11 +148,11 @@ export class AeoController {
     },
     @CurrentUser() user: SessionUser,
   ) {
-    return this.internal.startAeoTrack({
-      domain: String(payload?.domain || ''),
+    return this.trackerProvisioning.provisionForUser({
+      userId: user.i,
+      domain: payload?.domain,
       competitors: payload?.competitors,
-      analysis_id: payload?.analysis_id ?? null,
-      user_id: user.i || null,
+      analysisId: payload?.analysis_id ?? null,
     });
   }
 
@@ -219,7 +219,12 @@ export class AeoController {
       const [bot, vendor] = hit ?? [String(name).slice(0, 40), ''];
       const key = `${bot} ${vendor}`;
       const prev = agg.get(key);
-      agg.set(key, [bot, vendor, (prev?.[2] ?? 0) + Math.trunc(n), prev?.[3] ?? null]);
+      agg.set(key, [
+        bot,
+        vendor,
+        (prev?.[2] ?? 0) + Math.trunc(n),
+        prev?.[3] ?? null,
+      ]);
       accepted += Math.trunc(n);
     }
     for (const ua of uas.slice(0, 10000)) {
@@ -231,7 +236,12 @@ export class AeoController {
       const [bot, vendor] = hit;
       const key = `${bot} ${vendor}`;
       const prev = agg.get(key);
-      agg.set(key, [bot, vendor, (prev?.[2] ?? 0) + 1, String(ua).slice(0, 300)]);
+      agg.set(key, [
+        bot,
+        vendor,
+        (prev?.[2] ?? 0) + 1,
+        String(ua).slice(0, 300),
+      ]);
       accepted += 1;
     }
     if (agg.size === 0) return { ok: true, accepted: 0, dropped };
@@ -309,7 +319,10 @@ export class AeoController {
         .slice(0, 10);
       let wkHits = 0;
       for (const [d, v] of dayMap) if (d >= wkStart && d < wkEnd) wkHits += v;
-      series.push({ label: w === 1 ? 'сейчас' : `−${w - 1} нед`, hits: wkHits });
+      series.push({
+        label: w === 1 ? 'сейчас' : `−${w - 1} нед`,
+        hits: wkHits,
+      });
     }
     const total = bots.reduce((s, b) => s + b.visits, 0);
     return { hasData: total > 0, domain: dom, bots, series, total, weeks };
@@ -379,7 +392,12 @@ export class AeoController {
     @Body() payload: { n?: number; keywords?: unknown } | undefined,
     @CurrentUser() user: SessionUser,
   ) {
-    return this.mutations.suggestAeoPrompts(id, payload?.n, payload?.keywords, user.i);
+    return this.mutations.suggestAeoPrompts(
+      id,
+      payload?.n,
+      payload?.keywords,
+      user.i,
+    );
   }
 
   /**
@@ -421,7 +439,8 @@ export class AeoController {
   @UseGuards(LoginGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() payload: { prompts_limit?: unknown; competitors?: unknown } | undefined,
+    @Body()
+    payload: { prompts_limit?: unknown; competitors?: unknown } | undefined,
     @CurrentUser() user: SessionUser,
   ) {
     const p = payload || {};

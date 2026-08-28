@@ -77,22 +77,31 @@ export function useSiteAnalytic() {
         const list: any = await api.siteAnalyticList()
         const items: any[] = (list?.items || [])
           .filter((r: any) => !dom || norm(r.domain) === dom)
-          .sort((a: any, b: any) => String(b.finished_at || b.created_at || '').localeCompare(String(a.finished_at || a.created_at || '')))
-        const done = items.find((r) => r.status === 'done')
-        if (!done) {
-          // разбор ещё считается — покажем это отдельным состоянием
-          state.status = items.some((r) => ['queued', 'running'].includes(r.status)) ? 'running' : 'none'
+          // id монотонный и надёжнее finished_at: у незавершённого разбора его
+          // нет, поэтому старый done раньше мог перекрыть новый running.
+          .sort((a: any, b: any) => Number(b.id || 0) - Number(a.id || 0))
+        const latest = items[0]
+        if (!latest) {
+          state.status = 'none'
           return
         }
-        const sa: any = await api.siteAnalytic(Number(done.id))
+        state.analysisId = Number(latest.id) || null
+        if (['queued', 'running'].includes(latest.status)) {
+          state.status = 'running'
+          return
+        }
+        if (latest.status !== 'done') {
+          state.status = latest.status === 'error' ? 'error' : 'none'
+          return
+        }
+        const sa: any = await api.siteAnalytic(Number(latest.id))
         if (sa?.status === 'done' && sa?.facts) {
           state.facts = sa.facts as SiteFacts
-          state.analysisId = Number(done.id)
-          state.finishedAt = done.finished_at || sa?.finished_at || null
+          state.finishedAt = latest.finished_at || sa?.finished_at || null
           state.status = 'done'
           return
         }
-        state.status = 'none'
+        state.status = ['queued', 'running'].includes(sa?.status) ? 'running' : 'error'
       } catch {
         state.status = 'error'
       } finally {

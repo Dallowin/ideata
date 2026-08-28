@@ -10,13 +10,11 @@
  * Данные не выдумываем: серые плашки — это ЗАГЛУШКИ формы, а не цифры.
  * Состояние тянем из useBrandBootstrap, оно же само обновляется.
  */
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Check, Loader2, Play, RefreshCw } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useBrandBootstrap } from '@/composables/useBrandBootstrap'
-import { useBrands } from '@/composables/useBrands'
-import { api } from '@/lib/api'
 import { intlLocale } from '@/i18n'
 
 const props = withDefaults(defineProps<{
@@ -25,8 +23,10 @@ const props = withDefaults(defineProps<{
 }>(), { rows: 3 })
 
 const { t } = useI18n()
-const { active } = useBrands()
-const { phase, steps, percent, refresh, watchProgress, earlyCompetitors, domain } = useBrandBootstrap()
+const {
+  phase, steps, percent, refresh, startAnalysis, watchProgress,
+  earlyCompetitors, domain, starting, error,
+} = useBrandBootstrap()
 watchProgress()
 
 const analysing = computed(() => phase.value === 'analysing')
@@ -41,22 +41,9 @@ const intl = () => intlLocale()
 const trafficLabel = (n: number | null) =>
   n == null ? '—' : new Intl.NumberFormat(intl(), { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 
-// Запуск разбора руками — для случая, когда ничего не запущено (free-тариф).
-const starting = ref(false)
-const startErr = ref('')
+// Та же команда обслуживает первый запуск и явный retry пропущенного handoff.
 async function start() {
-  if (starting.value || !active.value) return
-  starting.value = true
-  startErr.value = ''
-  try {
-    await api.siteAnalyticStart(active.value.domain, active.value.geo || undefined)
-    refresh()
-  } catch (e: any) {
-    // self-host: тарифов/оплаты нет — показываем текст ошибки как есть.
-    startErr.value = e?.serverMessage || t('warmup.startError')
-  } finally {
-    starting.value = false
-  }
+  try { await startAnalysis() } catch { /* ошибка уже лежит в общем bootstrap state */ }
 }
 </script>
 
@@ -77,11 +64,11 @@ async function start() {
       </Button>
       <Button v-else size="sm" class="h-8 gap-1.5 text-[12px]" :disabled="starting" @click="start">
         <Loader2 v-if="starting" :size="13" class="animate-spin" /><Play v-else :size="13" />
-        {{ $t('warmup.start') }}
+        {{ error ? $t('action.retry') : $t('warmup.start') }}
       </Button>
     </div>
 
-    <p v-if="startErr" class="mt-2 text-[12px] text-amber-300/80">{{ startErr }}</p>
+    <p v-if="error" class="mt-2 text-[12px] text-amber-300/80">{{ error }}</p>
 
     <!-- полоса прогресса: доля ЗАВЕРШЁННЫХ шагов, без фейкового «ползёт само» -->
     <div v-if="analysing" class="mt-4 h-1 w-full overflow-hidden rounded-full bg-surface-hover">

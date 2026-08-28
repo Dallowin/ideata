@@ -34,14 +34,14 @@ import { buildPromptDuels, buildRivalRows, buildSourceDuels, normDomain } from '
 import type { PromptRow } from '@/data/prompts'
 
 // Свежий бренд: вместо пустой таблицы показываем ход разбора.
-const { phase: bootstrapPhase } = useBrandBootstrap()
+const { phase: bootstrapPhase, initialize } = useBrandBootstrap()
 const warming = computed(() => bootstrapPhase.value === 'analysing' || bootstrapPhase.value === 'idle')
 
 const { t } = useI18n()
 const { active, activeDomain, load: loadBrands } = useBrands()
 const { state: tracker, load: loadTracker } = useTracker()
 
-onMounted(() => loadTracker())
+onMounted(() => { void initialize() })
 
 const loading = computed(() => tracker.status === 'loading')
 

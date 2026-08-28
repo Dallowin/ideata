@@ -8,6 +8,7 @@ import { DefaultSiteCollectors } from './site-collectors';
 import { LLM_LAYER } from './llm-layer';
 import { LiveLlmLayer } from './live-llm-layer';
 import { PrismaSnapshotStore } from './snapshot-store';
+import { AeoModule } from '../aeo/aeo.module';
 
 /**
  * Native AI analyst (Python → NestJS migration). Exports SiteAnalyticService
@@ -21,10 +22,11 @@ import { PrismaSnapshotStore } from './snapshot-store';
  * top of aeo/*) and content_guide. Gated on an available LLM key via
  * getSettingKey (ANTHROPIC_API_KEY or OPENROUTER_API_KEY): with neither,
  * run_llm_layer leaves facts alone and snapshot/guide → null (the deterministic
- * report is still complete). The unified brand panel and the monitoring seed
- * come from PrismaSnapshotStore.
+ * report is still complete). PrismaSnapshotStore keeps an existing prompt panel
+ * in sync; monitoring is materialized once the SiteAnalysis row is durable.
  */
 @Module({
+  imports: [AeoModule],
   providers: [
     SiteAnalyticService,
     DefaultSiteCollectors,
@@ -37,7 +39,8 @@ import { PrismaSnapshotStore } from './snapshot-store';
       useFactory: (dfs: DataForSeoClient, prisma: PrismaService) =>
         new LiveLlmLayer({
           snapshot: {
-            keywordSuggestions: (seed, limit) => dfs.keywordSuggestions(seed, limit),
+            keywordSuggestions: (seed, limit) =>
+              dfs.keywordSuggestions(seed, limit),
             store: new PrismaSnapshotStore(prisma),
           },
         }),

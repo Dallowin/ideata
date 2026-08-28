@@ -5,6 +5,7 @@ import { InternalClient } from '../public-api/internal.client';
 import { DataForSeoClient } from '../discover/dataforseo.client';
 import { KeysSoClient } from '../discover/keysso.client';
 import { DiscoverSettings } from '../discover/settings';
+import { AeoTrackerProvisioningService } from './tracker-provisioning.service';
 
 /**
  * Native read + mutations for the AEO tracker (a stage of the Python →
@@ -24,11 +25,12 @@ import { DiscoverSettings } from '../discover/settings';
   providers: [
     AeoReadService,
     AeoMutationsService,
+    AeoTrackerProvisioningService,
     InternalClient,
     DataForSeoClient,
     KeysSoClient,
     DiscoverSettings,
   ],
-  exports: [AeoReadService, AeoMutationsService],
+  exports: [AeoReadService, AeoMutationsService, AeoTrackerProvisioningService],
 })
 export class AeoModule {}

@@ -36,9 +36,9 @@ const { activeDomain } = useBrands()
 const { state: tracker, load } = useTracker()
 // Пока по бренду нет ни одного прогона — вместо панелей с прочерками
 // показываем, что именно считается и сколько это занимает.
-const { phase } = useBrandBootstrap()
+const { phase, initialize } = useBrandBootstrap()
 const warming = computed(() => phase.value === 'analysing' || phase.value === 'idle')
-onMounted(() => load())
+onMounted(() => { void initialize() })
 
 // Диалог конкурентов открывается и из заблокированных KPI, и из рейтинга —
 // это два места, где человек упирается в их отсутствие.

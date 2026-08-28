@@ -60,11 +60,21 @@ import type { Facts, Raw } from './types';
 // ── geo map (site_analytic.py:37-45 _WORLD_LOCATIONS → GEO_LOCATIONS) ────────
 
 const WORLD_LOCATIONS: ReadonlyArray<[string, number, string]> = [
-  ['US', 2840, 'en'], ['IN', 2356, 'en'], ['BR', 2076, 'pt'],
-  ['GB', 2826, 'en'], ['DE', 2276, 'de'], ['FR', 2250, 'fr'],
-  ['ES', 2724, 'es'], ['IT', 2380, 'it'], ['MX', 2484, 'es'],
-  ['ID', 2360, 'id'], ['JP', 2392, 'ja'], ['NL', 2528, 'nl'],
-  ['PL', 2616, 'pl'], ['TR', 2792, 'tr'], ['CA', 2124, 'en'],
+  ['US', 2840, 'en'],
+  ['IN', 2356, 'en'],
+  ['BR', 2076, 'pt'],
+  ['GB', 2826, 'en'],
+  ['DE', 2276, 'de'],
+  ['FR', 2250, 'fr'],
+  ['ES', 2724, 'es'],
+  ['IT', 2380, 'it'],
+  ['MX', 2484, 'es'],
+  ['ID', 2360, 'id'],
+  ['JP', 2392, 'ja'],
+  ['NL', 2528, 'nl'],
+  ['PL', 2616, 'pl'],
+  ['TR', 2792, 'tr'],
+  ['CA', 2124, 'en'],
   ['AU', 2036, 'en'],
 ];
 const GEO_LOCATIONS: Record<string, [number, string]> = Object.fromEntries(
@@ -101,9 +111,11 @@ export function detectLang(
 ): string | null {
   const parts: string[] = [];
   if (isDict(context)) {
-    for (const k of ['title', 'description', 'h1', 'hero_text']) parts.push(pyStrOr(get(context, k)));
+    for (const k of ['title', 'description', 'h1', 'hero_text'])
+      parts.push(pyStrOr(get(context, k)));
   }
-  for (const k of (keywords || []).slice(0, 30)) parts.push(pyStrOr(get(k, 'keyword')));
+  for (const k of (keywords || []).slice(0, 30))
+    parts.push(pyStrOr(get(k, 'keyword')));
   const blob = parts.join(' ');
   if (Array.from(blob).filter(isAlpha).length < 20) return fallback;
   return cyrillicRatio(blob) >= 0.3 ? 'ru' : 'en';
@@ -133,10 +145,16 @@ function promptTexts(panel: unknown[]): string[] {
 }
 
 /** `merge_panels` (aeo.py:941): curated core + top-up by generation to n, deduped. */
-function mergePanels(existing: unknown[], fresh: unknown[], n: number): PanelEntry[] {
+function mergePanels(
+  existing: unknown[],
+  fresh: unknown[],
+  n: number,
+): PanelEntry[] {
   const out = dropFallback(normalizePanel(existing));
   const seen = new Set(out.map((p) => normPrompt(p.prompt)));
-  for (const p of dropFallback(normalizePanel(fresh, { defaultSource: 'generated' }))) {
+  for (const p of dropFallback(
+    normalizePanel(fresh, { defaultSource: 'generated' }),
+  )) {
     if (out.length >= n) break;
     const k = normPrompt(p.prompt);
     if (seen.has(k)) continue;
@@ -167,19 +185,15 @@ export interface AeoSnapshotStore {
   /** brand_aliases(user_id, domain) — confirmed brand spellings. */
   brandAliases(userId: number, domain: string): Promise<string[]>;
   /** prompt_pool_left — remaining account prompt pool (null = no clamping). */
-  promptPoolLeft(userId: number, excludeTrackerId: number | null): Promise<number | null>;
+  promptPoolLeft(
+    userId: number,
+    excludeTrackerId: number | null,
+  ): Promise<number | null>;
   /** update_aeo_tracker(id, prompts=merged) — syncs the top-up into the tracker. */
   updateTrackerPrompts(trackerId: number, prompts: PanelEntry[]): Promise<void>;
-  /** "2 in 1": analysis run → monitoring point (insert_aeo_answers + last_run_at). */
-  seedMonitoring(
-    trackerId: number,
-    runAt: Date,
-    answers: SnapshotAnswer[],
-    sentiment: Record<string, SentimentEntry> | null,
-  ): Promise<void>;
 }
 
-/** No-op store: the Python "no tracker" branch (panel from scratch, no sync/seed). */
+/** No-op store: the Python "no tracker" branch (panel from scratch, no sync). */
 export const NULL_SNAPSHOT_STORE: AeoSnapshotStore = {
   async effectivePlan() {
     return null;
@@ -194,9 +208,6 @@ export const NULL_SNAPSHOT_STORE: AeoSnapshotStore = {
     return null;
   },
   async updateTrackerPrompts() {
-    /* no-op */
-  },
-  async seedMonitoring() {
     /* no-op */
   },
 };
@@ -217,7 +228,10 @@ export interface AeoSnapshotDeps {
   /** flash-JSON for buildCompetitors and generatePrompts.deps.ask. */
   askJson?: AskJson;
   /** dataforseo.keyword_suggestions for generatePrompts.deps. */
-  keywordSuggestions?: (seed: string, limit: number) => Promise<KwSuggestionRow[] | null>;
+  keywordSuggestions?: (
+    seed: string,
+    limit: number,
+  ) => Promise<KwSuggestionRow[] | null>;
   store?: AeoSnapshotStore;
 }
 
@@ -258,11 +272,13 @@ export async function runAeoSnapshotCore(
   const sentimentBatchFn = deps.sentimentBatch ?? sentimentBatch;
   const generatePromptsFn = deps.generatePrompts ?? generatePrompts;
   const buildCompetitorsFn = deps.buildCompetitors ?? buildCompetitorsImpl;
-  const onboardingCompetitorsFn = deps.onboardingCompetitors ?? onboardingCompetitorsImpl;
+  const onboardingCompetitorsFn =
+    deps.onboardingCompetitors ?? onboardingCompetitorsImpl;
   const platformsForFn = deps.platformsFor ?? platformsFor;
   const availablePlatformsFn = deps.availablePlatforms ?? availablePlatforms;
   const promptCount =
-    deps.promptCount ?? ((plan) => promptCountFn(plan, process.env.AEO_PROMPTS ?? null));
+    deps.promptCount ??
+    ((plan) => promptCountFn(plan, process.env.AEO_PROMPTS ?? null));
   const ask = deps.askJson ?? askFlashJson;
   const store = deps.store ?? NULL_SNAPSHOT_STORE;
   const progress = opts.progress;
@@ -279,8 +295,12 @@ export async function runAeoSnapshotCore(
       brandAliases = await store.brandAliases(userId, domain);
       if (nPrompts === null) {
         nPrompts = promptCount(plan);
-        const poolLeft = await store.promptPoolLeft(userId, tracker?.id ?? null);
-        if (poolLeft !== null) nPrompts = Math.min(nPrompts, Math.max(5, poolLeft));
+        const poolLeft = await store.promptPoolLeft(
+          userId,
+          tracker?.id ?? null,
+        );
+        if (poolLeft !== null)
+          nPrompts = Math.min(nPrompts, Math.max(5, poolLeft));
       }
     } catch {
       tracker = null; // the analysis is still valid without a tracker (site_analytic.py:760)
@@ -294,8 +314,15 @@ export async function runAeoSnapshotCore(
     .map((c) => get(c, 'domain') as string)
     .slice(0, 3);
   const ru = isRuDomain(domain);
-  const crawlCtx = pyOr(get(facts, 'crawl'), get(raw, 'crawl')) as GenerateContext | null;
-  const lang = detectLang(crawlCtx, (pyOr(get(raw, 'keywords'), []) as any[]), ru ? 'ru' : 'en');
+  const crawlCtx = pyOr(
+    get(facts, 'crawl'),
+    get(raw, 'crawl'),
+  ) as GenerateContext | null;
+  const lang = detectLang(
+    crawlCtx,
+    pyOr(get(raw, 'keywords'), []) as any[],
+    ru ? 'ru' : 'en',
+  );
 
   let loc: number;
   let lc: string;
@@ -303,13 +330,18 @@ export async function runAeoSnapshotCore(
     loc = 2643;
     lc = 'ru';
   } else {
-    const geoKey = String(pyOr(get(pyOr(get(facts, 'meta'), {}), 'geo'), 'us')).toLowerCase();
+    const geoKey = String(
+      pyOr(get(pyOr(get(facts, 'meta'), {}), 'geo'), 'us'),
+    ).toLowerCase();
     [loc, lc] = GEO_LOCATIONS[geoKey] ?? GEO_LOCATIONS.us;
   }
 
   const platforms = lite
     ? await availablePlatformsFn(
-        dedup([...(await platformsForFn('micro')), ...(await platformsForFn('mid'))]),
+        dedup([
+          ...(await platformsForFn('micro')),
+          ...(await platformsForFn('mid')),
+        ]),
       )
     : await availablePlatformsFn(DEFAULT_PLATFORMS);
 
@@ -323,16 +355,24 @@ export async function runAeoSnapshotCore(
     panel = existing.slice(0, nPrompts);
   } else {
     progress?.('AEO: generating prompts');
-    const fresh = await generatePromptsFn(domain, pyOr(get(raw, 'keywords'), []) as KeywordRow[], {
-      n: nPrompts,
-      lang: lang ?? (ru ? 'ru' : 'en'),
-      context: crawlCtx,
-      competitors,
-      deps: { ask, keywordSuggestions: deps.keywordSuggestions },
-    });
+    const fresh = await generatePromptsFn(
+      domain,
+      pyOr(get(raw, 'keywords'), []) as KeywordRow[],
+      {
+        n: nPrompts,
+        lang: lang ?? (ru ? 'ru' : 'en'),
+        context: crawlCtx,
+        competitors,
+        deps: { ask, keywordSuggestions: deps.keywordSuggestions },
+      },
+    );
     const merged = mergePanels(existing, fresh, nPrompts);
     panel = merged.length ? merged : (fresh as unknown as PanelEntry[]);
-    if (tracker && merged.length && JSON.stringify(merged) !== JSON.stringify(existing)) {
+    if (
+      tracker &&
+      merged.length &&
+      JSON.stringify(merged) !== JSON.stringify(existing)
+    ) {
       try {
         await store.updateTrackerPrompts(tracker.id, merged);
       } catch {
@@ -352,8 +392,13 @@ export async function runAeoSnapshotCore(
 
   if (!answers.length) {
     // Fail-soft: the key is there, prompts are there, but ALL engines came back empty.
-    progress?.('AEO: engines unavailable — check ANTHROPIC_API_KEY / OPENROUTER_API_KEY');
-    return { block: panelOnlyBlock(panel, platforms, { note: ENGINES_NOTE }), run: null };
+    progress?.(
+      'AEO: engines unavailable — check ANTHROPIC_API_KEY / OPENROUTER_API_KEY',
+    );
+    return {
+      block: panelOnlyBlock(panel, platforms, { note: ENGINES_NOTE }),
+      run: null,
+    };
   }
 
   // Competitor validation: the SEO domains were only candidates (site_analytic.py:835).
@@ -364,7 +409,7 @@ export async function runAeoSnapshotCore(
     validated = await buildCompetitorsFn({
       domain,
       about,
-      seoRows: (pyOr(get(facts, 'competitors'), []) as any[]),
+      seoRows: pyOr(get(facts, 'competitors'), []) as any[],
       answers,
       onboarding: await onboardingCompetitorsFn(domain),
       ask,
@@ -393,7 +438,10 @@ export async function runAeoSnapshotCore(
   await judgeAnswersFn(answers, domain, competitors);
 
   // Panel metadata map → enriches the prompt rows (frequency/intent/topic).
-  const promptMeta: Record<string, { volume?: number | null; intent?: string | null; topic?: string | null }> = {};
+  const promptMeta: Record<
+    string,
+    { volume?: number | null; intent?: string | null; topic?: string | null }
+  > = {};
   for (const p of panel) {
     const pr = get(p, 'prompt');
     if (truthy(pr)) {
@@ -425,15 +473,6 @@ export async function runAeoSnapshotCore(
     prompts: panel,
     platforms: [...platforms],
   };
-
-  // "2 in 1": the user already has a tracker for this domain → the run = a monitoring point.
-  if (tracker) {
-    try {
-      await store.seedMonitoring(tracker.id, new Date(), answers, sentiment);
-    } catch {
-      /* a monitoring failure doesn't fail the analysis (site_analytic.py:906) */
-    }
-  }
 
   return { block, run, competitors: validated };
 }
